@@ -153,6 +153,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       Align(
                         alignment: Alignment.centerRight,
                         child: GestureDetector(
+                          behavior: HitTestBehavior.opaque,
                           onTap: () => context.push('/forgot-password'),
                           child: Padding(
                             padding: const EdgeInsets.symmetric(
@@ -191,6 +192,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             ),
                           ),
                           GestureDetector(
+                            behavior: HitTestBehavior.opaque,
                             onTap: () => context.push('/register'),
                             child: Text(
                               'Đăng ký ngay',

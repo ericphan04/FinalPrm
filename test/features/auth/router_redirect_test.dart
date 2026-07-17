@@ -57,7 +57,7 @@ void main() {
     router.go('/profile');
     await tester.pump();
 
-    expect(router.state.matchedLocation, '/login');
+    expect(router.state.uri.path, '/login');
   });
 
   testWidgets(
@@ -92,7 +92,7 @@ void main() {
       await tester.pump(const Duration(milliseconds: 100));
 
       // Should redirect back to home
-      expect(router.state.matchedLocation, '/');
+      expect(router.state.uri.path, '/');
     },
   );
 }

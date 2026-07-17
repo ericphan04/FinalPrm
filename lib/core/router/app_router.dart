@@ -45,9 +45,9 @@ final routerProvider = Provider<GoRouter>((ref) {
       final user = ref.read(authStateProvider);
       final isGuest = user.role == AppUserRole.guest;
 
-      final isLogin = state.matchedLocation == '/login';
-      final isRegister = state.matchedLocation == '/register';
-      final isForgotPassword = state.matchedLocation == '/forgot-password';
+      final isLogin = state.uri.path == '/login';
+      final isRegister = state.uri.path == '/register';
+      final isForgotPassword = state.uri.path == '/forgot-password';
 
       // 1. Nếu chưa đăng nhập (Guest)
       if (isGuest) {
@@ -55,8 +55,8 @@ final routerProvider = Provider<GoRouter>((ref) {
         if (isLogin ||
             isRegister ||
             isForgotPassword ||
-            state.matchedLocation == '/about' ||
-            state.matchedLocation == '/help') {
+            state.uri.path == '/about' ||
+            state.uri.path == '/help') {
           return null;
         }
         // Các trang khác (như profile, dashboard) yêu cầu đăng nhập
@@ -70,7 +70,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       }
 
       // Kiểm tra quyền hạn truy cập theo Role
-      final path = state.matchedLocation;
+      final path = state.uri.path;
       if (path.startsWith('/admin') && user.role != AppUserRole.admin) {
         // Cố tình vào trang admin nhưng không phải admin -> Về trang chủ
         return '/';

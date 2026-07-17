@@ -220,6 +220,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                             ),
                           ),
                           GestureDetector(
+                            behavior: HitTestBehavior.opaque,
                             onTap: () => context.pop(),
                             child: Text(
                               'Đăng nhập ngay',
