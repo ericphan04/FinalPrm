@@ -17,30 +17,9 @@ import '../../features/auth/presentation/views/mock_screens.dart';
 
 import '../../main.dart' show ShowroomScreen;
 
-/// Lớp chuyển đổi Stream thành [Listenable] cho GoRouter lắng nghe sự thay đổi
-class GoRouterRefreshStream extends ChangeNotifier {
-  late final StreamSubscription<dynamic> _subscription;
-
-  GoRouterRefreshStream(Stream<dynamic> stream) {
-    notifyListeners();
-    _subscription = stream.asBroadcastStream().listen(
-      (dynamic _) => notifyListeners(),
-    );
-  }
-
-  @override
-  void dispose() {
-    _subscription.cancel();
-    super.dispose();
-  }
-}
-
 final routerProvider = Provider<GoRouter>((ref) {
-  final authRepository = ref.watch(authRepositoryProvider);
-
-  return GoRouter(
+  final router = GoRouter(
     initialLocation: '/',
-    refreshListenable: GoRouterRefreshStream(authRepository.authStateChanges),
     redirect: (context, state) {
       final user = ref.read(authStateProvider);
       final isGuest = user.role == AppUserRole.guest;
@@ -111,4 +90,13 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
     ],
   );
+
+  // Lắng nghe sự thay đổi của authStateProvider để trigger GoRouter refresh
+  ref.listen(authStateProvider, (previous, next) {
+    if (previous != next) {
+      router.refresh();
+    }
+  });
+
+  return router;
 });

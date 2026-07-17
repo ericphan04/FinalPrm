@@ -9,8 +9,8 @@ import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_text_field.dart';
 import '../../../../core/widgets/confirm_dialog.dart';
 import '../../../../core/widgets/loading_view.dart';
+import '../../../auth/presentation/providers/auth_providers.dart';
 import '../controllers/profile_controller.dart';
-
 class ProfileView extends ConsumerStatefulWidget {
   const ProfileView({super.key});
 
@@ -344,6 +344,20 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                       size: 14,
                     ),
                     onTap: () => context.push('/about'),
+                  ),
+                  const Divider(height: 1),
+                  ListTile(
+                    leading: const Icon(
+                      Icons.logout_rounded,
+                      color: AppColors.error,
+                    ),
+                    title: const Text(
+                      'Đăng xuất',
+                      style: TextStyle(color: AppColors.error),
+                    ),
+                    onTap: () {
+                      ref.read(authControllerProvider.notifier).signOut();
+                    },
                   ),
                   const Divider(height: 1),
                 ],
