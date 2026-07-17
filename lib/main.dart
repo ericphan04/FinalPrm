@@ -16,20 +16,17 @@ import 'core/widgets/empty_view.dart';
 import 'core/widgets/error_view.dart';
 import 'core/widgets/confirm_dialog.dart';
 
-// Profile imports
-import 'features/profile/presentation/views/profile_view.dart';
-import 'features/profile/presentation/views/about_view.dart';
-import 'features/profile/presentation/views/help_view.dart';
+// Router import
+import 'core/router/app_router.dart';
+import 'core/firebase/firebase_bootstrap.dart';
 
 // Riverpod provider to manage theme switching globally in this demo
 final themeModeProvider = StateProvider<ThemeMode>((ref) => ThemeMode.light);
 
-void main() {
-  runApp(
-    const ProviderScope(
-      child: MyApp(),
-    ),
-  );
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await FirebaseBootstrap.initialize();
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends ConsumerWidget {
@@ -38,29 +35,7 @@ class MyApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final themeMode = ref.watch(themeModeProvider);
-
-    // GoRouter configuration linking our routes
-    final router = GoRouter(
-      initialLocation: '/',
-      routes: [
-        GoRoute(
-          path: '/',
-          builder: (context, state) => const ShowroomScreen(),
-        ),
-        GoRoute(
-          path: '/profile',
-          builder: (context, state) => const ProfileView(),
-        ),
-        GoRoute(
-          path: '/about',
-          builder: (context, state) => const AboutView(),
-        ),
-        GoRoute(
-          path: '/help',
-          builder: (context, state) => const HelpView(),
-        ),
-      ],
-    );
+    final router = ref.watch(routerProvider);
 
     return MaterialApp.router(
       title: 'Shoe Market UI Showroom',
@@ -86,11 +61,14 @@ class ShowroomScreen extends ConsumerWidget {
         title: const Text('UI Components Showroom'),
         actions: [
           IconButton(
-            icon: Icon(isDark ? Icons.light_mode_rounded : Icons.dark_mode_rounded),
+            icon: Icon(
+              isDark ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
+            ),
             tooltip: 'Đổi giao diện',
             onPressed: () {
-              ref.read(themeModeProvider.notifier).state =
-                  isDark ? ThemeMode.light : ThemeMode.dark;
+              ref.read(themeModeProvider.notifier).state = isDark
+                  ? ThemeMode.light
+                  : ThemeMode.dark;
             },
           ),
         ],
@@ -107,7 +85,11 @@ class ShowroomScreen extends ConsumerWidget {
                 padding: const EdgeInsets.all(AppSpacing.md),
                 child: Row(
                   children: [
-                    const Icon(Icons.person_pin_rounded, size: 48, color: AppColors.primary),
+                    const Icon(
+                      Icons.person_pin_rounded,
+                      size: 48,
+                      color: AppColors.primary,
+                    ),
                     const SizedBox(width: AppSpacing.md),
                     Expanded(
                       child: Column(
@@ -115,7 +97,9 @@ class ShowroomScreen extends ConsumerWidget {
                         children: [
                           Text(
                             'Trang Cá Nhân & Support',
-                            style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                            style: theme.textTheme.titleLarge?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                           Text(
                             'Nhấn để xem Profile, FAQ, và About screens.',
@@ -143,9 +127,15 @@ class ShowroomScreen extends ConsumerWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Headline Large (H1)', style: theme.textTheme.headlineLarge),
+                  Text(
+                    'Headline Large (H1)',
+                    style: theme.textTheme.headlineLarge,
+                  ),
                   const SizedBox(height: AppSpacing.xxs),
-                  Text('Headline Medium (H2)', style: theme.textTheme.headlineMedium),
+                  Text(
+                    'Headline Medium (H2)',
+                    style: theme.textTheme.headlineMedium,
+                  ),
                   const SizedBox(height: AppSpacing.xxs),
                   Text('Title Large (H3)', style: theme.textTheme.titleLarge),
                   const SizedBox(height: AppSpacing.xxs),
@@ -192,10 +182,7 @@ class ShowroomScreen extends ConsumerWidget {
                     onPressed: () {},
                     isLoading: true,
                   ),
-                  AppButton(
-                    text: 'Disabled Button',
-                    onPressed: null,
-                  ),
+                  AppButton(text: 'Disabled Button', onPressed: null),
                   AppButton(
                     text: 'With Icon',
                     onPressed: () {},
@@ -215,21 +202,30 @@ class ShowroomScreen extends ConsumerWidget {
                   const AppTextField(
                     labelText: 'Họ và tên (Mặc định)',
                     hintText: 'Nhập họ và tên...',
-                    prefixIcon: Icon(Icons.person_outline_rounded, color: AppColors.primary),
+                    prefixIcon: Icon(
+                      Icons.person_outline_rounded,
+                      color: AppColors.primary,
+                    ),
                   ),
                   const SizedBox(height: AppSpacing.md),
                   const AppTextField(
                     labelText: 'Mật khẩu (Ẩn/Hiện)',
                     hintText: 'Nhập mật khẩu...',
                     isPassword: true,
-                    prefixIcon: Icon(Icons.lock_outline_rounded, color: AppColors.primary),
+                    prefixIcon: Icon(
+                      Icons.lock_outline_rounded,
+                      color: AppColors.primary,
+                    ),
                   ),
                   const SizedBox(height: AppSpacing.md),
                   AppTextField(
                     labelText: 'Trường có lỗi',
                     hintText: 'Trường nhập liệu lỗi...',
                     errorText: 'Thông tin này bắt buộc phải nhập',
-                    prefixIcon: const Icon(Icons.warning_amber_rounded, color: AppColors.error),
+                    prefixIcon: const Icon(
+                      Icons.warning_amber_rounded,
+                      color: AppColors.error,
+                    ),
                   ),
                 ],
               ),
@@ -252,7 +248,8 @@ class ShowroomScreen extends ConsumerWidget {
                         context: context,
                         builder: (ctx) => ConfirmDialog(
                           title: 'Xác nhận xóa giỏ hàng?',
-                          content: 'Tất cả sản phẩm trong giỏ hàng hiện tại sẽ bị xóa sạch khỏi bộ nhớ.',
+                          content:
+                              'Tất cả sản phẩm trong giỏ hàng hiện tại sẽ bị xóa sạch khỏi bộ nhớ.',
                           confirmText: 'Đồng ý',
                           cancelText: 'Hủy bỏ',
                           isDestructive: true,
@@ -284,7 +281,10 @@ class ShowroomScreen extends ConsumerWidget {
             const SizedBox(height: AppSpacing.lg),
 
             // Section Product Skeleton
-            _buildSectionHeader(context, '5. Product Card Skeletons (Hiệu ứng Shimmer)'),
+            _buildSectionHeader(
+              context,
+              '5. Product Card Skeletons (Hiệu ứng Shimmer)',
+            ),
             GridView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
@@ -300,7 +300,10 @@ class ShowroomScreen extends ConsumerWidget {
             const SizedBox(height: AppSpacing.lg),
 
             // Section Empty/Error Fallbacks
-            _buildSectionHeader(context, '6. Fallback Screens (Màn hình thông báo)'),
+            _buildSectionHeader(
+              context,
+              '6. Fallback Screens (Màn hình thông báo)',
+            ),
             _buildShowcaseCard(
               context,
               Column(
@@ -317,7 +320,8 @@ class ShowroomScreen extends ConsumerWidget {
                             appBar: AppBar(title: const Text('Giỏ hàng')),
                             body: const EmptyView(
                               title: 'Giỏ hàng của bạn đang trống',
-                              description: 'Hãy dạo quanh cửa hàng và chọn những đôi giày ưng ý nhất nhé!',
+                              description:
+                                  'Hãy dạo quanh cửa hàng và chọn những đôi giày ưng ý nhất nhé!',
                               icon: Icons.shopping_cart_outlined,
                               actionText: 'Mua sắm ngay',
                             ),
@@ -336,10 +340,10 @@ class ShowroomScreen extends ConsumerWidget {
                         context,
                         MaterialPageRoute(
                           builder: (ctx) => Scaffold(
-                            appBar: AppBar(title: const Text('Danh sách đơn hàng')),
-                            body: ErrorView(
-                              onRetry: () => Navigator.pop(ctx),
+                            appBar: AppBar(
+                              title: const Text('Danh sách đơn hàng'),
                             ),
+                            body: ErrorView(onRetry: () => Navigator.pop(ctx)),
                           ),
                         ),
                       );
@@ -360,9 +364,9 @@ class ShowroomScreen extends ConsumerWidget {
       child: Text(
         title,
         style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: AppColors.primary,
-            ),
+          fontWeight: FontWeight.bold,
+          color: AppColors.primary,
+        ),
       ),
     );
   }

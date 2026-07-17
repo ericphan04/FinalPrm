@@ -29,7 +29,7 @@ class MockProfileRepository implements ProfileRepository {
   Future<void> updateProfile(UserProfile profile) async {
     // Simulate network delay
     await Future.delayed(const Duration(milliseconds: 1200));
-    
+
     // Simulate business rule / security rule constraint check
     if (profile.displayName.trim().isEmpty) {
       throw Exception('Tên hiển thị không được để trống.');
@@ -45,7 +45,7 @@ class MockProfileRepository implements ProfileRepository {
   Future<String> uploadAvatar(String uid, File imageFile) async {
     // Simulate network upload delay
     await Future.delayed(const Duration(milliseconds: 1500));
-    
+
     // Return the local file path as the URL for demonstration
     return imageFile.path;
   }

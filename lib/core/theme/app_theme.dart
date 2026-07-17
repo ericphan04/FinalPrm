@@ -30,8 +30,12 @@ class AppTheme {
           horizontal: AppSpacing.md,
           vertical: AppSpacing.md,
         ),
-        hintStyle: AppTextStyles.bodyMedium.copyWith(color: AppColors.textLightMuted),
-        labelStyle: AppTextStyles.label.copyWith(color: AppColors.textLightSecondary),
+        hintStyle: AppTextStyles.bodyMedium.copyWith(
+          color: AppColors.textLightMuted,
+        ),
+        labelStyle: AppTextStyles.label.copyWith(
+          color: AppColors.textLightSecondary,
+        ),
         errorStyle: AppTextStyles.bodySmall.copyWith(color: AppColors.error),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
@@ -102,8 +106,12 @@ class AppTheme {
           horizontal: AppSpacing.md,
           vertical: AppSpacing.md,
         ),
-        hintStyle: AppTextStyles.bodyMedium.copyWith(color: AppColors.textDarkMuted),
-        labelStyle: AppTextStyles.label.copyWith(color: AppColors.textDarkSecondary),
+        hintStyle: AppTextStyles.bodyMedium.copyWith(
+          color: AppColors.textDarkMuted,
+        ),
+        labelStyle: AppTextStyles.label.copyWith(
+          color: AppColors.textDarkSecondary,
+        ),
         errorStyle: AppTextStyles.bodySmall.copyWith(color: AppColors.error),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
@@ -152,8 +160,12 @@ class AppTheme {
 
   static TextTheme _buildTextTheme(Brightness brightness) {
     final bool isDark = brightness == Brightness.dark;
-    final Color primaryColor = isDark ? AppColors.textDarkPrimary : AppColors.textLightPrimary;
-    final Color secondaryColor = isDark ? AppColors.textDarkSecondary : AppColors.textLightSecondary;
+    final Color primaryColor = isDark
+        ? AppColors.textDarkPrimary
+        : AppColors.textLightPrimary;
+    final Color secondaryColor = isDark
+        ? AppColors.textDarkSecondary
+        : AppColors.textLightSecondary;
 
     return TextTheme(
       headlineLarge: AppTextStyles.h1.copyWith(color: primaryColor),

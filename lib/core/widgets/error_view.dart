@@ -11,7 +11,8 @@ class ErrorView extends StatelessWidget {
   const ErrorView({
     super.key,
     this.title = 'Đã xảy ra lỗi',
-    this.message = 'Không thể tải dữ liệu. Vui lòng kiểm tra lại kết nối mạng và thử lại.',
+    this.message =
+        'Không thể tải dữ liệu. Vui lòng kiểm tra lại kết nối mạng và thử lại.',
     this.onRetry,
   });
 
@@ -41,7 +42,7 @@ class ErrorView extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(AppSpacing.md),
                   decoration: BoxDecoration(
-                    color: AppColors.error.withOpacity(0.1),
+                    color: AppColors.error.withValues(alpha: 0.1),
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(
@@ -63,7 +64,9 @@ class ErrorView extends StatelessWidget {
                 Text(
                   message,
                   style: theme.textTheme.bodyMedium?.copyWith(
-                    color: isDark ? AppColors.textDarkSecondary : AppColors.textLightSecondary,
+                    color: isDark
+                        ? AppColors.textDarkSecondary
+                        : AppColors.textLightSecondary,
                   ),
                   textAlign: TextAlign.center,
                 ),

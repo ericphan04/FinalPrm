@@ -9,7 +9,7 @@ class HelpView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Trợ giúp & FAQ'),
@@ -23,7 +23,9 @@ class HelpView extends StatelessWidget {
         children: [
           Text(
             'Các câu hỏi thường gặp',
-            style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+            style: theme.textTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
           ),
           const SizedBox(height: AppSpacing.sm),
           _buildFAQTile(
@@ -51,24 +53,41 @@ class HelpView extends StatelessWidget {
             'Quy định về đánh giá sản phẩm như thế nào?',
             'Để đảm bảo tính khách quan, chỉ những khách hàng đã mua và nhận hàng thành công (trạng thái đơn hàng "Đã giao hàng" - Delivered) mới được quyền đánh giá sản phẩm. Mỗi sản phẩm trong đơn hàng chỉ được đánh giá duy nhất một lần.',
           ),
-          
+
           const SizedBox(height: AppSpacing.xl),
           Text(
             'Kênh hỗ trợ trực tiếp',
-            style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+            style: theme.textTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
           ),
           const SizedBox(height: AppSpacing.sm),
-          
+
           Card(
             child: Padding(
               padding: const EdgeInsets.all(AppSpacing.md),
               child: Column(
                 children: [
-                  _buildContactRow(context, Icons.phone_rounded, 'Hotline hỗ trợ', '1900 1234 (8:00 - 21:00)'),
+                  _buildContactRow(
+                    context,
+                    Icons.phone_rounded,
+                    'Hotline hỗ trợ',
+                    '1900 1234 (8:00 - 21:00)',
+                  ),
                   const Divider(height: 16),
-                  _buildContactRow(context, Icons.email_rounded, 'Email hỗ trợ', 'support@shoemarket.vn'),
+                  _buildContactRow(
+                    context,
+                    Icons.email_rounded,
+                    'Email hỗ trợ',
+                    'support@shoemarket.vn',
+                  ),
                   const Divider(height: 16),
-                  _buildContactRow(context, Icons.language_rounded, 'Website hỗ trợ', 'www.shoemarket.vn'),
+                  _buildContactRow(
+                    context,
+                    Icons.language_rounded,
+                    'Website hỗ trợ',
+                    'www.shoemarket.vn',
+                  ),
                 ],
               ),
             ),
@@ -95,11 +114,18 @@ class HelpView extends StatelessWidget {
         ),
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(AppSpacing.md, 0, AppSpacing.md, AppSpacing.md),
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.md,
+              0,
+              AppSpacing.md,
+              AppSpacing.md,
+            ),
             child: Text(
               answer,
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: isDark ? AppColors.textDarkSecondary : AppColors.textLightSecondary,
+                color: isDark
+                    ? AppColors.textDarkSecondary
+                    : AppColors.textLightSecondary,
               ),
             ),
           ),
@@ -108,9 +134,14 @@ class HelpView extends StatelessWidget {
     );
   }
 
-  Widget _buildContactRow(BuildContext context, IconData icon, String label, String value) {
+  Widget _buildContactRow(
+    BuildContext context,
+    IconData icon,
+    String label,
+    String value,
+  ) {
     final theme = Theme.of(context);
-    
+
     return Row(
       children: [
         Icon(icon, color: AppColors.primary, size: 24),
@@ -121,12 +152,11 @@ class HelpView extends StatelessWidget {
             children: [
               Text(
                 label,
-                style: theme.textTheme.labelMedium?.copyWith(fontWeight: FontWeight.bold),
+                style: theme.textTheme.labelMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-              Text(
-                value,
-                style: theme.textTheme.bodyMedium,
-              ),
+              Text(value, style: theme.textTheme.bodyMedium),
             ],
           ),
         ),

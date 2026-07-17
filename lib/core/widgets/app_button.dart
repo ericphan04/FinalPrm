@@ -42,8 +42,12 @@ class AppButton extends StatelessWidget {
         buttonStyle = ElevatedButton.styleFrom(
           backgroundColor: AppColors.primary,
           foregroundColor: Colors.white,
-          disabledBackgroundColor: isDark ? AppColors.surfaceDark : AppColors.borderLight,
-          disabledForegroundColor: isDark ? AppColors.textDarkMuted : AppColors.textLightMuted,
+          disabledBackgroundColor: isDark
+              ? AppColors.surfaceDark
+              : AppColors.borderLight,
+          disabledForegroundColor: isDark
+              ? AppColors.textDarkMuted
+              : AppColors.textLightMuted,
           elevation: 0,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
@@ -52,15 +56,25 @@ class AppButton extends StatelessWidget {
         break;
       case AppButtonVariant.secondary:
         buttonStyle = ElevatedButton.styleFrom(
-          backgroundColor: isDark ? AppColors.surfaceDark : AppColors.primaryLight,
-          foregroundColor: isDark ? AppColors.textDarkPrimary : AppColors.primary,
-          disabledBackgroundColor: isDark ? AppColors.surfaceDark.withOpacity(0.5) : AppColors.borderLight.withOpacity(0.5),
-          disabledForegroundColor: isDark ? AppColors.textDarkMuted : AppColors.textLightMuted,
+          backgroundColor: isDark
+              ? AppColors.surfaceDark
+              : AppColors.primaryLight,
+          foregroundColor: isDark
+              ? AppColors.textDarkPrimary
+              : AppColors.primary,
+          disabledBackgroundColor: isDark
+              ? AppColors.surfaceDark.withValues(alpha: 0.5)
+              : AppColors.borderLight.withValues(alpha: 0.5),
+          disabledForegroundColor: isDark
+              ? AppColors.textDarkMuted
+              : AppColors.textLightMuted,
           elevation: 0,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
             side: BorderSide(
-              color: isDark ? AppColors.borderDark : AppColors.primary.withOpacity(0.2),
+              color: isDark
+                  ? AppColors.borderDark
+                  : AppColors.primary.withValues(alpha: 0.2),
               width: 1,
             ),
           ),
@@ -68,9 +82,16 @@ class AppButton extends StatelessWidget {
         break;
       case AppButtonVariant.outlined:
         buttonStyle = OutlinedButton.styleFrom(
-          foregroundColor: isDark ? AppColors.textDarkPrimary : AppColors.secondary,
-          side: BorderSide(color: isDark ? AppColors.borderDark : AppColors.borderLight, width: 1.5),
-          disabledForegroundColor: isDark ? AppColors.textDarkMuted : AppColors.textLightMuted,
+          foregroundColor: isDark
+              ? AppColors.textDarkPrimary
+              : AppColors.secondary,
+          side: BorderSide(
+            color: isDark ? AppColors.borderDark : AppColors.borderLight,
+            width: 1.5,
+          ),
+          disabledForegroundColor: isDark
+              ? AppColors.textDarkMuted
+              : AppColors.textLightMuted,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
           ),
@@ -79,7 +100,9 @@ class AppButton extends StatelessWidget {
       case AppButtonVariant.text:
         buttonStyle = TextButton.styleFrom(
           foregroundColor: AppColors.primary,
-          disabledForegroundColor: isDark ? AppColors.textDarkMuted : AppColors.textLightMuted,
+          disabledForegroundColor: isDark
+              ? AppColors.textDarkMuted
+              : AppColors.textLightMuted,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
           ),
@@ -102,7 +125,9 @@ class AppButton extends StatelessWidget {
             child: CircularProgressIndicator(
               strokeWidth: 2,
               valueColor: AlwaysStoppedAnimation<Color>(
-                variant == AppButtonVariant.primary ? Colors.white : AppColors.primary,
+                variant == AppButtonVariant.primary
+                    ? Colors.white
+                    : AppColors.primary,
               ),
             ),
           )
@@ -111,8 +136,14 @@ class AppButton extends StatelessWidget {
             text,
             style: theme.textTheme.labelLarge?.copyWith(
               color: enabled
-                  ? (variant == AppButtonVariant.primary ? Colors.white : (variant == AppButtonVariant.text ? AppColors.primary : theme.colorScheme.onSurface))
-                  : (isDark ? AppColors.textDarkMuted : AppColors.textLightMuted),
+                  ? (variant == AppButtonVariant.primary
+                        ? Colors.white
+                        : (variant == AppButtonVariant.text
+                              ? AppColors.primary
+                              : theme.colorScheme.onSurface))
+                  : (isDark
+                        ? AppColors.textDarkMuted
+                        : AppColors.textLightMuted),
             ),
           ),
         if (trailingIcon != null && !isLoading) ...[
@@ -132,16 +163,16 @@ class AppButton extends StatelessWidget {
               child: content,
             )
           : variant == AppButtonVariant.text
-              ? TextButton(
-                  onPressed: enabled ? onPressed : null,
-                  style: buttonStyle,
-                  child: content,
-                )
-              : ElevatedButton(
-                  onPressed: enabled ? onPressed : null,
-                  style: buttonStyle,
-                  child: content,
-                ),
+          ? TextButton(
+              onPressed: enabled ? onPressed : null,
+              style: buttonStyle,
+              child: content,
+            )
+          : ElevatedButton(
+              onPressed: enabled ? onPressed : null,
+              style: buttonStyle,
+              child: content,
+            ),
     );
   }
 }

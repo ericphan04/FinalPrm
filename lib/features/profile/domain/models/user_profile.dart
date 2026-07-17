@@ -51,7 +51,9 @@ class UserProfile {
       displayName: map['displayName'] ?? '',
       phone: map['phone'] ?? '',
       avatarUrl: map['avatarUrl'] ?? '',
-      updatedAt: map['updatedAt'] != null ? DateTime.tryParse(map['updatedAt']) : null,
+      updatedAt: map['updatedAt'] != null
+          ? DateTime.tryParse(map['updatedAt'])
+          : null,
     );
   }
 

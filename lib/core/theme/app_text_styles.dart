@@ -4,7 +4,8 @@ class AppTextStyles {
   AppTextStyles._();
 
   // Font family can be customized, default to system font
-  static const String fontFamily = 'Outfit'; // Premium look, falls back to system font if not available
+  static const String fontFamily =
+      'Outfit'; // Premium look, falls back to system font if not available
 
   // Headings
   static const TextStyle h1 = TextStyle(

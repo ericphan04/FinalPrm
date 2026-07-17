@@ -20,7 +20,10 @@ class AboutView extends StatelessWidget {
         ),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.xl),
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.lg,
+          vertical: AppSpacing.xl,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -52,12 +55,14 @@ class AboutView extends StatelessWidget {
               'Shoe Market MVP 1.0',
               style: theme.textTheme.bodyLarge?.copyWith(
                 fontWeight: FontWeight.w600,
-                color: isDark ? AppColors.textDarkSecondary : AppColors.textLightSecondary,
+                color: isDark
+                    ? AppColors.textDarkSecondary
+                    : AppColors.textLightSecondary,
               ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: AppSpacing.xl),
-            
+
             // Description Card
             Card(
               child: Padding(
@@ -67,7 +72,9 @@ class AboutView extends StatelessWidget {
                   children: [
                     Text(
                       'Giới thiệu',
-                      style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                      style: theme.textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     const SizedBox(height: AppSpacing.xs),
                     Text(
@@ -89,31 +96,49 @@ class AboutView extends StatelessWidget {
                   children: [
                     Text(
                       'Nhóm thực hiện',
-                      style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                      style: theme.textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     const SizedBox(height: AppSpacing.sm),
-                    _buildMemberRow(context, 'Dũng', 'Tech Lead, Nền tảng & Bảo mật'),
+                    _buildMemberRow(
+                      context,
+                      'Dũng',
+                      'Tech Lead, Nền tảng & Bảo mật',
+                    ),
                     _buildMemberRow(context, 'Hoàng', 'Guest & User Commerce'),
                     _buildMemberRow(context, 'Hưng', 'Seller Center'),
-                    _buildMemberRow(context, 'Long', 'Admin, Functions & QA tích hợp'),
-                    _buildMemberRow(context, 'Hiếu', 'UI System, Profile & Tài liệu'),
+                    _buildMemberRow(
+                      context,
+                      'Long',
+                      'Admin, Functions & QA tích hợp',
+                    ),
+                    _buildMemberRow(
+                      context,
+                      'Hiếu',
+                      'UI System, Profile & Tài liệu',
+                    ),
                   ],
                 ),
               ),
             ),
             const SizedBox(height: AppSpacing.xl),
-            
+
             // Footer Version info
             Text(
               'Phiên bản 1.0.0 (Release 2026-07)',
               style: theme.textTheme.bodySmall?.copyWith(
-                color: isDark ? AppColors.textDarkMuted : AppColors.textLightMuted,
+                color: isDark
+                    ? AppColors.textDarkMuted
+                    : AppColors.textLightMuted,
               ),
             ),
             Text(
               '© 2026 Final Project Team. All Rights Reserved.',
               style: theme.textTheme.bodySmall?.copyWith(
-                color: isDark ? AppColors.textDarkMuted : AppColors.textLightMuted,
+                color: isDark
+                    ? AppColors.textDarkMuted
+                    : AppColors.textLightMuted,
               ),
             ),
           ],
@@ -145,7 +170,9 @@ class AboutView extends StatelessWidget {
                   TextSpan(
                     text: role,
                     style: TextStyle(
-                      color: isDark ? AppColors.textDarkSecondary : AppColors.textLightSecondary,
+                      color: isDark
+                          ? AppColors.textDarkSecondary
+                          : AppColors.textLightSecondary,
                     ),
                   ),
                 ],

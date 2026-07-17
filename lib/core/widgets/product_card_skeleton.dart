@@ -16,7 +16,9 @@ class ProductCardSkeleton extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        color: isDark ? AppColors.surfaceDark.withOpacity(0.5) : Colors.white,
+        color: isDark
+            ? AppColors.surfaceDark.withValues(alpha: 0.5)
+            : Colors.white,
         borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
         border: Border.all(
           color: isDark ? AppColors.borderDark : AppColors.borderLight,
@@ -101,7 +103,9 @@ class ProductCardSkeleton extends StatelessWidget {
                         height: 20,
                         decoration: BoxDecoration(
                           color: Colors.white,
-                          borderRadius: BorderRadius.circular(AppSpacing.radiusXs),
+                          borderRadius: BorderRadius.circular(
+                            AppSpacing.radiusXs,
+                          ),
                         ),
                       ),
                     ),

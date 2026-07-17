@@ -1,0 +1,217 @@
+import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
+import 'package:cloud_firestore/cloud_firestore.dart';
+import '../../../../core/error/app_failure.dart';
+import '../../../../core/error/error_handler.dart';
+import '../../../../core/logging/app_logger.dart';
+import '../../../../core/result/result.dart';
+import '../../domain/models/app_user.dart';
+import '../../domain/models/app_user_role.dart';
+import 'auth_repository.dart';
+
+/// Triển khai [AuthRepository] kết nối trực tiếp với Firebase Auth và Firestore.
+class FirebaseAuthRepository implements AuthRepository {
+  final firebase_auth.FirebaseAuth _firebaseAuth;
+  final FirebaseFirestore _firestore;
+
+  FirebaseAuthRepository({
+    firebase_auth.FirebaseAuth? firebaseAuth,
+    FirebaseFirestore? firestore,
+  }) : _firebaseAuth = firebaseAuth ?? firebase_auth.FirebaseAuth.instance,
+       _firestore = firestore ?? FirebaseFirestore.instance;
+
+  @override
+  Stream<AppUser> get authStateChanges {
+    return _firebaseAuth.idTokenChanges().asyncMap((firebaseUser) async {
+      if (firebaseUser == null) {
+        return AppUser.guest();
+      }
+      return await _mapFirebaseUserToAppUser(firebaseUser);
+    });
+  }
+
+  @override
+  Future<Result<AppUser>> signInWithEmailAndPassword({
+    required String email,
+    required String password,
+  }) async {
+    try {
+      final credential = await _firebaseAuth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      final user = credential.user;
+      if (user == null) {
+        return const Failure(
+          AppFailure(
+            code: 'auth_null_user',
+            message: 'Không tìm thấy thông tin người dùng sau khi đăng nhập.',
+          ),
+        );
+      }
+      final appUser = await _mapFirebaseUserToAppUser(user);
+      AppLogger.info(
+        'Đăng nhập thành công: email=${appUser.email}, role=${appUser.role}',
+      );
+      return Success(appUser);
+    } catch (e) {
+      AppLogger.error('Lỗi đăng nhập', e);
+      return Failure(ErrorHandler.handle(e));
+    }
+  }
+
+  @override
+  Future<Result<AppUser>> signUpWithEmailAndPassword({
+    required String email,
+    required String password,
+    required String displayName,
+  }) async {
+    try {
+      final credential = await _firebaseAuth.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      final user = credential.user;
+      if (user == null) {
+        return const Failure(
+          AppFailure(
+            code: 'auth_null_user',
+            message: 'Không thể tạo tài khoản mới.',
+          ),
+        );
+      }
+
+      // Cập nhật displayName trong Auth profile
+      await user.updateDisplayName(displayName);
+
+      // Tạo hồ sơ người dùng tương ứng trong Firestore
+      // Chú ý: Tránh lưu role và status vào document lúc tạo từ client vì rules chặn ghi hai trường này.
+      await _firestore.collection('users').doc(user.uid).set({
+        'uid': user.uid,
+        'email': email,
+        'displayName': displayName,
+        'phone': '',
+        'avatarUrl': '',
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
+
+      // Làm mới Firebase Auth user state để đồng bộ displayName
+      await user.reload();
+      final updatedUser = _firebaseAuth.currentUser ?? user;
+
+      final appUser = await _mapFirebaseUserToAppUser(updatedUser);
+      AppLogger.info('Đăng ký tài khoản thành công: email=${appUser.email}');
+      return Success(appUser);
+    } catch (e) {
+      AppLogger.error('Lỗi đăng ký tài khoản', e);
+      return Failure(ErrorHandler.handle(e));
+    }
+  }
+
+  @override
+  Future<Result<void>> signOut() async {
+    try {
+      await _firebaseAuth.signOut();
+      AppLogger.info('Đăng xuất thành công');
+      return const Success(null);
+    } catch (e) {
+      AppLogger.error('Lỗi đăng xuất', e);
+      return Failure(ErrorHandler.handle(e));
+    }
+  }
+
+  @override
+  Future<Result<void>> sendPasswordResetEmail({required String email}) async {
+    try {
+      await _firebaseAuth.sendPasswordResetEmail(email: email);
+      AppLogger.info('Đã gửi email khôi phục mật khẩu tới: email=$email');
+      return const Success(null);
+    } catch (e) {
+      AppLogger.error('Lỗi gửi email khôi phục mật khẩu', e);
+      return Failure(ErrorHandler.handle(e));
+    }
+  }
+
+  @override
+  Future<Result<AppUser>> getCurrentUser() async {
+    try {
+      final user = _firebaseAuth.currentUser;
+      if (user == null) {
+        return Success(AppUser.guest());
+      }
+      final appUser = await _mapFirebaseUserToAppUser(user);
+      return Success(appUser);
+    } catch (e) {
+      AppLogger.error('Lỗi lấy thông tin người dùng hiện tại', e);
+      return Failure(ErrorHandler.handle(e));
+    }
+  }
+
+  @override
+  Future<Result<void>> forceRefreshIdToken() async {
+    try {
+      final user = _firebaseAuth.currentUser;
+      if (user != null) {
+        await user.getIdTokenResult(true);
+        AppLogger.info('Force refresh ID Token thành công cho uid=${user.uid}');
+        return const Success(null);
+      }
+      return const Failure(
+        AppFailure(
+          code: 'no_authenticated_user',
+          message: 'Không tìm thấy phiên đăng nhập hoạt động.',
+        ),
+      );
+    } catch (e) {
+      AppLogger.error('Lỗi force refresh ID Token', e);
+      return Failure(ErrorHandler.handle(e));
+    }
+  }
+
+  /// Map Firebase User thành AppUser nội bộ kèm theo trích xuất Custom Claims
+  Future<AppUser> _mapFirebaseUserToAppUser(
+    firebase_auth.User firebaseUser,
+  ) async {
+    try {
+      // Force refresh nhẹ (không bắt buộc) để đọc claims gần nhất
+      final idTokenResult = await firebaseUser.getIdTokenResult();
+      final claims = idTokenResult.claims;
+
+      AppUserRole role = AppUserRole.user;
+      if (claims != null && claims.containsKey('role')) {
+        final roleClaim = claims['role'] as String?;
+        role = _parseRole(roleClaim);
+      }
+
+      return AppUser(
+        uid: firebaseUser.uid,
+        email: firebaseUser.email ?? '',
+        displayName: firebaseUser.displayName ?? '',
+        photoUrl: firebaseUser.photoURL ?? '',
+        role: role,
+      );
+    } catch (e) {
+      AppLogger.error('Lỗi ánh xạ Firebase User sang AppUser', e);
+      // Fallback về role user cơ bản nếu có lỗi xảy ra
+      return AppUser(
+        uid: firebaseUser.uid,
+        email: firebaseUser.email ?? '',
+        displayName: firebaseUser.displayName ?? '',
+        photoUrl: firebaseUser.photoURL ?? '',
+        role: AppUserRole.user,
+      );
+    }
+  }
+
+  AppUserRole _parseRole(String? roleClaim) {
+    if (roleClaim == null) return AppUserRole.user;
+    switch (roleClaim.toLowerCase()) {
+      case 'admin':
+        return AppUserRole.admin;
+      case 'seller':
+        return AppUserRole.seller;
+      case 'user':
+      default:
+        return AppUserRole.user;
+    }
+  }
+}

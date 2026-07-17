@@ -52,7 +52,9 @@ void main() {
   });
 
   group('AppButton Widget Tests', () {
-    testWidgets('AppButton renders text and triggers callback', (WidgetTester tester) async {
+    testWidgets('AppButton renders text and triggers callback', (
+      WidgetTester tester,
+    ) async {
       bool tapped = false;
 
       await tester.pumpWidget(
@@ -78,7 +80,9 @@ void main() {
       expect(tapped, isTrue);
     });
 
-    testWidgets('AppButton in loading state shows spinner and does not tap', (WidgetTester tester) async {
+    testWidgets('AppButton in loading state shows spinner and does not tap', (
+      WidgetTester tester,
+    ) async {
       bool tapped = false;
 
       await tester.pumpWidget(
@@ -107,7 +111,9 @@ void main() {
       expect(tapped, isFalse);
     });
 
-    testWidgets('Disabled AppButton does not trigger callback', (WidgetTester tester) async {
+    testWidgets('Disabled AppButton does not trigger callback', (
+      WidgetTester tester,
+    ) async {
       bool tapped = false;
 
       await tester.pumpWidget(
@@ -132,7 +138,9 @@ void main() {
   });
 
   group('AppTextField Widget Tests', () {
-    testWidgets('AppTextField updates text controller', (WidgetTester tester) async {
+    testWidgets('AppTextField updates text controller', (
+      WidgetTester tester,
+    ) async {
       final controller = TextEditingController();
 
       await tester.pumpWidget(
@@ -154,14 +162,13 @@ void main() {
       expect(controller.text, 'John Doe');
     });
 
-    testWidgets('AppTextField toggle password visibility works', (WidgetTester tester) async {
+    testWidgets('AppTextField toggle password visibility works', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         const MaterialApp(
           home: Scaffold(
-            body: AppTextField(
-              labelText: 'Password',
-              isPassword: true,
-            ),
+            body: AppTextField(labelText: 'Password', isPassword: true),
           ),
         ),
       );

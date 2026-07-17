@@ -106,3 +106,13 @@ Trang chủ `/` (Showroom) được thiết kế đặc biệt để hội đồ
 4. Dialog xác nhận xuất hiện: *"Bạn có chắc chắn muốn hủy các thay đổi chưa lưu?"*.
 5. Nhấn **"Quay lại"** -> Dialog đóng, thông tin chỉnh sửa vẫn giữ nguyên.
 6. Nhấn lại **"Hủy bỏ"** -> Nhấn **"Đồng ý"** -> Dữ liệu form tự động reset về giá trị gốc gần nhất.
+## 🔐 Test Accounts
+
+Below are pre-configured test accounts for each role, usable with the Firebase Emulator or test environment.
+
+| Role   | Email | Password |
+|--------|---------------------|----------|
+| Guest  | guest@example.com   | guest123 |
+| User   | user@example.com    | user123 |
+| Seller | seller@example.com  | seller123 |
+| Admin  | admin@example.com   | admin123 |

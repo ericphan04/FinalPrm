@@ -1,0 +1,24 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Mặc định từ chối tất cả các yêu cầu đọc/ghi (Deny by default)
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+
+    // Quy tắc cho ảnh đại diện của người dùng
+    match /users/{userId}/{allPaths=**} {
+      // Mọi người đều có thể xem ảnh đại diện
+      allow read: if true;
+      
+      // Chỉ chính chủ tài khoản mới được upload hoặc xóa ảnh đại diện của chính mình
+      // Kiểm tra dung lượng file tải lên nhỏ hơn 5MB và là ảnh
+      allow write: if request.auth != null && request.auth.uid == userId
+        && (request == null || request.resource == null || (
+          request.resource.size < 5 * 1024 * 1024
+          && request.resource.contentType.matches('image/.*')
+        ));
+    }
+  }
+}
