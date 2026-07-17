@@ -19,14 +19,13 @@ class FirebaseBootstrap {
         options: DefaultFirebaseOptions.currentPlatform,
       );
 
-      // 2. Kiểm tra cờ sử dụng Emulator
-      const bool forceEmulator = bool.fromEnvironment(
+      // 2. Kiểm tra cờ sử dụng Emulator (phải bật tường minh bằng --dart-define=USE_EMULATOR=true)
+      const bool useEmulator = bool.fromEnvironment(
         'USE_EMULATOR',
         defaultValue: false,
       );
 
-      // Mặc định kết nối Emulator nếu ở chế độ Debug hoặc bật cờ
-      if (kDebugMode || forceEmulator) {
+      if (useEmulator) {
         String host = 'localhost';
         if (!kIsWeb) {
           host = Platform.isAndroid ? '10.0.2.2' : '127.0.0.1';
@@ -48,10 +47,14 @@ class FirebaseBootstrap {
         await FirebaseStorage.instance.useStorageEmulator(host, 9199);
 
         AppLogger.info(
-          'Kết nối thành công Firebase Local Emulators (Auth: 9099, Firestore: 8080, Storage: 9199)',
+          'Kết nối Firebase Local Emulators thành công (Auth: 9099, Firestore: 8080, Storage: 9199)',
         );
       } else {
-        AppLogger.info('Khởi tạo Firebase thành công (Chế độ Production)');
+        AppLogger.info(
+          kDebugMode
+              ? 'Firebase khởi tạo thành công (Debug → dùng project thật). Thêm --dart-define=USE_EMULATOR=true để dùng emulator.'
+              : 'Firebase khởi tạo thành công (Production)',
+        );
       }
     } catch (e) {
       AppLogger.error('Lỗi xảy ra trong quá trình khởi tạo Firebase', e);
