@@ -33,13 +33,19 @@ class ConfirmDialog extends StatelessWidget {
         title,
         style: theme.textTheme.titleLarge?.copyWith(
           fontWeight: FontWeight.bold,
-          color: isDestructive ? AppColors.error : (isDark ? AppColors.textDarkPrimary : AppColors.textLightPrimary),
+          color: isDestructive
+              ? AppColors.error
+              : (isDark
+                    ? AppColors.textDarkPrimary
+                    : AppColors.textLightPrimary),
         ),
       ),
       content: Text(
         content,
         style: theme.textTheme.bodyMedium?.copyWith(
-          color: isDark ? AppColors.textDarkSecondary : AppColors.textLightSecondary,
+          color: isDark
+              ? AppColors.textDarkSecondary
+              : AppColors.textLightSecondary,
         ),
       ),
       actionsPadding: const EdgeInsets.symmetric(

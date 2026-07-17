@@ -35,14 +35,12 @@ class EmptyView extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(AppSpacing.xl),
               decoration: BoxDecoration(
-                color: isDark ? AppColors.surfaceDark : AppColors.primaryLight.withOpacity(0.5),
+                color: isDark
+                    ? AppColors.surfaceDark
+                    : AppColors.primaryLight.withValues(alpha: 0.5),
                 shape: BoxShape.circle,
               ),
-              child: Icon(
-                icon,
-                size: 72,
-                color: AppColors.primary,
-              ),
+              child: Icon(icon, size: 72, color: AppColors.primary),
             ),
             const SizedBox(height: AppSpacing.lg),
             Text(
@@ -56,7 +54,9 @@ class EmptyView extends StatelessWidget {
             Text(
               description,
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: isDark ? AppColors.textDarkSecondary : AppColors.textLightSecondary,
+                color: isDark
+                    ? AppColors.textDarkSecondary
+                    : AppColors.textLightSecondary,
               ),
               textAlign: TextAlign.center,
             ),

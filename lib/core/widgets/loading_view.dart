@@ -6,11 +6,7 @@ class LoadingView extends StatelessWidget {
   final String? message;
   final bool isOverlay;
 
-  const LoadingView({
-    super.key,
-    this.message,
-    this.isOverlay = false,
-  });
+  const LoadingView({super.key, this.message, this.isOverlay = false});
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +29,7 @@ class LoadingView extends StatelessWidget {
                   color: AppColors.shadowColor,
                   blurRadius: 10,
                   offset: Offset(0, 4),
-                )
+                ),
               ],
             ),
             child: const CircularProgressIndicator(
@@ -47,7 +43,9 @@ class LoadingView extends StatelessWidget {
               message!,
               style: theme.textTheme.bodyMedium?.copyWith(
                 fontWeight: FontWeight.w500,
-                color: isDark ? AppColors.textDarkSecondary : AppColors.textLightSecondary,
+                color: isDark
+                    ? AppColors.textDarkSecondary
+                    : AppColors.textLightSecondary,
               ),
               textAlign: TextAlign.center,
             ),
@@ -58,13 +56,11 @@ class LoadingView extends StatelessWidget {
 
     if (isOverlay) {
       return Container(
-        color: Colors.black.withOpacity(0.5),
+        color: Colors.black.withValues(alpha: 0.5),
         child: child,
       );
     }
 
-    return Scaffold(
-      body: child,
-    );
+    return Scaffold(body: child);
   }
 }

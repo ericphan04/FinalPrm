@@ -35,12 +35,17 @@ class ProfileController extends StateNotifier<ProfileState> {
   final ProfileRepository _repository;
   final String _uid = 'user_123'; // Hardcoded for demo/sprint 0
 
-  ProfileController(this._repository) : super(ProfileState(profile: UserProfile.empty())) {
+  ProfileController(this._repository)
+    : super(ProfileState(profile: UserProfile.empty())) {
     fetchProfile();
   }
 
   Future<void> fetchProfile() async {
-    state = state.copyWith(isLoading: true, errorMessage: null, isSaveSuccess: false);
+    state = state.copyWith(
+      isLoading: true,
+      errorMessage: null,
+      isSaveSuccess: false,
+    );
     try {
       final profile = await _repository.getProfile(_uid);
       state = state.copyWith(profile: profile, isLoading: false);
@@ -52,25 +57,38 @@ class ProfileController extends StateNotifier<ProfileState> {
     }
   }
 
-  Future<void> updateProfile({required String displayName, required String phone}) async {
+  Future<void> updateProfile({
+    required String displayName,
+    required String phone,
+  }) async {
     // Validate inputs locally first
     if (displayName.trim().isEmpty) {
       state = state.copyWith(errorMessage: 'Tên hiển thị không được để trống.');
       return;
     }
     if (phone.trim().isEmpty || phone.length < 10) {
-      state = state.copyWith(errorMessage: 'Số điện thoại không hợp lệ (tối thiểu 10 chữ số).');
+      state = state.copyWith(
+        errorMessage: 'Số điện thoại không hợp lệ (tối thiểu 10 chữ số).',
+      );
       return;
     }
 
-    state = state.copyWith(isLoading: true, errorMessage: null, isSaveSuccess: false);
+    state = state.copyWith(
+      isLoading: true,
+      errorMessage: null,
+      isSaveSuccess: false,
+    );
     try {
       final updatedProfile = state.profile.copyWith(
         displayName: displayName,
         phone: phone,
       );
       await _repository.updateProfile(updatedProfile);
-      state = state.copyWith(profile: updatedProfile, isLoading: false, isSaveSuccess: true);
+      state = state.copyWith(
+        profile: updatedProfile,
+        isLoading: false,
+        isSaveSuccess: true,
+      );
     } catch (e) {
       state = state.copyWith(
         isLoading: false,
@@ -80,12 +98,20 @@ class ProfileController extends StateNotifier<ProfileState> {
   }
 
   Future<void> updateAvatar(File imageFile) async {
-    state = state.copyWith(isLoading: true, errorMessage: null, isSaveSuccess: false);
+    state = state.copyWith(
+      isLoading: true,
+      errorMessage: null,
+      isSaveSuccess: false,
+    );
     try {
       final newAvatarUrl = await _repository.uploadAvatar(_uid, imageFile);
       final updatedProfile = state.profile.copyWith(avatarUrl: newAvatarUrl);
       await _repository.updateProfile(updatedProfile);
-      state = state.copyWith(profile: updatedProfile, isLoading: false, isSaveSuccess: true);
+      state = state.copyWith(
+        profile: updatedProfile,
+        isLoading: false,
+        isSaveSuccess: true,
+      );
     } catch (e) {
       state = state.copyWith(
         isLoading: false,
@@ -100,7 +126,8 @@ class ProfileController extends StateNotifier<ProfileState> {
 }
 
 // Riverpod Provider for ProfileController
-final profileControllerProvider = StateNotifierProvider<ProfileController, ProfileState>((ref) {
-  final repository = ref.watch(profileRepositoryProvider);
-  return ProfileController(repository);
-});
+final profileControllerProvider =
+    StateNotifierProvider<ProfileController, ProfileState>((ref) {
+      final repository = ref.watch(profileRepositoryProvider);
+      return ProfileController(repository);
+    });

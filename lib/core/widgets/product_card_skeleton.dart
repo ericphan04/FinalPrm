@@ -12,11 +12,13 @@ class ProductCardSkeleton extends StatelessWidget {
     final isDark = theme.brightness == Brightness.dark;
 
     final Color baseColor = isDark ? AppColors.surfaceDark : Color(0xFFE2E8F0);
-    final Color highlightColor = isDark ? AppColors.primaryDark.withOpacity(0.3) : AppColors.primaryLight.withOpacity(0.3);
+    final Color highlightColor = isDark ? Color(0xFF242F48) : Color(0xFFF1F5F9);
 
     return Container(
       decoration: BoxDecoration(
-        color: isDark ? AppColors.surfaceDark.withOpacity(0.5) : Colors.white,
+        color: isDark
+            ? AppColors.surfaceDark.withValues(alpha: 0.5)
+            : Colors.white,
         borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
         border: Border.all(
           color: isDark ? AppColors.borderDark : AppColors.borderLight,
@@ -101,7 +103,9 @@ class ProductCardSkeleton extends StatelessWidget {
                         height: 20,
                         decoration: BoxDecoration(
                           color: Colors.white,
-                          borderRadius: BorderRadius.circular(AppSpacing.radiusXs),
+                          borderRadius: BorderRadius.circular(
+                            AppSpacing.radiusXs,
+                          ),
                         ),
                       ),
                     ),

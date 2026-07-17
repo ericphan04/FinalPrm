@@ -59,7 +59,9 @@ class _AppTextFieldState extends State<AppTextField> {
           Text(
             widget.labelText!,
             style: theme.textTheme.labelMedium?.copyWith(
-              color: isDark ? AppColors.textDarkSecondary : AppColors.textLightSecondary,
+              color: isDark
+                  ? AppColors.textDarkSecondary
+                  : AppColors.textLightSecondary,
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -74,7 +76,9 @@ class _AppTextFieldState extends State<AppTextField> {
           readOnly: widget.readOnly,
           onTap: widget.onTap,
           style: theme.textTheme.bodyMedium?.copyWith(
-            color: isDark ? AppColors.textDarkPrimary : AppColors.textLightPrimary,
+            color: isDark
+                ? AppColors.textDarkPrimary
+                : AppColors.textLightPrimary,
           ),
           decoration: InputDecoration(
             hintText: widget.hintText,
@@ -82,7 +86,9 @@ class _AppTextFieldState extends State<AppTextField> {
             errorText: widget.errorText,
             prefixIcon: widget.prefixIcon != null
                 ? Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.sm,
+                    ),
                     child: widget.prefixIcon,
                   )
                 : null,
@@ -93,8 +99,12 @@ class _AppTextFieldState extends State<AppTextField> {
             suffixIcon: widget.isPassword
                 ? IconButton(
                     icon: Icon(
-                      _obscureText ? Icons.visibility_off_outlined : Icons.visibility_outlined,
-                      color: isDark ? AppColors.textDarkMuted : AppColors.textLightMuted,
+                      _obscureText
+                          ? Icons.visibility_off_outlined
+                          : Icons.visibility_outlined,
+                      color: isDark
+                          ? AppColors.textDarkMuted
+                          : AppColors.textLightMuted,
                       size: 20,
                     ),
                     onPressed: () {
