@@ -4,9 +4,10 @@ class AppColors {
   AppColors._();
 
   // Primary brand color (vibrant active orange, reminiscent of premium sports brands)
-  static const Color primary = Color(0xFFFF5F1F);
-  static const Color primaryDark = Color(0xFFE04F15);
-  static const Color primaryLight = Color(0xFFFFECE5);
+  // Primary brand color (blue, representing trust & premium feel)
+  static const Color primary = Color(0xFF0A84FF); // #0A84FF
+  static const Color primaryDark = Color(0xFF0066CC); // darker shade for shadows
+  static const Color primaryLight = Color(0xFFE0F0FF); // light tint for backgrounds
 
   // Secondary brand color (deep cool slate)
   static const Color secondary = Color(0xFF0F172A);

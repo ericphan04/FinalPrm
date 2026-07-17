@@ -12,7 +12,7 @@ class ProductCardSkeleton extends StatelessWidget {
     final isDark = theme.brightness == Brightness.dark;
 
     final Color baseColor = isDark ? AppColors.surfaceDark : Color(0xFFE2E8F0);
-    final Color highlightColor = isDark ? Color(0xFF242F48) : Color(0xFFF1F5F9);
+    final Color highlightColor = isDark ? AppColors.primaryDark.withOpacity(0.3) : AppColors.primaryLight.withOpacity(0.3);
 
     return Container(
       decoration: BoxDecoration(
