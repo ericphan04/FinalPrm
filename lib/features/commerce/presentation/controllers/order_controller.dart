@@ -7,7 +7,7 @@ class OrderState {
   final bool isLoading;
   final String? errorMessage;
   final List<AppOrder> orders;
-  
+
   OrderState({
     this.isLoading = false,
     this.errorMessage,
@@ -33,21 +33,37 @@ class OrderController extends StateNotifier<OrderState> {
 
   OrderController(this._repository, this._uid) : super(OrderState()) {
     if (_uid != null) {
-      _repository.watchUserOrders(_uid).listen((orders) {
-        if (mounted) {
-          state = state.copyWith(orders: orders, isLoading: false);
-        }
-      }, onError: (err) {
-        if (mounted) {
-          state = state.copyWith(errorMessage: err.toString(), isLoading: false);
-        }
-      });
+      _repository
+          .watchUserOrders(_uid)
+          .listen(
+            (orders) {
+              if (mounted) {
+                state = state.copyWith(orders: orders, isLoading: false);
+              }
+            },
+            onError: (err) {
+              if (mounted) {
+                state = state.copyWith(
+                  errorMessage: err.toString(),
+                  isLoading: false,
+                );
+              }
+            },
+          );
     }
   }
 
-  Future<bool> createCheckout(List<CartItem> items, ShippingAddress address, String paymentMethod) async {
+  Future<bool> createCheckout(
+    List<CartItem> items,
+    ShippingAddress address,
+    String paymentMethod,
+  ) async {
     state = state.copyWith(isLoading: true, errorMessage: null);
-    final result = await _repository.createCheckout(items, address, paymentMethod);
+    final result = await _repository.createCheckout(
+      items,
+      address,
+      paymentMethod,
+    );
     return result.when(
       onSuccess: (_) {
         state = state.copyWith(isLoading: false);

@@ -12,6 +12,11 @@ _Product _$ProductFromJson(Map<String, dynamic> json) => _Product(
   description: json['description'] as String,
   categoryId: json['categoryId'] as String,
   basePrice: (json['basePrice'] as num).toDouble(),
+  sellerId: json['sellerId'] as String,
+  status:
+      $enumDecodeNullable(_$ProductStatusEnumMap, json['status']) ??
+      ProductStatus.draft,
+  rejectReason: json['rejectReason'] as String?,
   images:
       (json['images'] as List<dynamic>?)?.map((e) => e as String).toList() ??
       const [],
@@ -30,10 +35,20 @@ Map<String, dynamic> _$ProductToJson(_Product instance) => <String, dynamic>{
   'description': instance.description,
   'categoryId': instance.categoryId,
   'basePrice': instance.basePrice,
+  'sellerId': instance.sellerId,
+  'status': _$ProductStatusEnumMap[instance.status]!,
+  'rejectReason': instance.rejectReason,
   'images': instance.images,
   'isAvailable': instance.isAvailable,
   'createdAt': instance.createdAt.toIso8601String(),
   'variants': instance.variants,
+};
+
+const _$ProductStatusEnumMap = {
+  ProductStatus.draft: 'draft',
+  ProductStatus.pendingReview: 'pendingReview',
+  ProductStatus.published: 'published',
+  ProductStatus.rejected: 'rejected',
 };
 
 _ProductVariant _$ProductVariantFromJson(Map<String, dynamic> json) =>
@@ -41,6 +56,7 @@ _ProductVariant _$ProductVariantFromJson(Map<String, dynamic> json) =>
       id: json['id'] as String,
       size: json['size'] as String,
       color: json['color'] as String,
+      sku: json['sku'] as String,
       stockQuantity: (json['stockQuantity'] as num?)?.toInt() ?? 0,
       priceDifference: (json['priceDifference'] as num?)?.toDouble() ?? 0.0,
     );
@@ -50,6 +66,7 @@ Map<String, dynamic> _$ProductVariantToJson(_ProductVariant instance) =>
       'id': instance.id,
       'size': instance.size,
       'color': instance.color,
+      'sku': instance.sku,
       'stockQuantity': instance.stockQuantity,
       'priceDifference': instance.priceDifference,
     };

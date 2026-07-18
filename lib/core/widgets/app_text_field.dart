@@ -16,6 +16,7 @@ class AppTextField extends StatefulWidget {
   final Widget? suffixIcon;
   final bool readOnly;
   final VoidCallback? onTap;
+  final int maxLines;
 
   const AppTextField({
     super.key,
@@ -32,6 +33,7 @@ class AppTextField extends StatefulWidget {
     this.suffixIcon,
     this.readOnly = false,
     this.onTap,
+    this.maxLines = 1,
   });
 
   @override
@@ -75,6 +77,7 @@ class _AppTextFieldState extends State<AppTextField> {
           onChanged: widget.onChanged,
           readOnly: widget.readOnly,
           onTap: widget.onTap,
+          maxLines: widget.maxLines,
           style: theme.textTheme.bodyMedium?.copyWith(
             color: isDark
                 ? AppColors.textDarkPrimary

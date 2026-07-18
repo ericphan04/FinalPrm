@@ -9,7 +9,7 @@ class CatalogState {
   final List<Product> products;
   final List<Category> categories;
   final String? selectedCategoryId;
-  
+
   CatalogState({
     this.isLoading = false,
     this.errorMessage,

@@ -17,8 +17,8 @@ class FirebaseProfileRepository implements ProfileRepository {
   FirebaseProfileRepository({
     FirebaseFirestore? firestore,
     FirebaseStorage? storage,
-  })  : _firestore = firestore ?? FirebaseFirestore.instance,
-        _storage = storage ?? FirebaseStorage.instance;
+  }) : _firestore = firestore ?? FirebaseFirestore.instance,
+       _storage = storage ?? FirebaseStorage.instance;
 
   @override
   Future<UserProfile> getProfile(String uid) async {

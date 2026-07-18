@@ -33,12 +33,18 @@ class CartRepositoryImpl implements CartRepository {
         return Success(items);
       } else {
         // User Cart
-        final snapshot = await _firestore.collection('users').doc(uid).collection('cart').get();
+        final snapshot = await _firestore
+            .collection('users')
+            .doc(uid)
+            .collection('cart')
+            .get();
         final items = snapshot.docs.map((doc) {
           final data = doc.data();
           data['id'] = doc.id;
           if (data['addedAt'] is Timestamp) {
-             data['addedAt'] = (data['addedAt'] as Timestamp).toDate().toIso8601String();
+            data['addedAt'] = (data['addedAt'] as Timestamp)
+                .toDate()
+                .toIso8601String();
           }
           return CartItem.fromJson(data);
         }).toList();
@@ -56,22 +62,31 @@ class CartRepositoryImpl implements CartRepository {
         final currentResult = await getCartItems(null);
         if (currentResult is Success<List<CartItem>>) {
           final items = List<CartItem>.from(currentResult.data);
-          final existingIndex = items.indexWhere((i) => i.variantId == item.variantId);
+          final existingIndex = items.indexWhere(
+            (i) => i.variantId == item.variantId,
+          );
           if (existingIndex >= 0) {
             items[existingIndex] = items[existingIndex].copyWith(
-              quantity: items[existingIndex].quantity + item.quantity
+              quantity: items[existingIndex].quantity + item.quantity,
             );
           } else {
             items.add(item);
           }
-          await _prefs.setString(_guestCartKey, jsonEncode(items.map((e) => e.toJson()).toList()));
+          await _prefs.setString(
+            _guestCartKey,
+            jsonEncode(items.map((e) => e.toJson()).toList()),
+          );
         }
       } else {
         final coll = _firestore.collection('users').doc(uid).collection('cart');
-        final query = await coll.where('variantId', isEqualTo: item.variantId).get();
+        final query = await coll
+            .where('variantId', isEqualTo: item.variantId)
+            .get();
         if (query.docs.isNotEmpty) {
           final doc = query.docs.first;
-          await doc.reference.update({'quantity': FieldValue.increment(item.quantity)});
+          await doc.reference.update({
+            'quantity': FieldValue.increment(item.quantity),
+          });
         } else {
           final data = item.toJson();
           data.remove('id');
@@ -86,7 +101,11 @@ class CartRepositoryImpl implements CartRepository {
   }
 
   @override
-  Future<Result<void>> updateQuantity(String? uid, String itemId, int quantity) async {
+  Future<Result<void>> updateQuantity(
+    String? uid,
+    String itemId,
+    int quantity,
+  ) async {
     try {
       if (uid == null) {
         final currentResult = await getCartItems(null);
@@ -95,13 +114,19 @@ class CartRepositoryImpl implements CartRepository {
           final index = items.indexWhere((i) => i.id == itemId);
           if (index >= 0) {
             items[index] = items[index].copyWith(quantity: quantity);
-            await _prefs.setString(_guestCartKey, jsonEncode(items.map((e) => e.toJson()).toList()));
+            await _prefs.setString(
+              _guestCartKey,
+              jsonEncode(items.map((e) => e.toJson()).toList()),
+            );
           }
         }
       } else {
-        await _firestore.collection('users').doc(uid).collection('cart').doc(itemId).update({
-          'quantity': quantity,
-        });
+        await _firestore
+            .collection('users')
+            .doc(uid)
+            .collection('cart')
+            .doc(itemId)
+            .update({'quantity': quantity});
       }
       return const Success(null);
     } catch (e) {
@@ -115,11 +140,20 @@ class CartRepositoryImpl implements CartRepository {
       if (uid == null) {
         final currentResult = await getCartItems(null);
         if (currentResult is Success<List<CartItem>>) {
-          final items = List<CartItem>.from(currentResult.data)..removeWhere((i) => i.id == itemId);
-          await _prefs.setString(_guestCartKey, jsonEncode(items.map((e) => e.toJson()).toList()));
+          final items = List<CartItem>.from(currentResult.data)
+            ..removeWhere((i) => i.id == itemId);
+          await _prefs.setString(
+            _guestCartKey,
+            jsonEncode(items.map((e) => e.toJson()).toList()),
+          );
         }
       } else {
-        await _firestore.collection('users').doc(uid).collection('cart').doc(itemId).delete();
+        await _firestore
+            .collection('users')
+            .doc(uid)
+            .collection('cart')
+            .doc(itemId)
+            .delete();
       }
       return const Success(null);
     } catch (e) {
@@ -133,7 +167,11 @@ class CartRepositoryImpl implements CartRepository {
       if (uid == null) {
         await _prefs.remove(_guestCartKey);
       } else {
-        final docs = await _firestore.collection('users').doc(uid).collection('cart').get();
+        final docs = await _firestore
+            .collection('users')
+            .doc(uid)
+            .collection('cart')
+            .get();
         final batch = _firestore.batch();
         for (var doc in docs.docs) {
           batch.delete(doc.reference);
@@ -150,7 +188,8 @@ class CartRepositoryImpl implements CartRepository {
   Future<Result<void>> mergeGuestCart(String uid) async {
     try {
       final guestResult = await getCartItems(null);
-      if (guestResult is Success<List<CartItem>> && guestResult.data.isNotEmpty) {
+      if (guestResult is Success<List<CartItem>> &&
+          guestResult.data.isNotEmpty) {
         for (var item in guestResult.data) {
           await addToCart(uid, item);
         }

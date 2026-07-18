@@ -33,10 +33,15 @@ class _ProductDetailViewState extends ConsumerState<ProductDetailView> {
       orElse: () => throw Exception('Product not found'),
     );
 
-    final currencyFormatter = NumberFormat.currency(locale: 'vi_VN', symbol: 'đ');
-    
+    final currencyFormatter = NumberFormat.currency(
+      locale: 'vi_VN',
+      symbol: 'đ',
+    );
+
     // Find matching variant if size & color selected
-    final variant = product.variants.where((v) => v.size == selectedSize && v.color == selectedColor).firstOrNull;
+    final variant = product.variants
+        .where((v) => v.size == selectedSize && v.color == selectedColor)
+        .firstOrNull;
     final currentPrice = product.basePrice + (variant?.priceDifference ?? 0);
     final displayPrice = currencyFormatter.format(currentPrice);
 
@@ -60,11 +65,14 @@ class _ProductDetailViewState extends ConsumerState<ProductDetailView> {
             Hero(
               tag: 'product-${product.id}',
               child: Image.network(
-                product.images.isNotEmpty ? product.images.first : 'https://via.placeholder.com/600',
+                product.images.isNotEmpty
+                    ? product.images.first
+                    : 'https://via.placeholder.com/600',
                 width: double.infinity,
                 height: 300,
                 fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => Container(height: 300, color: Colors.grey[200]),
+                errorBuilder: (_, __, ___) =>
+                    Container(height: 300, color: Colors.grey[200]),
               ),
             ),
             Padding(
@@ -74,15 +82,20 @@ class _ProductDetailViewState extends ConsumerState<ProductDetailView> {
                 children: [
                   Text(
                     product.name,
-                    style: theme.textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold),
+                    style: theme.textTheme.headlineMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   const SizedBox(height: AppSpacing.sm),
                   Text(
                     displayPrice,
-                    style: theme.textTheme.headlineSmall?.copyWith(color: AppColors.primary, fontWeight: FontWeight.w600),
+                    style: theme.textTheme.headlineSmall?.copyWith(
+                      color: AppColors.primary,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                   const SizedBox(height: AppSpacing.lg),
-                  
+
                   // Size Selection
                   if (sizes.isNotEmpty) ...[
                     Text('Kích thước', style: theme.textTheme.titleMedium),
@@ -100,7 +113,11 @@ class _ProductDetailViewState extends ConsumerState<ProductDetailView> {
                             });
                           },
                           selectedColor: AppColors.primary,
-                          labelStyle: TextStyle(color: isSelected ? Colors.white : (isDark ? Colors.white : Colors.black)),
+                          labelStyle: TextStyle(
+                            color: isSelected
+                                ? Colors.white
+                                : (isDark ? Colors.white : Colors.black),
+                          ),
                         );
                       }).toList(),
                     ),
@@ -124,13 +141,17 @@ class _ProductDetailViewState extends ConsumerState<ProductDetailView> {
                             });
                           },
                           selectedColor: AppColors.primary,
-                          labelStyle: TextStyle(color: isSelected ? Colors.white : (isDark ? Colors.white : Colors.black)),
+                          labelStyle: TextStyle(
+                            color: isSelected
+                                ? Colors.white
+                                : (isDark ? Colors.white : Colors.black),
+                          ),
                         );
                       }).toList(),
                     ),
                     const SizedBox(height: AppSpacing.lg),
                   ],
-                  
+
                   Text('Mô tả', style: theme.textTheme.titleMedium),
                   const SizedBox(height: AppSpacing.sm),
                   Text(product.description, style: theme.textTheme.bodyMedium),
@@ -145,7 +166,13 @@ class _ProductDetailViewState extends ConsumerState<ProductDetailView> {
         padding: const EdgeInsets.all(AppSpacing.md),
         decoration: BoxDecoration(
           color: isDark ? AppColors.surfaceDark : Colors.white,
-          boxShadow: const [BoxShadow(color: AppColors.shadowColor, blurRadius: 10, offset: Offset(0, -4))],
+          boxShadow: const [
+            BoxShadow(
+              color: AppColors.shadowColor,
+              blurRadius: 10,
+              offset: Offset(0, -4),
+            ),
+          ],
         ),
         child: SafeArea(
           child: Row(
@@ -160,7 +187,9 @@ class _ProductDetailViewState extends ConsumerState<ProductDetailView> {
                   children: [
                     IconButton(
                       icon: const Icon(Icons.remove),
-                      onPressed: quantity > 1 ? () => setState(() => quantity--) : null,
+                      onPressed: quantity > 1
+                          ? () => setState(() => quantity--)
+                          : null,
                     ),
                     Text('$quantity', style: theme.textTheme.titleMedium),
                     IconButton(
@@ -174,30 +203,48 @@ class _ProductDetailViewState extends ConsumerState<ProductDetailView> {
               Expanded(
                 child: AppButton(
                   text: 'Thêm vào giỏ',
-                  onPressed: (selectedSize == null || selectedColor == null) ? null : () {
-                    if (variant == null) {
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Phân loại không hợp lệ')));
-                      return;
-                    }
-                    if (variant.stockQuantity < quantity) {
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Không đủ số lượng trong kho')));
-                      return;
-                    }
-                    final item = CartItem(
-                      id: '',
-                      productId: product.id,
-                      variantId: variant.id,
-                      productName: product.name,
-                      imageUrl: product.images.isNotEmpty ? product.images.first : '',
-                      size: selectedSize!,
-                      color: selectedColor!,
-                      price: currentPrice,
-                      quantity: quantity,
-                      addedAt: DateTime.now(),
-                    );
-                    ref.read(cartControllerProvider.notifier).addToCart(item);
-                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Đã thêm vào giỏ hàng')));
-                  },
+                  onPressed: (selectedSize == null || selectedColor == null)
+                      ? null
+                      : () {
+                          if (variant == null) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Phân loại không hợp lệ'),
+                              ),
+                            );
+                            return;
+                          }
+                          if (variant.stockQuantity < quantity) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Không đủ số lượng trong kho'),
+                              ),
+                            );
+                            return;
+                          }
+                          final item = CartItem(
+                            id: '',
+                            productId: product.id,
+                            variantId: variant.id,
+                            productName: product.name,
+                            imageUrl: product.images.isNotEmpty
+                                ? product.images.first
+                                : '',
+                            size: selectedSize!,
+                            color: selectedColor!,
+                            price: currentPrice,
+                            quantity: quantity,
+                            addedAt: DateTime.now(),
+                          );
+                          ref
+                              .read(cartControllerProvider.notifier)
+                              .addToCart(item);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Đã thêm vào giỏ hàng'),
+                            ),
+                          );
+                        },
                 ),
               ),
             ],

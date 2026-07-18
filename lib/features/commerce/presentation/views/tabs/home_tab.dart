@@ -36,7 +36,10 @@ class HomeTab extends ConsumerWidget {
           // Content
           SafeArea(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.xxl),
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.lg,
+                vertical: AppSpacing.xxl,
+              ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.end,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -74,12 +77,16 @@ class HomeTab extends ConsumerWidget {
                   // Shop Button
                   OutlinedButton(
                     onPressed: () {
-                      ref.read(mainTabIndexProvider.notifier).state = 1; // Switch to Shop Tab
+                      ref.read(mainTabIndexProvider.notifier).state =
+                          1; // Switch to Shop Tab
                     },
                     style: OutlinedButton.styleFrom(
                       foregroundColor: Colors.white,
                       side: const BorderSide(color: Colors.white, width: 1.5),
-                      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 32,
+                        vertical: 14,
+                      ),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30),
                       ),

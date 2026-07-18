@@ -64,13 +64,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         } else if (next.user.role != AppUserRole.guest) {
           context.go('/');
         }
-      } else if (next.errorMessage != null && next.errorMessage != previous?.errorMessage) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(next.errorMessage!),
-              backgroundColor: AppColors.error,
-            ),
-          );
+      } else if (next.errorMessage != null &&
+          next.errorMessage != previous?.errorMessage) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(next.errorMessage!),
+            backgroundColor: AppColors.error,
+          ),
+        );
       }
     });
 
@@ -83,7 +84,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             leading: IconButton(
               icon: Icon(
                 Icons.arrow_back_ios_new_rounded,
-                color: isDark ? AppColors.textDarkPrimary : AppColors.textLightPrimary,
+                color: isDark
+                    ? AppColors.textDarkPrimary
+                    : AppColors.textLightPrimary,
               ),
               onPressed: () => context.go('/'),
               tooltip: 'Về trang chủ',

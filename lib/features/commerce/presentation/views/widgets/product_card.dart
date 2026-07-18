@@ -22,12 +22,15 @@ class ProductCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    
-    final currencyFormatter = NumberFormat.currency(locale: 'vi_VN', symbol: 'đ');
+
+    final currencyFormatter = NumberFormat.currency(
+      locale: 'vi_VN',
+      symbol: 'đ',
+    );
     final displayPrice = currencyFormatter.format(product.basePrice);
-    
-    final imageUrl = product.images.isNotEmpty 
-        ? product.images.first 
+
+    final imageUrl = product.images.isNotEmpty
+        ? product.images.first
         : 'https://via.placeholder.com/300x300.png?text=No+Image';
 
     return GestureDetector(
@@ -45,7 +48,7 @@ class ProductCard extends StatelessWidget {
               color: AppColors.shadowColor,
               blurRadius: 10,
               offset: const Offset(0, 4),
-            )
+            ),
           ],
         ),
         child: Column(
@@ -67,8 +70,10 @@ class ProductCard extends StatelessWidget {
                         fit: BoxFit.cover,
                         width: double.infinity,
                         height: double.infinity,
-                        errorBuilder: (context, error, stackTrace) => 
-                            Container(color: Colors.grey[200], child: const Icon(Icons.image_not_supported)),
+                        errorBuilder: (context, error, stackTrace) => Container(
+                          color: Colors.grey[200],
+                          child: const Icon(Icons.image_not_supported),
+                        ),
                       ),
                     ),
                   ),
@@ -83,14 +88,21 @@ class ProductCard extends StatelessWidget {
                         ),
                         alignment: Alignment.center,
                         child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
                           decoration: BoxDecoration(
                             color: AppColors.error,
                             borderRadius: BorderRadius.circular(4),
                           ),
                           child: const Text(
                             'HẾT HÀNG',
-                            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 10),
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 10,
+                            ),
                           ),
                         ),
                       ),
@@ -104,13 +116,19 @@ class ProductCard extends StatelessWidget {
                       child: Container(
                         padding: const EdgeInsets.all(6),
                         decoration: BoxDecoration(
-                          color: isDark ? AppColors.surfaceDark.withOpacity(0.8) : Colors.white.withOpacity(0.9),
+                          color: isDark
+                              ? AppColors.surfaceDark.withOpacity(0.8)
+                              : Colors.white.withOpacity(0.9),
                           shape: BoxShape.circle,
                         ),
                         child: Icon(
-                          isFavorite ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+                          isFavorite
+                              ? Icons.favorite_rounded
+                              : Icons.favorite_border_rounded,
                           size: 16,
-                          color: isFavorite ? AppColors.error : (isDark ? Colors.white : Colors.black),
+                          color: isFavorite
+                              ? AppColors.error
+                              : (isDark ? Colors.white : Colors.black),
                         ),
                       ),
                     ),

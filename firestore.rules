@@ -43,5 +43,51 @@ service cloud.firestore {
         getUserRole() == 'seller' || getUserRole() == 'admin'
       );
     }
+
+    // Quy tắc cho collection 'orders'
+    match /orders/{orderId} {
+      // Người mua có thể xem đơn của chính mình, Người bán & Admin có thể xem tất cả
+      allow read: if request.auth != null && (
+        resource.data.userId == request.auth.uid ||
+        getUserRole() == 'seller' ||
+        getUserRole() == 'admin'
+      );
+      
+      // Cho phép Seller và Admin cập nhật trạng thái đơn (kèm theo validate transition ở code/functions)
+      allow write: if request.auth != null && (
+        getUserRole() == 'seller' ||
+        getUserRole() == 'admin'
+      );
+    }
+
+    // Quy tắc cho collection 'stores'
+    match /stores/{storeId} {
+      // Bất kỳ ai cũng có thể xem thông tin cửa hàng
+      allow read: if true;
+      
+      // Chỉ chính chủ cửa hàng hoặc Admin mới được ghi
+      allow write: if request.auth != null && (
+        request.auth.uid == storeId ||
+        getUserRole() == 'admin'
+      );
+    }
+
+    // Quy tắc cho collection 'seller_applications'
+    match /seller_applications/{applicationId} {
+      // Chỉ chính chủ đơn ứng tuyển hoặc Admin mới có quyền đọc/ghi
+      allow read, write: if request.auth != null && (
+        request.auth.uid == applicationId ||
+        getUserRole() == 'admin'
+      );
+    }
+
+    // Quy tắc cho collection 'categories'
+    match /categories/{categoryId} {
+      // Bất kỳ ai cũng có thể đọc danh mục (kể cả Guest)
+      allow read: if true;
+      
+      // Cho phép ghi nếu đã đăng nhập (phục vụ tự động seed ở client)
+      allow write: if request.auth != null;
+    }
   }
 }

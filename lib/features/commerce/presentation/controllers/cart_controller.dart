@@ -7,12 +7,8 @@ class CartState {
   final bool isLoading;
   final String? errorMessage;
   final List<CartItem> items;
-  
-  CartState({
-    this.isLoading = false,
-    this.errorMessage,
-    this.items = const [],
-  });
+
+  CartState({this.isLoading = false, this.errorMessage, this.items = const []});
 
   CartState copyWith({
     bool? isLoading,
@@ -25,8 +21,9 @@ class CartState {
       items: items ?? this.items,
     );
   }
-  
-  double get totalAmount => items.fold(0, (sum, item) => sum + (item.price * item.quantity));
+
+  double get totalAmount =>
+      items.fold(0, (sum, item) => sum + (item.price * item.quantity));
 }
 
 class CartController extends StateNotifier<CartState> {
@@ -52,13 +49,17 @@ class CartController extends StateNotifier<CartState> {
 
   Future<void> addToCart(CartItem item) async {
     // Generate an ID for guest cart items just in case, for user cart it will be removed by repo.
-    final newItem = item.id.isEmpty ? item.copyWith(id: const Uuid().v4()) : item;
-    
+    final newItem = item.id.isEmpty
+        ? item.copyWith(id: const Uuid().v4())
+        : item;
+
     // Optimistic UI update
     final newItems = List<CartItem>.from(state.items);
     final index = newItems.indexWhere((i) => i.variantId == newItem.variantId);
     if (index >= 0) {
-      newItems[index] = newItems[index].copyWith(quantity: newItems[index].quantity + newItem.quantity);
+      newItems[index] = newItems[index].copyWith(
+        quantity: newItems[index].quantity + newItem.quantity,
+      );
     } else {
       newItems.add(newItem);
     }
@@ -97,7 +98,8 @@ class CartController extends StateNotifier<CartState> {
   }
 
   Future<void> removeFromCart(String itemId) async {
-    final newItems = List<CartItem>.from(state.items)..removeWhere((i) => i.id == itemId);
+    final newItems = List<CartItem>.from(state.items)
+      ..removeWhere((i) => i.id == itemId);
     state = state.copyWith(items: newItems);
 
     final result = await _repository.removeFromCart(_uid, itemId);
@@ -117,7 +119,10 @@ class CartController extends StateNotifier<CartState> {
       result.when(
         onSuccess: (_) => _loadCart(),
         onFailure: (failure) {
-          state = state.copyWith(isLoading: false, errorMessage: failure.message);
+          state = state.copyWith(
+            isLoading: false,
+            errorMessage: failure.message,
+          );
         },
       );
     }

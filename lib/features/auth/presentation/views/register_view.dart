@@ -71,13 +71,14 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
         } else if (next.user.role != AppUserRole.guest) {
           context.go('/');
         }
-      } else if (next.errorMessage != null && next.errorMessage != previous?.errorMessage) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(next.errorMessage!),
-              backgroundColor: AppColors.error,
-            ),
-          );
+      } else if (next.errorMessage != null &&
+          next.errorMessage != previous?.errorMessage) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(next.errorMessage!),
+            backgroundColor: AppColors.error,
+          ),
+        );
       }
     });
 
