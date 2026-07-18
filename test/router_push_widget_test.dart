@@ -16,29 +16,31 @@ void main() {
     final mockRepo = MockAuthRepository();
     final authStream = StreamController<AppUser>.broadcast();
     when(() => mockRepo.authStateChanges).thenAnswer((_) => authStream.stream);
-    
-    await tester.pumpWidget(ProviderScope(
-      overrides: [
-        authRepositoryProvider.overrideWithValue(mockRepo)
-      ],
-      child: const MyApp()
-    ));
-    
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [authRepositoryProvider.overrideWithValue(mockRepo)],
+        child: const MyApp(),
+      ),
+    );
+
     // Default start should go to ShowroomScreen
     authStream.add(AppUser.guest());
     await tester.pumpAndSettle();
-    
+
     print('Initial Route: /');
-    
-    final container = ProviderScope.containerOf(tester.element(find.byType(MyApp)));
+
+    final container = ProviderScope.containerOf(
+      tester.element(find.byType(MyApp)),
+    );
     final router = container.read(routerProvider);
-    
+
     // Now we are at ShowroomScreen. Let's go to /login
     router.go('/login');
     await tester.pumpAndSettle();
-    
+
     print('Current route before click: ${router.state.uri.path}');
-    
+
     final registerButton = find.text('Đăng ký ngay');
     if (registerButton.evaluate().isNotEmpty) {
       print('Found Đăng ký ngay, tapping...');

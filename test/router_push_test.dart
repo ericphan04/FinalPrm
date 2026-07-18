@@ -8,7 +8,9 @@ void main() {
     final router = GoRouter(
       initialLocation: '/login',
       redirect: (context, state) {
-        print('Redirect evaluated for: ${state.uri.path}, matchedLocation: ${state.matchedLocation}');
+        print(
+          'Redirect evaluated for: ${state.uri.path}, matchedLocation: ${state.matchedLocation}',
+        );
         capturedPath = state.uri.path;
         return null;
       },
@@ -31,10 +33,10 @@ void main() {
 
     await tester.pumpWidget(MaterialApp.router(routerConfig: router));
     await tester.pumpAndSettle();
-    
+
     await tester.tap(find.text('Push'));
     await tester.pumpAndSettle();
-    
+
     expect(capturedPath, '/register');
   });
 }

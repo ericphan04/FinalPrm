@@ -36,7 +36,8 @@ class DefaultFirebaseOptions {
   // Tạm dùng cùng projectId; thay thế apiKey + appId khi có iOS app đăng ký trên Firebase Console
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyCiAWCWokDMAKDOeI1fKBanXSBju13RjMs',
-    appId: '1:1085757977903:ios:000000000000000000000000', // TODO: thay bằng iOS appId thật
+    appId:
+        '1:1085757977903:ios:000000000000000000000000', // TODO: thay bằng iOS appId thật
     messagingSenderId: '1085757977903',
     projectId: 'shoestoremarketplace',
     storageBucket: 'shoestoremarketplace.firebasestorage.app',
@@ -48,7 +49,8 @@ class DefaultFirebaseOptions {
   // Web — chưa cấu hình, thêm nếu cần deploy web
   static const FirebaseOptions web = FirebaseOptions(
     apiKey: 'AIzaSyCiAWCWokDMAKDOeI1fKBanXSBju13RjMs',
-    appId: '1:1085757977903:web:000000000000000000000000', // TODO: thay bằng Web appId thật
+    appId:
+        '1:1085757977903:web:000000000000000000000000', // TODO: thay bằng Web appId thật
     messagingSenderId: '1085757977903',
     projectId: 'shoestoremarketplace',
     storageBucket: 'shoestoremarketplace.firebasestorage.app',

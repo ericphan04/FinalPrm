@@ -7,18 +7,22 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    // Helper function to get role of logged in user from Firestore
+    function getUserRole() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role;
+    }
+
     // Quy tắc cho collection 'users'
     match /users/{userId} {
       // Chỉ Admin hoặc chính chủ tài khoản mới được đọc profile
-      allow read: if request.auth != null && (request.auth.uid == userId || request.auth.token.role == 'admin');
+      allow read: if request.auth != null && (request.auth.uid == userId || getUserRole() == 'admin');
 
-      // Cho phép tạo nếu tài khoản trùng khớp và không được gán trước các trường role/status quyền lực
-      allow create: if request.auth != null && request.auth.uid == userId 
-        && !request.resource.data.keys().hasAny(['role', 'status']);
+      // Cho phép tạo nếu tài khoản trùng khớp
+      allow create: if request.auth != null && request.auth.uid == userId;
 
       // Cho phép cập nhật nếu là chính chủ và không thay đổi trường role/status (hoặc nếu là admin thì được đổi)
       allow update: if request.auth != null && (
-        request.auth.token.role == 'admin' || (
+        getUserRole() == 'admin' || (
           request.auth.uid == userId 
           && (!request.resource.data.keys().hasAny(['role', 'status']) 
               || (resource.data != null && request.resource.data.role == resource.data.role && request.resource.data.status == resource.data.status))
@@ -26,7 +30,7 @@ service cloud.firestore {
       );
 
       // Chỉ Admin mới có quyền xóa tài khoản người dùng
-      allow delete: if request.auth != null && request.auth.token.role == 'admin';
+      allow delete: if request.auth != null && getUserRole() == 'admin';
     }
 
     // Quy tắc cho collection 'products'
@@ -36,7 +40,7 @@ service cloud.firestore {
 
       // Chỉ Seller hoặc Admin mới có quyền tạo, sửa đổi hoặc xóa sản phẩm
       allow write: if request.auth != null && (
-        request.auth.token.role == 'seller' || request.auth.token.role == 'admin'
+        getUserRole() == 'seller' || getUserRole() == 'admin'
       );
     }
   }

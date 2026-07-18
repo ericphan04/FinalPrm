@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/models/user_profile.dart';
 import '../../data/repositories/profile_repository.dart';
+import '../../../auth/presentation/providers/auth_providers.dart';
 
 class ProfileState {
   final UserProfile profile;
@@ -33,14 +34,18 @@ class ProfileState {
 
 class ProfileController extends StateNotifier<ProfileState> {
   final ProfileRepository _repository;
-  final String _uid = 'user_123'; // Hardcoded for demo/sprint 0
+  final String _uid;
 
-  ProfileController(this._repository)
-    : super(ProfileState(profile: UserProfile.empty())) {
-    fetchProfile();
+  ProfileController(this._repository, this._uid)
+      : super(ProfileState(profile: UserProfile.empty())) {
+    if (_uid.isNotEmpty) {
+      fetchProfile();
+    }
   }
 
   Future<void> fetchProfile() async {
+    if (_uid.isEmpty) return;
+
     state = state.copyWith(
       isLoading: true,
       errorMessage: null,
@@ -61,7 +66,6 @@ class ProfileController extends StateNotifier<ProfileState> {
     required String displayName,
     required String phone,
   }) async {
-    // Validate inputs locally first
     if (displayName.trim().isEmpty) {
       state = state.copyWith(errorMessage: 'Tên hiển thị không được để trống.');
       return;
@@ -125,9 +129,9 @@ class ProfileController extends StateNotifier<ProfileState> {
   }
 }
 
-// Riverpod Provider for ProfileController
 final profileControllerProvider =
     StateNotifierProvider<ProfileController, ProfileState>((ref) {
-      final repository = ref.watch(profileRepositoryProvider);
-      return ProfileController(repository);
-    });
+  final repository = ref.watch(profileRepositoryProvider);
+  final authUser = ref.watch(authStateProvider);
+  return ProfileController(repository, authUser.uid);
+});

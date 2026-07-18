@@ -11,6 +11,7 @@ import '../../../../core/widgets/confirm_dialog.dart';
 import '../../../../core/widgets/loading_view.dart';
 import '../../../auth/presentation/providers/auth_providers.dart';
 import '../controllers/profile_controller.dart';
+
 class ProfileView extends ConsumerStatefulWidget {
   const ProfileView({super.key});
 

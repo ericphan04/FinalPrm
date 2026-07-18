@@ -25,6 +25,9 @@ class MockCollectionReference extends Mock
 class MockDocumentReference extends Mock
     implements DocumentReference<Map<String, dynamic>> {}
 
+class MockDocumentSnapshot extends Mock
+    implements DocumentSnapshot<Map<String, dynamic>> {}
+
 void main() {
   late MockFirebaseAuth mockFirebaseAuth;
   late MockFirebaseFirestore mockFirestore;
@@ -33,6 +36,7 @@ void main() {
   late MockIdTokenResult mockIdTokenResult;
   late MockCollectionReference mockCollectionReference;
   late MockDocumentReference mockDocumentReference;
+  late MockDocumentSnapshot mockSnapshot;
   late FirebaseAuthRepository repository;
 
   setUp(() {
@@ -43,6 +47,7 @@ void main() {
     mockIdTokenResult = MockIdTokenResult();
     mockCollectionReference = MockCollectionReference();
     mockDocumentReference = MockDocumentReference();
+    mockSnapshot = MockDocumentSnapshot();
 
     repository = FirebaseAuthRepository(
       firebaseAuth: mockFirebaseAuth,
@@ -71,6 +76,11 @@ void main() {
       () => mockCollectionReference.doc(any()),
     ).thenReturn(mockDocumentReference);
     when(() => mockDocumentReference.set(any())).thenAnswer((_) async {});
+    when(
+      () => mockDocumentReference.get(),
+    ).thenAnswer((_) async => mockSnapshot);
+    when(() => mockSnapshot.exists).thenReturn(true);
+    when(() => mockSnapshot.data()).thenReturn({'role': 'user'});
   });
 
   group('FirebaseAuthRepository - signInWithEmailAndPassword', () {
@@ -141,7 +151,7 @@ void main() {
 
       expect(result, isA<Success<AppUser>>());
       verify(() => mockUser.updateDisplayName('Test User')).called(1);
-      verify(() => mockFirestore.collection('users')).called(1);
+      verify(() => mockFirestore.collection('users')).called(2);
     });
   });
 
