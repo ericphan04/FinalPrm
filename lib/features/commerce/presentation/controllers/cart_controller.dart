@@ -112,6 +112,18 @@ class CartController extends StateNotifier<CartState> {
     );
   }
 
+  Future<void> clearCart() async {
+    state = state.copyWith(items: []);
+    final result = await _repository.clearCart(_uid);
+    result.when(
+      onSuccess: (_) {},
+      onFailure: (failure) {
+        state = state.copyWith(errorMessage: failure.message);
+        _loadCart(); // revert
+      },
+    );
+  }
+
   Future<void> mergeCart() async {
     if (_uid != null) {
       state = state.copyWith(isLoading: true);

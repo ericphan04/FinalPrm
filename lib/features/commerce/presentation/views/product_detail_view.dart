@@ -52,9 +52,37 @@ class _ProductDetailViewState extends ConsumerState<ProductDetailView> {
       appBar: AppBar(
         title: Text(product.name),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.shopping_cart_outlined),
-            onPressed: () => context.push('/cart'),
+          Consumer(
+            builder: (context, ref, _) {
+              // Watch state so it rebuilds when favorites change
+              ref.watch(favoriteControllerProvider);
+              final isFavorite = ref.read(favoriteControllerProvider.notifier).isFavorite(product.id);
+              
+              return IconButton(
+                icon: Icon(
+                  isFavorite ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+                  color: isFavorite ? Colors.redAccent : null,
+                ),
+                onPressed: () {
+                  ref.read(favoriteControllerProvider.notifier).toggleFavorite(product.id);
+                },
+              );
+            },
+          ),
+          Consumer(
+            builder: (context, ref, _) {
+              final cartState = ref.watch(cartControllerProvider);
+              final itemCount = cartState.items.fold(0, (sum, item) => sum + item.quantity);
+              
+              return IconButton(
+                icon: Badge(
+                  isLabelVisible: itemCount > 0,
+                  label: Text(itemCount.toString()),
+                  child: const Icon(Icons.shopping_cart_outlined),
+                ),
+                onPressed: () => context.push('/cart'),
+              );
+            },
           ),
         ],
       ),

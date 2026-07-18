@@ -46,7 +46,7 @@ class _CheckoutViewState extends ConsumerState<CheckoutView> {
       city: _cityController.text,
     );
 
-    final success = await ref
+    final order = await ref
         .read(orderControllerProvider.notifier)
         .createCheckout(
           cartState.items,
@@ -54,28 +54,12 @@ class _CheckoutViewState extends ConsumerState<CheckoutView> {
           'COD', // Currently only COD supported
         );
 
-    if (success && mounted) {
+    if (order != null && mounted) {
       await ref
           .read(cartControllerProvider.notifier)
-          .mergeCart(); // Clear local cart effectively
+          .clearCart(); // Xóa sạch giỏ hàng sau khi đặt thành công
 
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (ctx) => ConfirmDialog(
-          title: 'Đặt hàng thành công',
-          content:
-              'Đơn hàng của bạn đã được xác nhận. Vui lòng theo dõi trong mục Đơn hàng.',
-          confirmText: 'Xem đơn hàng',
-          cancelText: 'Về trang chủ',
-          onConfirm: () {
-            context.go('/orders');
-          },
-        ),
-      ).then((_) {
-        // Fallback if dialog dismissed
-        if (context.mounted) context.go('/');
-      });
+      context.go('/order-success', extra: order);
     } else if (mounted) {
       final error = ref.read(orderControllerProvider).errorMessage;
       ScaffoldMessenger.of(

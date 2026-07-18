@@ -9,10 +9,22 @@ import '../../data/repositories/order_repository.dart';
 import '../controllers/catalog_controller.dart';
 import '../controllers/cart_controller.dart';
 import '../controllers/order_controller.dart';
+import '../controllers/favorite_controller.dart';
+import '../../data/repositories/favorite_repository.dart';
 import '../../../../features/auth/presentation/providers/auth_providers.dart';
 
 final sharedPrefsProvider = Provider<SharedPreferences>((ref) {
   throw UnimplementedError('Initialize sharedPrefsProvider in main.dart');
+});
+
+final guestUidProvider = Provider<String>((ref) {
+  final prefs = ref.watch(sharedPrefsProvider);
+  String? guestUid = prefs.getString('guest_uid');
+  if (guestUid == null) {
+    guestUid = 'guest_${DateTime.now().millisecondsSinceEpoch}';
+    prefs.setString('guest_uid', guestUid);
+  }
+  return guestUid;
 });
 
 final catalogRepositoryProvider = Provider<CatalogRepository>((ref) {
@@ -49,7 +61,8 @@ final orderControllerProvider =
     StateNotifierProvider<OrderController, OrderState>((ref) {
       final repository = ref.watch(orderRepositoryProvider);
       final authState = ref.watch(authControllerProvider);
-      final uid = authState.user.uid.isEmpty ? null : authState.user.uid;
+      final guestUid = ref.watch(guestUidProvider);
+      final uid = authState.user.uid.isEmpty ? guestUid : authState.user.uid;
       return OrderController(repository, uid);
     });
 
@@ -61,6 +74,31 @@ final cartMergeListenerProvider = Provider<void>((ref) {
       ref.read(cartRepositoryProvider).mergeGuestCart(nextUid).then((_) {
         // Refresh cart controller after merge
         ref.invalidate(cartControllerProvider);
+      });
+    }
+  });
+});
+final favoriteRepositoryProvider = Provider<FavoriteRepository>((ref) {
+  final prefs = ref.watch(sharedPrefsProvider);
+  return FavoriteRepositoryImpl(FirebaseFirestore.instance, prefs);
+});
+
+final favoriteControllerProvider = StateNotifierProvider<FavoriteController, FavoriteState>(
+  (ref) {
+    final repository = ref.watch(favoriteRepositoryProvider);
+    final authState = ref.watch(authControllerProvider);
+    final uid = authState.user.uid.isEmpty ? null : authState.user.uid;
+    return FavoriteController(repository, uid);
+  },
+);
+
+final favoriteMergeListenerProvider = Provider<void>((ref) {
+  ref.listen(authControllerProvider, (previous, next) {
+    final prevUid = previous?.user.uid;
+    final nextUid = next.user.uid;
+    if ((prevUid == null || prevUid.isEmpty) && nextUid.isNotEmpty) {
+      ref.read(favoriteRepositoryProvider).mergeGuestFavorites(nextUid).then((_) {
+        ref.invalidate(favoriteControllerProvider);
       });
     }
   });

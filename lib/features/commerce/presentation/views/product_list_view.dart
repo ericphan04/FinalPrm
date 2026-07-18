@@ -21,9 +21,20 @@ class ProductListView extends ConsumerWidget {
       appBar: AppBar(
         title: const Text('Cửa hàng'),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.shopping_cart_outlined),
-            onPressed: () => context.push('/cart'),
+          Consumer(
+            builder: (context, ref, _) {
+              final cartState = ref.watch(cartControllerProvider);
+              final itemCount = cartState.items.fold(0, (sum, item) => sum + item.quantity);
+              
+              return IconButton(
+                icon: Badge(
+                  isLabelVisible: itemCount > 0,
+                  label: Text(itemCount.toString()),
+                  child: const Icon(Icons.shopping_cart_outlined),
+                ),
+                onPressed: () => context.push('/cart'),
+              );
+            },
           ),
         ],
       ),

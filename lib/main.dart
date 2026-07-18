@@ -45,8 +45,9 @@ class MyApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // Initialize listener for cart merge on login
+    // Initialize listener for cart and favorite merge on login
     ref.watch(cartMergeListenerProvider);
+    ref.watch(favoriteMergeListenerProvider);
 
     final themeMode = ref.watch(themeModeProvider);
     final router = ref.watch(routerProvider);
