@@ -13,7 +13,13 @@ import '../../features/auth/presentation/views/register_view.dart';
 import '../../features/auth/presentation/views/forgot_password_view.dart';
 import '../../features/auth/presentation/views/mock_screens.dart';
 
-import '../../main.dart' show ShowroomScreen;
+import '../../features/commerce/presentation/views/main_screen.dart';
+
+import '../../features/commerce/presentation/views/product_list_view.dart';
+import '../../features/commerce/presentation/views/product_detail_view.dart';
+import '../../features/commerce/presentation/views/cart_view.dart';
+import '../../features/commerce/presentation/views/checkout_view.dart';
+import '../../features/commerce/presentation/views/order_list_view.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   final router = GoRouter(
@@ -28,15 +34,19 @@ final routerProvider = Provider<GoRouter>((ref) {
 
       // 1. Nếu chưa đăng nhập (Guest)
       if (isGuest) {
-        // Cho phép truy cập trang đăng nhập, đăng ký, quên mật khẩu và các trang giới thiệu công khai
+        // Cho phép truy cập trang đăng nhập, đăng ký, quên mật khẩu, trang public và commerce cơ bản
         if (isLogin ||
             isRegister ||
             isForgotPassword ||
+            state.uri.path == '/' ||
             state.uri.path == '/about' ||
-            state.uri.path == '/help') {
+            state.uri.path == '/help' ||
+            state.uri.path.startsWith('/catalog') ||
+            state.uri.path.startsWith('/product') ||
+            state.uri.path == '/cart') {
           return null;
         }
-        // Các trang khác (như profile, dashboard) yêu cầu đăng nhập
+        // Các trang khác (như checkout, orders, profile, dashboard) yêu cầu đăng nhập
         return '/login';
       }
 
@@ -62,7 +72,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       return null;
     },
     routes: [
-      GoRoute(path: '/', builder: (context, state) => const ShowroomScreen()),
+      GoRoute(path: '/', builder: (context, state) => const MainScreen()),
       GoRoute(path: '/login', builder: (context, state) => const LoginScreen()),
       GoRoute(
         path: '/register',
@@ -85,6 +95,29 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/admin/dashboard',
         builder: (context, state) => const AdminDashboardScreen(),
+      ),
+      GoRoute(
+        path: '/catalog',
+        builder: (context, state) => const ProductListView(),
+      ),
+      GoRoute(
+        path: '/product/:id',
+        builder: (context, state) {
+          final id = state.pathParameters['id']!;
+          return ProductDetailView(productId: id);
+        },
+      ),
+      GoRoute(
+        path: '/cart',
+        builder: (context, state) => const CartView(),
+      ),
+      GoRoute(
+        path: '/checkout',
+        builder: (context, state) => const CheckoutView(),
+      ),
+      GoRoute(
+        path: '/orders',
+        builder: (context, state) => const OrderListView(),
       ),
     ],
   );

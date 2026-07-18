@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../providers/auth_providers.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/theme/app_spacing.dart';
@@ -20,8 +21,10 @@ class SellerDashboardScreen extends ConsumerWidget {
           IconButton(
             icon: const Icon(Icons.logout_rounded),
             tooltip: 'Đăng xuất',
-            onPressed: () =>
-                ref.read(authControllerProvider.notifier).signOut(),
+            onPressed: () async {
+                await ref.read(authControllerProvider.notifier).signOut();
+                if (context.mounted) context.go('/');
+            },
           ),
         ],
       ),
@@ -59,8 +62,10 @@ class SellerDashboardScreen extends ConsumerWidget {
               const SizedBox(height: AppSpacing.xxl),
               AppButton(
                 text: 'Đăng xuất tài khoản',
-                onPressed: () =>
-                    ref.read(authControllerProvider.notifier).signOut(),
+                onPressed: () async {
+                    await ref.read(authControllerProvider.notifier).signOut();
+                    if (context.mounted) context.go('/');
+                },
                 variant: AppButtonVariant.outlined,
                 width: 200,
               ),
@@ -87,8 +92,10 @@ class AdminDashboardScreen extends ConsumerWidget {
           IconButton(
             icon: const Icon(Icons.logout_rounded),
             tooltip: 'Đăng xuất',
-            onPressed: () =>
-                ref.read(authControllerProvider.notifier).signOut(),
+            onPressed: () async {
+                await ref.read(authControllerProvider.notifier).signOut();
+                if (context.mounted) context.go('/');
+            },
           ),
         ],
       ),
@@ -126,8 +133,10 @@ class AdminDashboardScreen extends ConsumerWidget {
               const SizedBox(height: AppSpacing.xxl),
               AppButton(
                 text: 'Đăng xuất tài khoản',
-                onPressed: () =>
-                    ref.read(authControllerProvider.notifier).signOut(),
+                onPressed: () async {
+                    await ref.read(authControllerProvider.notifier).signOut();
+                    if (context.mounted) context.go('/');
+                },
                 variant: AppButtonVariant.outlined,
                 width: 200,
               ),

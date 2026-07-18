@@ -356,8 +356,9 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                       'Đăng xuất',
                       style: TextStyle(color: AppColors.error),
                     ),
-                    onTap: () {
-                      ref.read(authControllerProvider.notifier).signOut();
+                    onTap: () async {
+                      await ref.read(authControllerProvider.notifier).signOut();
+                      if (context.mounted) context.go('/');
                     },
                   ),
                   const Divider(height: 1),

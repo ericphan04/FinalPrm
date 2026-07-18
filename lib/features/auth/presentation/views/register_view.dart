@@ -6,6 +6,7 @@ import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_text_field.dart';
 import '../../../../core/widgets/loading_view.dart';
+import '../../domain/models/app_user_role.dart';
 import '../providers/auth_providers.dart';
 
 class RegisterScreen extends ConsumerStatefulWidget {
@@ -59,14 +60,24 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     final isDark = theme.brightness == Brightness.dark;
 
     ref.listen(authControllerProvider, (previous, next) {
-      if (next.errorMessage != null &&
-          next.errorMessage != previous?.errorMessage) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(next.errorMessage!),
-            backgroundColor: AppColors.error,
-          ),
-        );
+      if (previous?.isLoading == true && !next.isLoading) {
+        if (next.errorMessage != null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(next.errorMessage!),
+              backgroundColor: AppColors.error,
+            ),
+          );
+        } else if (next.user.role != AppUserRole.guest) {
+          context.go('/');
+        }
+      } else if (next.errorMessage != null && next.errorMessage != previous?.errorMessage) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(next.errorMessage!),
+              backgroundColor: AppColors.error,
+            ),
+          );
       }
     });
 
