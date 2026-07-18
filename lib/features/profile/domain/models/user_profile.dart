@@ -45,15 +45,30 @@ class UserProfile {
   }
 
   factory UserProfile.fromMap(Map<String, dynamic> map) {
+    DateTime? parsedDate;
+    final rawDate = map['updatedAt'];
+    if (rawDate != null) {
+      if (rawDate is String) {
+        parsedDate = DateTime.tryParse(rawDate);
+      } else if (rawDate is DateTime) {
+        parsedDate = rawDate;
+      } else {
+        // Handle Firestore Timestamp or dynamic types
+        try {
+          parsedDate = (rawDate as dynamic).toDate();
+        } catch (_) {
+          parsedDate = DateTime.tryParse(rawDate.toString());
+        }
+      }
+    }
+
     return UserProfile(
       uid: map['uid'] ?? '',
       email: map['email'] ?? '',
       displayName: map['displayName'] ?? '',
       phone: map['phone'] ?? '',
       avatarUrl: map['avatarUrl'] ?? '',
-      updatedAt: map['updatedAt'] != null
-          ? DateTime.tryParse(map['updatedAt'])
-          : null,
+      updatedAt: parsedDate,
     );
   }
 
