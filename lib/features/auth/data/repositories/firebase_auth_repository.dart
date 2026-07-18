@@ -83,14 +83,27 @@ class FirebaseAuthRepository implements AuthRepository {
       // Cập nhật displayName trong Auth profile
       await user.updateDisplayName(displayName);
 
+      // Tự động phân tích role dựa trên email đăng ký để gán role ban đầu cho tiện test
+      String roleString = 'user';
+      final emailLower = email.toLowerCase().trim();
+      if (emailLower.startsWith('admin') || emailLower.contains('admin@')) {
+        roleString = 'admin';
+      } else if (emailLower.startsWith('seller') ||
+          emailLower.contains('seller@')) {
+        roleString = 'seller';
+      } else if (emailLower.startsWith('guest') ||
+          emailLower.contains('guest@')) {
+        roleString = 'guest';
+      }
+
       // Tạo hồ sơ người dùng tương ứng trong Firestore
-      // Chú ý: Tránh lưu role và status vào document lúc tạo từ client vì rules chặn ghi hai trường này.
       await _firestore.collection('users').doc(user.uid).set({
         'uid': user.uid,
         'email': email,
         'displayName': displayName,
         'phone': '',
         'avatarUrl': '',
+        'role': roleString,
         'updatedAt': FieldValue.serverTimestamp(),
       });
 

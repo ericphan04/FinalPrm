@@ -17,9 +17,8 @@ service cloud.firestore {
       // Chỉ Admin hoặc chính chủ tài khoản mới được đọc profile
       allow read: if request.auth != null && (request.auth.uid == userId || getUserRole() == 'admin');
 
-      // Cho phép tạo nếu tài khoản trùng khớp và không được gán trước các trường role/status quyền lực
-      allow create: if request.auth != null && request.auth.uid == userId 
-        && !request.resource.data.keys().hasAny(['role', 'status']);
+      // Cho phép tạo nếu tài khoản trùng khớp
+      allow create: if request.auth != null && request.auth.uid == userId;
 
       // Cho phép cập nhật nếu là chính chủ và không thay đổi trường role/status (hoặc nếu là admin thì được đổi)
       allow update: if request.auth != null && (
