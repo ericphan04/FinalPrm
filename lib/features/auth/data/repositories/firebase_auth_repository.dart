@@ -167,19 +167,24 @@ class FirebaseAuthRepository implements AuthRepository {
     }
   }
 
-  /// Map Firebase User thành AppUser nội bộ kèm theo trích xuất Custom Claims
+  /// Map Firebase User thành AppUser nội bộ kèm theo lấy thông tin role từ Firestore
   Future<AppUser> _mapFirebaseUserToAppUser(
     firebase_auth.User firebaseUser,
   ) async {
     try {
-      // Force refresh nhẹ (không bắt buộc) để đọc claims gần nhất
-      final idTokenResult = await firebaseUser.getIdTokenResult();
-      final claims = idTokenResult.claims;
-
+      // Đọc thông tin role từ document Firestore của người dùng
+      final userDoc = await _firestore
+          .collection('users')
+          .doc(firebaseUser.uid)
+          .get();
       AppUserRole role = AppUserRole.user;
-      if (claims != null && claims.containsKey('role')) {
-        final roleClaim = claims['role'] as String?;
-        role = _parseRole(roleClaim);
+
+      if (userDoc.exists) {
+        final data = userDoc.data();
+        if (data != null && data.containsKey('role')) {
+          final roleClaim = data['role'] as String?;
+          role = _parseRole(roleClaim);
+        }
       }
 
       return AppUser(
@@ -209,6 +214,8 @@ class FirebaseAuthRepository implements AuthRepository {
         return AppUserRole.admin;
       case 'seller':
         return AppUserRole.seller;
+      case 'guest':
+        return AppUserRole.guest;
       case 'user':
       default:
         return AppUserRole.user;

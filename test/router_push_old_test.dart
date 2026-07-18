@@ -31,10 +31,10 @@ void main() {
 
     await tester.pumpWidget(MaterialApp.router(routerConfig: router));
     await tester.pumpAndSettle();
-    
+
     await tester.tap(find.text('Push'));
     await tester.pumpAndSettle();
-    
+
     expect(capturedMatchedLocation, '/register');
   });
 }
