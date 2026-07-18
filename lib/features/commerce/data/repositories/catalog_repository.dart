@@ -66,30 +66,35 @@ class CatalogRepositoryImpl implements CatalogRepository {
         query = query.where('categoryId', isEqualTo: categoryId);
       }
 
-      // Simple text search mock (Firestore doesn't support full-text search directly well,
-      // usually requires Algolia, but we do basic filtering or ignore)
-      // Here we just limit and sort
-      query = query.orderBy('createdAt', descending: true).limit(limit);
-
-      if (startAfter != null) {
-        query = query.startAfterDocument(startAfter);
-      }
-
       final snapshot = await query.get();
-      final products = snapshot.docs.map((doc) {
+      final List<Product> products = [];
+      
+      for (final doc in snapshot.docs) {
         final data = doc.data() as Map<String, dynamic>;
         data['id'] = doc.id;
-        // Timestamp to string conversion handled by JsonSerializable if needed,
-        // but let's assume default mapping works for createdAt if it's stored as ISO string or we parse it
         if (data['createdAt'] is Timestamp) {
           data['createdAt'] = (data['createdAt'] as Timestamp)
               .toDate()
               .toIso8601String();
         }
-        return Product.fromJson(data);
-      }).toList();
+        try {
+          final prod = Product.fromJson(data);
+          // Chỉ hiển thị các sản phẩm đã được duyệt/đăng bán (published) ra showroom công cộng
+          if (prod.status == ProductStatus.published) {
+            products.add(prod);
+          }
+        } catch (e) {
+          // Bỏ qua nếu dữ liệu sản phẩm cũ bị lỗi format
+        }
+      }
 
-      return Success(products);
+      // Sắp xếp theo ngày tạo giảm dần (mới nhất lên đầu) trong bộ nhớ
+      products.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+
+      // Phân trang giới hạn số lượng trong bộ nhớ
+      final paginatedProducts = products.take(limit).toList();
+
+      return Success(paginatedProducts);
     } catch (e) {
       return Failure(AppFailure.serverError('Lỗi tải danh sách sản phẩm: $e'));
     }
