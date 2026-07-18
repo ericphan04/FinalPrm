@@ -14,4 +14,16 @@ class AppFailure {
   @override
   String toString() =>
       'AppFailure(code: $code, message: $message, originalError: $originalError)';
+
+  factory AppFailure.serverError(String message) {
+    return AppFailure(code: 'server-error', message: message);
+  }
+
+  factory AppFailure.notFound(String message) {
+    return AppFailure(code: 'not-found', message: message);
+  }
+
+  factory AppFailure.conflict(String message) {
+    return AppFailure(code: 'conflict', message: message);
+  }
 }

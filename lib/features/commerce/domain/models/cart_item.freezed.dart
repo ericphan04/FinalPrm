@@ -1,0 +1,305 @@
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// coverage:ignore-file
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
+// ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
+
+part of 'cart_item.dart';
+
+// **************************************************************************
+// FreezedGenerator
+// **************************************************************************
+
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// dart format off
+T _$identity<T>(T value) => value;
+
+/// @nodoc
+mixin _$CartItem {
+
+ String get id; String get productId; String get variantId; String get productName; String get imageUrl; String get size; String get color; double get price; int get quantity; DateTime get addedAt;
+/// Create a copy of CartItem
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$CartItemCopyWith<CartItem> get copyWith => _$CartItemCopyWithImpl<CartItem>(this as CartItem, _$identity);
+
+  /// Serializes this CartItem to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is CartItem&&(identical(other.id, id) || other.id == id)&&(identical(other.productId, productId) || other.productId == productId)&&(identical(other.variantId, variantId) || other.variantId == variantId)&&(identical(other.productName, productName) || other.productName == productName)&&(identical(other.imageUrl, imageUrl) || other.imageUrl == imageUrl)&&(identical(other.size, size) || other.size == size)&&(identical(other.color, color) || other.color == color)&&(identical(other.price, price) || other.price == price)&&(identical(other.quantity, quantity) || other.quantity == quantity)&&(identical(other.addedAt, addedAt) || other.addedAt == addedAt));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,id,productId,variantId,productName,imageUrl,size,color,price,quantity,addedAt);
+
+@override
+String toString() {
+  return 'CartItem(id: $id, productId: $productId, variantId: $variantId, productName: $productName, imageUrl: $imageUrl, size: $size, color: $color, price: $price, quantity: $quantity, addedAt: $addedAt)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $CartItemCopyWith<$Res>  {
+  factory $CartItemCopyWith(CartItem value, $Res Function(CartItem) _then) = _$CartItemCopyWithImpl;
+@useResult
+$Res call({
+ String id, String productId, String variantId, String productName, String imageUrl, String size, String color, double price, int quantity, DateTime addedAt
+});
+
+
+
+
+}
+/// @nodoc
+class _$CartItemCopyWithImpl<$Res>
+    implements $CartItemCopyWith<$Res> {
+  _$CartItemCopyWithImpl(this._self, this._then);
+
+  final CartItem _self;
+  final $Res Function(CartItem) _then;
+
+/// Create a copy of CartItem
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? productId = null,Object? variantId = null,Object? productName = null,Object? imageUrl = null,Object? size = null,Object? color = null,Object? price = null,Object? quantity = null,Object? addedAt = null,}) {
+  return _then(CartItem(
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String,productId: null == productId ? _self.productId : productId // ignore: cast_nullable_to_non_nullable
+as String,variantId: null == variantId ? _self.variantId : variantId // ignore: cast_nullable_to_non_nullable
+as String,productName: null == productName ? _self.productName : productName // ignore: cast_nullable_to_non_nullable
+as String,imageUrl: null == imageUrl ? _self.imageUrl : imageUrl // ignore: cast_nullable_to_non_nullable
+as String,size: null == size ? _self.size : size // ignore: cast_nullable_to_non_nullable
+as String,color: null == color ? _self.color : color // ignore: cast_nullable_to_non_nullable
+as String,price: null == price ? _self.price : price // ignore: cast_nullable_to_non_nullable
+as double,quantity: null == quantity ? _self.quantity : quantity // ignore: cast_nullable_to_non_nullable
+as int,addedAt: null == addedAt ? _self.addedAt : addedAt // ignore: cast_nullable_to_non_nullable
+as DateTime,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [CartItem].
+extension CartItemPatterns on CartItem {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _CartItem value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _CartItem() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _CartItem value)  $default,){
+final _that = this;
+switch (_that) {
+case _CartItem():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _CartItem value)?  $default,){
+final _that = this;
+switch (_that) {
+case _CartItem() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String productId,  String variantId,  String productName,  String imageUrl,  String size,  String color,  double price,  int quantity,  DateTime addedAt)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _CartItem() when $default != null:
+return $default(_that.id,_that.productId,_that.variantId,_that.productName,_that.imageUrl,_that.size,_that.color,_that.price,_that.quantity,_that.addedAt);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String productId,  String variantId,  String productName,  String imageUrl,  String size,  String color,  double price,  int quantity,  DateTime addedAt)  $default,) {final _that = this;
+switch (_that) {
+case _CartItem():
+return $default(_that.id,_that.productId,_that.variantId,_that.productName,_that.imageUrl,_that.size,_that.color,_that.price,_that.quantity,_that.addedAt);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String productId,  String variantId,  String productName,  String imageUrl,  String size,  String color,  double price,  int quantity,  DateTime addedAt)?  $default,) {final _that = this;
+switch (_that) {
+case _CartItem() when $default != null:
+return $default(_that.id,_that.productId,_that.variantId,_that.productName,_that.imageUrl,_that.size,_that.color,_that.price,_that.quantity,_that.addedAt);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class _CartItem implements CartItem {
+  const _CartItem({required this.id, required this.productId, required this.variantId, required this.productName, required this.imageUrl, required this.size, required this.color, required this.price, this.quantity = 1, required this.addedAt});
+  factory _CartItem.fromJson(Map<String, dynamic> json) => _$CartItemFromJson(json);
+
+@override final  String id;
+@override final  String productId;
+@override final  String variantId;
+@override final  String productName;
+@override final  String imageUrl;
+@override final  String size;
+@override final  String color;
+@override final  double price;
+@override@JsonKey() final  int quantity;
+@override final  DateTime addedAt;
+
+/// Create a copy of CartItem
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$CartItemCopyWith<_CartItem> get copyWith => __$CartItemCopyWithImpl<_CartItem>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$CartItemToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CartItem&&(identical(other.id, id) || other.id == id)&&(identical(other.productId, productId) || other.productId == productId)&&(identical(other.variantId, variantId) || other.variantId == variantId)&&(identical(other.productName, productName) || other.productName == productName)&&(identical(other.imageUrl, imageUrl) || other.imageUrl == imageUrl)&&(identical(other.size, size) || other.size == size)&&(identical(other.color, color) || other.color == color)&&(identical(other.price, price) || other.price == price)&&(identical(other.quantity, quantity) || other.quantity == quantity)&&(identical(other.addedAt, addedAt) || other.addedAt == addedAt));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,id,productId,variantId,productName,imageUrl,size,color,price,quantity,addedAt);
+
+@override
+String toString() {
+  return 'CartItem(id: $id, productId: $productId, variantId: $variantId, productName: $productName, imageUrl: $imageUrl, size: $size, color: $color, price: $price, quantity: $quantity, addedAt: $addedAt)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$CartItemCopyWith<$Res> implements $CartItemCopyWith<$Res> {
+  factory _$CartItemCopyWith(_CartItem value, $Res Function(_CartItem) _then) = __$CartItemCopyWithImpl;
+@override @useResult
+$Res call({
+ String id, String productId, String variantId, String productName, String imageUrl, String size, String color, double price, int quantity, DateTime addedAt
+});
+
+
+
+
+}
+/// @nodoc
+class __$CartItemCopyWithImpl<$Res>
+    implements _$CartItemCopyWith<$Res> {
+  __$CartItemCopyWithImpl(this._self, this._then);
+
+  final _CartItem _self;
+  final $Res Function(_CartItem) _then;
+
+/// Create a copy of CartItem
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? productId = null,Object? variantId = null,Object? productName = null,Object? imageUrl = null,Object? size = null,Object? color = null,Object? price = null,Object? quantity = null,Object? addedAt = null,}) {
+  return _then(_CartItem(
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String,productId: null == productId ? _self.productId : productId // ignore: cast_nullable_to_non_nullable
+as String,variantId: null == variantId ? _self.variantId : variantId // ignore: cast_nullable_to_non_nullable
+as String,productName: null == productName ? _self.productName : productName // ignore: cast_nullable_to_non_nullable
+as String,imageUrl: null == imageUrl ? _self.imageUrl : imageUrl // ignore: cast_nullable_to_non_nullable
+as String,size: null == size ? _self.size : size // ignore: cast_nullable_to_non_nullable
+as String,color: null == color ? _self.color : color // ignore: cast_nullable_to_non_nullable
+as String,price: null == price ? _self.price : price // ignore: cast_nullable_to_non_nullable
+as double,quantity: null == quantity ? _self.quantity : quantity // ignore: cast_nullable_to_non_nullable
+as int,addedAt: null == addedAt ? _self.addedAt : addedAt // ignore: cast_nullable_to_non_nullable
+as DateTime,
+  ));
+}
+
+
+}
+
+// dart format on
