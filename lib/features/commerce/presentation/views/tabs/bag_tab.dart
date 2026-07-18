@@ -34,7 +34,10 @@ class BagTab extends ConsumerWidget {
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                border: Border.all(color: isDark ? Colors.white : Colors.black, width: 2),
+                border: Border.all(
+                  color: isDark ? Colors.white : Colors.black,
+                  width: 2,
+                ),
               ),
               child: Icon(
                 Icons.shopping_bag_outlined,
@@ -62,10 +65,16 @@ class BagTab extends ConsumerWidget {
             ),
             const Spacer(),
             Padding(
-              padding: const EdgeInsets.fromLTRB(24, 24, 24, 120), // 120 padding bottom để tránh floating nav bar
+              padding: const EdgeInsets.fromLTRB(
+                24,
+                24,
+                24,
+                120,
+              ), // 120 padding bottom để tránh floating nav bar
               child: ElevatedButton(
                 onPressed: () {
-                  ref.read(mainTabIndexProvider.notifier).state = 1; // Go to Shop Tab
+                  ref.read(mainTabIndexProvider.notifier).state =
+                      1; // Go to Shop Tab
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: isDark ? Colors.white : Colors.black,
@@ -75,7 +84,10 @@ class BagTab extends ConsumerWidget {
                     borderRadius: BorderRadius.circular(30),
                   ),
                 ),
-                child: const Text('Shop Now', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                child: const Text(
+                  'Shop Now',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
               ),
             ),
           ],

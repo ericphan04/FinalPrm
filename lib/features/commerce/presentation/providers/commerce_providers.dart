@@ -25,26 +25,33 @@ final cartRepositoryProvider = Provider<CartRepository>((ref) {
 });
 
 final orderRepositoryProvider = Provider<OrderRepository>((ref) {
-  return OrderRepositoryImpl(FirebaseFunctions.instance, FirebaseFirestore.instance);
+  return OrderRepositoryImpl(
+    FirebaseFunctions.instance,
+    FirebaseFirestore.instance,
+  );
 });
 
-final catalogControllerProvider = StateNotifierProvider<CatalogController, CatalogState>((ref) {
-  return CatalogController(ref.watch(catalogRepositoryProvider));
-});
+final catalogControllerProvider =
+    StateNotifierProvider<CatalogController, CatalogState>((ref) {
+      return CatalogController(ref.watch(catalogRepositoryProvider));
+    });
 
-final cartControllerProvider = StateNotifierProvider<CartController, CartState>((ref) {
-  final repository = ref.watch(cartRepositoryProvider);
-  final authState = ref.watch(authControllerProvider);
-  final uid = authState.user.uid.isEmpty ? null : authState.user.uid;
-  return CartController(repository, uid);
-});
+final cartControllerProvider = StateNotifierProvider<CartController, CartState>(
+  (ref) {
+    final repository = ref.watch(cartRepositoryProvider);
+    final authState = ref.watch(authControllerProvider);
+    final uid = authState.user.uid.isEmpty ? null : authState.user.uid;
+    return CartController(repository, uid);
+  },
+);
 
-final orderControllerProvider = StateNotifierProvider<OrderController, OrderState>((ref) {
-  final repository = ref.watch(orderRepositoryProvider);
-  final authState = ref.watch(authControllerProvider);
-  final uid = authState.user.uid.isEmpty ? null : authState.user.uid;
-  return OrderController(repository, uid);
-});
+final orderControllerProvider =
+    StateNotifierProvider<OrderController, OrderState>((ref) {
+      final repository = ref.watch(orderRepositoryProvider);
+      final authState = ref.watch(authControllerProvider);
+      final uid = authState.user.uid.isEmpty ? null : authState.user.uid;
+      return OrderController(repository, uid);
+    });
 
 final cartMergeListenerProvider = Provider<void>((ref) {
   ref.listen(authControllerProvider, (previous, next) {

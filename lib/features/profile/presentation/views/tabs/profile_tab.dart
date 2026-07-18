@@ -26,12 +26,18 @@ class ProfileTab extends ConsumerWidget {
 
     if (user.role == AppUserRole.guest) {
       return Scaffold(
-        backgroundColor: isDark ? AppColors.backgroundDark : AppColors.backgroundLight,
+        backgroundColor: isDark
+            ? AppColors.backgroundDark
+            : AppColors.backgroundLight,
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.person_outline_rounded, size: 80, color: isDark ? Colors.white54 : Colors.black54),
+              Icon(
+                Icons.person_outline_rounded,
+                size: 80,
+                color: isDark ? Colors.white54 : Colors.black54,
+              ),
               const SizedBox(height: AppSpacing.lg),
               Text(
                 'Become a Member',
@@ -56,10 +62,18 @@ class ProfileTab extends ConsumerWidget {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: isDark ? Colors.white : Colors.black,
                   foregroundColor: isDark ? Colors.black : Colors.white,
-                  padding: const EdgeInsets.symmetric(horizontal: 48, vertical: 16),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 48,
+                    vertical: 16,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
                 ),
-                child: const Text('Join Us / Sign In', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                child: const Text(
+                  'Join Us / Sign In',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
               ),
             ],
           ),
@@ -68,7 +82,9 @@ class ProfileTab extends ConsumerWidget {
     }
 
     return Scaffold(
-      backgroundColor: isDark ? AppColors.backgroundDark : AppColors.backgroundLight,
+      backgroundColor: isDark
+          ? AppColors.backgroundDark
+          : AppColors.backgroundLight,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
@@ -78,44 +94,128 @@ class ProfileTab extends ConsumerWidget {
               // Avatar
               CircleAvatar(
                 radius: 50,
-                backgroundColor: isDark ? AppColors.surfaceDark : Colors.grey[200],
+                backgroundColor: isDark
+                    ? AppColors.surfaceDark
+                    : Colors.grey[200],
                 backgroundImage: user.photoUrl.isNotEmpty
                     ? NetworkImage(user.photoUrl)
                     : null,
                 child: user.photoUrl.isEmpty
                     ? Text(
                         _getInitials(user.displayName),
-                        style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Colors.grey),
+                        style: const TextStyle(
+                          fontSize: 32,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.grey,
+                        ),
                       )
                     : null,
               ),
               const SizedBox(height: AppSpacing.md),
               // Name
               Text(
-                user.displayName.isNotEmpty ? user.displayName : 'Người dùng mới',
-                style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                user.displayName.isNotEmpty
+                    ? user.displayName
+                    : 'Người dùng mới',
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               const SizedBox(height: AppSpacing.md),
               // Edit Profile Button
               OutlinedButton(
-                onPressed: () => context.push('/profile'), // Dẫn đến màn hình Edit Profile cũ
+                onPressed: () => context.push(
+                  '/profile',
+                ), // Dẫn đến màn hình Edit Profile cũ
                 style: OutlinedButton.styleFrom(
                   foregroundColor: isDark ? Colors.white : Colors.black,
-                  side: BorderSide(color: isDark ? Colors.white38 : Colors.black26),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  side: BorderSide(
+                    color: isDark ? Colors.white38 : Colors.black26,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 12,
+                  ),
                 ),
-                child: const Text('Edit Profile', style: TextStyle(fontWeight: FontWeight.bold)),
+                child: const Text(
+                  'Edit Profile',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
               ),
               const SizedBox(height: AppSpacing.xxl),
               // Action Row
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  _buildActionItem(context, Icons.shopping_bag_outlined, 'Orders', () => context.push('/orders')),
-                  _buildActionItem(context, Icons.favorite_border_rounded, 'Favorites', () {}),
-                  _buildActionItem(context, Icons.settings_outlined, 'Settings', () {}),
+                  _buildActionItem(
+                    context,
+                    Icons.shopping_bag_outlined,
+                    'Orders',
+                    () => context.push('/orders'),
+                  ),
+                  _buildActionItem(
+                    context,
+                    Icons.favorite_border_rounded,
+                    'Favorites',
+                    () {},
+                  ),
+                  _buildActionItem(
+                    context,
+                    Icons.settings_outlined,
+                    'Settings',
+                    () {},
+                  ),
                 ],
+              ),
+              const SizedBox(height: AppSpacing.xl),
+              Card(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Column(
+                  children: [
+                    if (user.role == AppUserRole.seller ||
+                        user.role == AppUserRole.admin)
+                      ListTile(
+                        leading: const Icon(
+                          Icons.storefront_rounded,
+                          color: AppColors.primary,
+                        ),
+                        title: const Text(
+                          'Kênh Người Bán (Seller Center)',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        subtitle: const Text(
+                          'Quản lý sản phẩm, đơn hàng và thống kê shop',
+                        ),
+                        trailing: const Icon(
+                          Icons.arrow_forward_ios_rounded,
+                          size: 14,
+                        ),
+                        onTap: () => context.push('/seller/dashboard'),
+                      )
+                    else if (user.role == AppUserRole.user)
+                      ListTile(
+                        leading: const Icon(
+                          Icons.storefront_rounded,
+                          color: AppColors.primary,
+                        ),
+                        title: const Text('Đăng ký bán hàng'),
+                        subtitle: const Text(
+                          'Mở cửa hàng trực tuyến của bạn để kinh doanh giày dép',
+                        ),
+                        trailing: const Icon(
+                          Icons.arrow_forward_ios_rounded,
+                          size: 14,
+                        ),
+                        onTap: () => context.push('/seller-apply'),
+                      ),
+                  ],
+                ),
               ),
               const Spacer(),
               // Logout Button
@@ -125,19 +225,30 @@ class ProfileTab extends ConsumerWidget {
                   onPressed: () {
                     ref.read(authControllerProvider.notifier).signOut();
                   },
-                  icon: const Icon(Icons.logout_rounded, color: Colors.redAccent),
+                  icon: const Icon(
+                    Icons.logout_rounded,
+                    color: Colors.redAccent,
+                  ),
                   label: const Text(
                     'Log Out',
-                    style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold, fontSize: 16),
+                    style: TextStyle(
+                      color: Colors.redAccent,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
                   ),
                   style: OutlinedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     side: const BorderSide(color: Colors.redAccent),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
                   ),
                 ),
               ),
-              const SizedBox(height: 120), // Khoảng trống để không bị đè bởi Floating Navigation Bar
+              const SizedBox(
+                height: 120,
+              ), // Khoảng trống để không bị đè bởi Floating Navigation Bar
             ],
           ),
         ),
@@ -145,7 +256,12 @@ class ProfileTab extends ConsumerWidget {
     );
   }
 
-  Widget _buildActionItem(BuildContext context, IconData icon, String label, VoidCallback onTap) {
+  Widget _buildActionItem(
+    BuildContext context,
+    IconData icon,
+    String label,
+    VoidCallback onTap,
+  ) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
@@ -156,7 +272,11 @@ class ProfileTab extends ConsumerWidget {
         children: [
           Container(
             padding: const EdgeInsets.all(AppSpacing.md),
-            child: Icon(icon, size: 28, color: isDark ? Colors.white : Colors.black),
+            child: Icon(
+              icon,
+              size: 28,
+              color: isDark ? Colors.white : Colors.black,
+            ),
           ),
           Text(
             label,

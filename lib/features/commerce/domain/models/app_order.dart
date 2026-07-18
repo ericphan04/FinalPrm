@@ -19,7 +19,8 @@ abstract class AppOrder with _$AppOrder {
     DateTime? updatedAt,
   }) = _AppOrder;
 
-  factory AppOrder.fromJson(Map<String, dynamic> json) => _$AppOrderFromJson(json);
+  factory AppOrder.fromJson(Map<String, dynamic> json) =>
+      _$AppOrderFromJson(json);
 }
 
 @freezed
@@ -35,7 +36,8 @@ abstract class OrderItem with _$OrderItem {
     required String imageUrl,
   }) = _OrderItem;
 
-  factory OrderItem.fromJson(Map<String, dynamic> json) => _$OrderItemFromJson(json);
+  factory OrderItem.fromJson(Map<String, dynamic> json) =>
+      _$OrderItemFromJson(json);
 }
 
 @freezed
@@ -47,5 +49,6 @@ abstract class ShippingAddress with _$ShippingAddress {
     required String city,
   }) = _ShippingAddress;
 
-  factory ShippingAddress.fromJson(Map<String, dynamic> json) => _$ShippingAddressFromJson(json);
+  factory ShippingAddress.fromJson(Map<String, dynamic> json) =>
+      _$ShippingAddressFromJson(json);
 }

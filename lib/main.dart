@@ -34,9 +34,7 @@ void main() async {
   final prefs = await SharedPreferences.getInstance();
   runApp(
     ProviderScope(
-      overrides: [
-        sharedPrefsProvider.overrideWithValue(prefs),
-      ],
+      overrides: [sharedPrefsProvider.overrideWithValue(prefs)],
       child: const MyApp(),
     ),
   );
@@ -49,7 +47,7 @@ class MyApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     // Initialize listener for cart merge on login
     ref.watch(cartMergeListenerProvider);
-    
+
     final themeMode = ref.watch(themeModeProvider);
     final router = ref.watch(routerProvider);
 
@@ -74,7 +72,9 @@ class ShowroomScreen extends ConsumerWidget {
     final catalogState = ref.watch(catalogControllerProvider);
 
     return Scaffold(
-      backgroundColor: isDark ? AppColors.backgroundDark : AppColors.backgroundLight,
+      backgroundColor: isDark
+          ? AppColors.backgroundDark
+          : AppColors.backgroundLight,
       body: CustomScrollView(
         slivers: [
           // Premium Glassmorphic App Bar
@@ -82,19 +82,22 @@ class ShowroomScreen extends ConsumerWidget {
             expandedHeight: 60.0,
             floating: true,
             pinned: true,
-            backgroundColor: (isDark ? AppColors.surfaceDark : Colors.white).withOpacity(0.85),
+            backgroundColor: (isDark ? AppColors.surfaceDark : Colors.white)
+                .withOpacity(0.85),
             elevation: 0,
             flexibleSpace: ClipRect(
               child: BackdropFilter(
                 filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                child: const FlexibleSpaceBar(
-                  titlePadding: EdgeInsets.zero,
-                ),
+                child: const FlexibleSpaceBar(titlePadding: EdgeInsets.zero),
               ),
             ),
             title: Row(
               children: [
-                const Icon(Icons.sports_volleyball_rounded, color: AppColors.primary, size: 28),
+                const Icon(
+                  Icons.sports_volleyball_rounded,
+                  color: AppColors.primary,
+                  size: 28,
+                ),
                 const SizedBox(width: AppSpacing.sm),
                 Flexible(
                   child: Text(
@@ -118,9 +121,13 @@ class ShowroomScreen extends ConsumerWidget {
                 onPressed: () => context.push('/cart'),
               ),
               IconButton(
-                icon: Icon(isDark ? Icons.light_mode_rounded : Icons.dark_mode_rounded),
+                icon: Icon(
+                  isDark ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
+                ),
                 onPressed: () {
-                  ref.read(themeModeProvider.notifier).state = isDark ? ThemeMode.light : ThemeMode.dark;
+                  ref.read(themeModeProvider.notifier).state = isDark
+                      ? ThemeMode.light
+                      : ThemeMode.dark;
                 },
               ),
               IconButton(
@@ -132,29 +139,38 @@ class ShowroomScreen extends ConsumerWidget {
           ),
 
           // Hero Banner Section
-          SliverToBoxAdapter(
-            child: _buildHeroBanner(context),
-          ),
+          SliverToBoxAdapter(child: _buildHeroBanner(context)),
 
           // Categories Section
-          SliverToBoxAdapter(
-            child: _buildCategories(context, isDark),
-          ),
+          SliverToBoxAdapter(child: _buildCategories(context, isDark)),
 
           // Section Title: Popular Products
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(AppSpacing.lg, AppSpacing.lg, AppSpacing.lg, AppSpacing.md),
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.lg,
+                AppSpacing.lg,
+                AppSpacing.lg,
+                AppSpacing.md,
+              ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
                     'Sản phẩm nổi bật',
-                    style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+                    style: theme.textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   TextButton(
                     onPressed: () => context.push('/catalog'),
-                    child: const Text('Xem tất cả', style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold)),
+                    child: const Text(
+                      'Xem tất cả',
+                      style: TextStyle(
+                        color: AppColors.primary,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -178,17 +194,21 @@ class ShowroomScreen extends ConsumerWidget {
                 ),
               ),
             )
-          else if (catalogState.errorMessage != null && catalogState.products.isEmpty)
+          else if (catalogState.errorMessage != null &&
+              catalogState.products.isEmpty)
             SliverToBoxAdapter(
               child: ErrorView(
-                onRetry: () => ref.read(catalogControllerProvider.notifier).filterByCategory(catalogState.selectedCategoryId),
+                onRetry: () => ref
+                    .read(catalogControllerProvider.notifier)
+                    .filterByCategory(catalogState.selectedCategoryId),
               ),
             )
           else if (catalogState.products.isEmpty)
             const SliverToBoxAdapter(
               child: EmptyView(
                 title: 'Chưa có sản phẩm nào',
-                description: 'Cửa hàng đang cập nhật thêm sản phẩm. Vui lòng quay lại sau.',
+                description:
+                    'Cửa hàng đang cập nhật thêm sản phẩm. Vui lòng quay lại sau.',
                 icon: Icons.inventory_2_outlined,
               ),
             )
@@ -202,16 +222,13 @@ class ShowroomScreen extends ConsumerWidget {
                   mainAxisSpacing: AppSpacing.md,
                   childAspectRatio: 0.65,
                 ),
-                delegate: SliverChildBuilderDelegate(
-                  (context, index) {
-                    final product = catalogState.products[index];
-                    return ProductCard(
-                      product: product,
-                      onTap: () => context.push('/product/${product.id}'),
-                    );
-                  },
-                  childCount: catalogState.products.length,
-                ),
+                delegate: SliverChildBuilderDelegate((context, index) {
+                  final product = catalogState.products[index];
+                  return ProductCard(
+                    product: product,
+                    onTap: () => context.push('/product/${product.id}'),
+                  );
+                }, childCount: catalogState.products.length),
               ),
             ),
 
@@ -228,10 +245,16 @@ class ShowroomScreen extends ConsumerWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(AppSpacing.radiusXl),
         boxShadow: const [
-          BoxShadow(color: AppColors.shadowColor, blurRadius: 20, offset: Offset(0, 10))
+          BoxShadow(
+            color: AppColors.shadowColor,
+            blurRadius: 20,
+            offset: Offset(0, 10),
+          ),
         ],
         image: const DecorationImage(
-          image: NetworkImage('https://images.unsplash.com/photo-1552346154-21d32810baa3?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'),
+          image: NetworkImage(
+            'https://images.unsplash.com/photo-1552346154-21d32810baa3?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+          ),
           fit: BoxFit.cover,
         ),
       ),
@@ -257,14 +280,22 @@ class ShowroomScreen extends ConsumerWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: AppColors.primary,
                     borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
                   ),
                   child: const Text(
                     'NEW COLLECTION',
-                    style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1),
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1,
+                    ),
                   ),
                 ),
                 const SizedBox(height: AppSpacing.sm),
@@ -284,9 +315,16 @@ class ShowroomScreen extends ConsumerWidget {
                     backgroundColor: Colors.white,
                     foregroundColor: Colors.black,
                     elevation: 0,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSpacing.radiusCircular)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(
+                        AppSpacing.radiusCircular,
+                      ),
+                    ),
                   ),
-                  child: const Text('Mua ngay', style: TextStyle(fontWeight: FontWeight.bold)),
+                  child: const Text(
+                    'Mua ngay',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
                 ),
               ],
             ),
@@ -312,7 +350,9 @@ class ShowroomScreen extends ConsumerWidget {
           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
           child: Text(
             'Danh mục',
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+            style: Theme.of(
+              context,
+            ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
           ),
         ),
         const SizedBox(height: AppSpacing.md),
@@ -333,14 +373,26 @@ class ShowroomScreen extends ConsumerWidget {
                     decoration: BoxDecoration(
                       color: isDark ? AppColors.surfaceDark : Colors.white,
                       shape: BoxShape.circle,
-                      boxShadow: const [BoxShadow(color: AppColors.shadowColor, blurRadius: 10, offset: Offset(0, 4))],
+                      boxShadow: const [
+                        BoxShadow(
+                          color: AppColors.shadowColor,
+                          blurRadius: 10,
+                          offset: Offset(0, 4),
+                        ),
+                      ],
                     ),
-                    child: Icon(cat['icon'] as IconData, size: 28, color: AppColors.primary),
+                    child: Icon(
+                      cat['icon'] as IconData,
+                      size: 28,
+                      color: AppColors.primary,
+                    ),
                   ),
                   const SizedBox(height: AppSpacing.sm),
                   Text(
                     cat['name'] as String,
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w600),
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ],
               );

@@ -48,21 +48,26 @@ class ProductListView extends ConsumerWidget {
 
     if (catalogState.errorMessage != null && catalogState.products.isEmpty) {
       return ErrorView(
-        onRetry: () => ref.read(catalogControllerProvider.notifier).filterByCategory(catalogState.selectedCategoryId),
+        onRetry: () => ref
+            .read(catalogControllerProvider.notifier)
+            .filterByCategory(catalogState.selectedCategoryId),
       );
     }
 
     if (catalogState.products.isEmpty) {
       return const EmptyView(
         title: 'Chưa có sản phẩm nào',
-        description: 'Chúng tôi đang cập nhật sản phẩm mới. Vui lòng quay lại sau.',
+        description:
+            'Chúng tôi đang cập nhật sản phẩm mới. Vui lòng quay lại sau.',
         icon: Icons.inventory_2_outlined,
       );
     }
 
     return RefreshIndicator(
       onRefresh: () async {
-        await ref.read(catalogControllerProvider.notifier).filterByCategory(catalogState.selectedCategoryId);
+        await ref
+            .read(catalogControllerProvider.notifier)
+            .filterByCategory(catalogState.selectedCategoryId);
       },
       child: CustomScrollView(
         slivers: [
@@ -75,16 +80,13 @@ class ProductListView extends ConsumerWidget {
                 mainAxisSpacing: AppSpacing.md,
                 childAspectRatio: 0.65,
               ),
-              delegate: SliverChildBuilderDelegate(
-                (context, index) {
-                  final product = catalogState.products[index];
-                  return ProductCard(
-                    product: product,
-                    onTap: () => context.push('/product/${product.id}'),
-                  );
-                },
-                childCount: catalogState.products.length,
-              ),
+              delegate: SliverChildBuilderDelegate((context, index) {
+                final product = catalogState.products[index];
+                return ProductCard(
+                  product: product,
+                  onTap: () => context.push('/product/${product.id}'),
+                );
+              }, childCount: catalogState.products.length),
             ),
           ),
         ],

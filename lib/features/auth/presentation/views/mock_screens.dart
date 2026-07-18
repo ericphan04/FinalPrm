@@ -22,8 +22,8 @@ class SellerDashboardScreen extends ConsumerWidget {
             icon: const Icon(Icons.logout_rounded),
             tooltip: 'Đăng xuất',
             onPressed: () async {
-                await ref.read(authControllerProvider.notifier).signOut();
-                if (context.mounted) context.go('/');
+              await ref.read(authControllerProvider.notifier).signOut();
+              if (context.mounted) context.go('/');
             },
           ),
         ],
@@ -63,8 +63,8 @@ class SellerDashboardScreen extends ConsumerWidget {
               AppButton(
                 text: 'Đăng xuất tài khoản',
                 onPressed: () async {
-                    await ref.read(authControllerProvider.notifier).signOut();
-                    if (context.mounted) context.go('/');
+                  await ref.read(authControllerProvider.notifier).signOut();
+                  if (context.mounted) context.go('/');
                 },
                 variant: AppButtonVariant.outlined,
                 width: 200,
@@ -93,8 +93,8 @@ class AdminDashboardScreen extends ConsumerWidget {
             icon: const Icon(Icons.logout_rounded),
             tooltip: 'Đăng xuất',
             onPressed: () async {
-                await ref.read(authControllerProvider.notifier).signOut();
-                if (context.mounted) context.go('/');
+              await ref.read(authControllerProvider.notifier).signOut();
+              if (context.mounted) context.go('/');
             },
           ),
         ],
@@ -134,8 +134,8 @@ class AdminDashboardScreen extends ConsumerWidget {
               AppButton(
                 text: 'Đăng xuất tài khoản',
                 onPressed: () async {
-                    await ref.read(authControllerProvider.notifier).signOut();
-                    if (context.mounted) context.go('/');
+                  await ref.read(authControllerProvider.notifier).signOut();
+                  if (context.mounted) context.go('/');
                 },
                 variant: AppButtonVariant.outlined,
                 width: 200,

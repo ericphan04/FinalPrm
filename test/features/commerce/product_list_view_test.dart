@@ -8,7 +8,8 @@ import 'package:finalprm/core/widgets/product_card_skeleton.dart';
 import 'package:finalprm/core/widgets/empty_view.dart';
 import 'package:finalprm/core/widgets/error_view.dart';
 
-class MockCatalogController extends StateNotifier<CatalogState> implements CatalogController {
+class MockCatalogController extends StateNotifier<CatalogState>
+    implements CatalogController {
   MockCatalogController(super.state);
 
   @override
@@ -19,22 +20,31 @@ void main() {
   Widget createWidgetUnderTest(CatalogState state) {
     return ProviderScope(
       overrides: [
-        catalogControllerProvider.overrideWith((ref) => MockCatalogController(state)),
+        catalogControllerProvider.overrideWith(
+          (ref) => MockCatalogController(state),
+        ),
       ],
-      child: const MaterialApp(
-        home: ProductListView(),
-      ),
+      child: const MaterialApp(home: ProductListView()),
     );
   }
 
   group('ProductListView States', () {
-    testWidgets('shows loading skeletons when isLoading is true and no products', (tester) async {
-      await tester.pumpWidget(createWidgetUnderTest(CatalogState(isLoading: true)));
-      expect(find.byType(ProductCardSkeleton), findsWidgets);
-    });
+    testWidgets(
+      'shows loading skeletons when isLoading is true and no products',
+      (tester) async {
+        await tester.pumpWidget(
+          createWidgetUnderTest(CatalogState(isLoading: true)),
+        );
+        expect(find.byType(ProductCardSkeleton), findsWidgets);
+      },
+    );
 
-    testWidgets('shows ErrorView when there is an error and no products', (tester) async {
-      await tester.pumpWidget(createWidgetUnderTest(CatalogState(errorMessage: 'Error')));
+    testWidgets('shows ErrorView when there is an error and no products', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        createWidgetUnderTest(CatalogState(errorMessage: 'Error')),
+      );
       expect(find.byType(ErrorView), findsOneWidget);
     });
 

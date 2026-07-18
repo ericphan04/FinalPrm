@@ -16,34 +16,46 @@ class CartView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final cartState = ref.watch(cartControllerProvider);
     final theme = Theme.of(context);
-    final currencyFormatter = NumberFormat.currency(locale: 'vi_VN', symbol: 'đ');
+    final currencyFormatter = NumberFormat.currency(
+      locale: 'vi_VN',
+      symbol: 'đ',
+    );
 
     return Scaffold(
       appBar: AppBar(title: const Text('Giỏ hàng')),
       body: cartState.isLoading && cartState.items.isEmpty
           ? const Center(child: CircularProgressIndicator())
           : cartState.items.isEmpty
-              ? const EmptyView(
-                  title: 'Giỏ hàng trống',
-                  description: 'Hãy dạo quanh cửa hàng và chọn sản phẩm nhé!',
-                  icon: Icons.shopping_cart_outlined,
-                )
-              : ListView.separated(
-                  padding: const EdgeInsets.all(AppSpacing.md),
-                  itemCount: cartState.items.length,
-                  separatorBuilder: (_, __) => const SizedBox(height: AppSpacing.md),
-                  itemBuilder: (context, index) {
-                    final item = cartState.items[index];
-                    return _CartItemTile(item: item);
-                  },
-                ),
+          ? const EmptyView(
+              title: 'Giỏ hàng trống',
+              description: 'Hãy dạo quanh cửa hàng và chọn sản phẩm nhé!',
+              icon: Icons.shopping_cart_outlined,
+            )
+          : ListView.separated(
+              padding: const EdgeInsets.all(AppSpacing.md),
+              itemCount: cartState.items.length,
+              separatorBuilder: (_, __) =>
+                  const SizedBox(height: AppSpacing.md),
+              itemBuilder: (context, index) {
+                final item = cartState.items[index];
+                return _CartItemTile(item: item);
+              },
+            ),
       bottomNavigationBar: cartState.items.isEmpty
           ? null
           : Container(
               padding: const EdgeInsets.all(AppSpacing.md),
               decoration: BoxDecoration(
-                color: Theme.of(context).brightness == Brightness.dark ? AppColors.surfaceDark : Colors.white,
-                boxShadow: const [BoxShadow(color: AppColors.shadowColor, blurRadius: 10, offset: Offset(0, -4))],
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? AppColors.surfaceDark
+                    : Colors.white,
+                boxShadow: const [
+                  BoxShadow(
+                    color: AppColors.shadowColor,
+                    blurRadius: 10,
+                    offset: Offset(0, -4),
+                  ),
+                ],
               ),
               child: SafeArea(
                 child: Row(
@@ -82,7 +94,10 @@ class _CartItemTile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final currencyFormatter = NumberFormat.currency(locale: 'vi_VN', symbol: 'đ');
+    final currencyFormatter = NumberFormat.currency(
+      locale: 'vi_VN',
+      symbol: 'đ',
+    );
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(AppSpacing.sm),
@@ -95,7 +110,8 @@ class _CartItemTile extends ConsumerWidget {
                 width: 80,
                 height: 80,
                 fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => Container(width: 80, height: 80, color: Colors.grey[200]),
+                errorBuilder: (_, __, ___) =>
+                    Container(width: 80, height: 80, color: Colors.grey[200]),
               ),
             ),
             const SizedBox(width: AppSpacing.sm),
@@ -103,12 +119,21 @@ class _CartItemTile extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(item.productName, style: const TextStyle(fontWeight: FontWeight.bold)),
-                  Text('${item.size} | ${item.color}', style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                  Text(
+                    item.productName,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    '${item.size} | ${item.color}',
+                    style: const TextStyle(fontSize: 12, color: Colors.grey),
+                  ),
                   const SizedBox(height: 4),
                   Text(
                     currencyFormatter.format(item.price),
-                    style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                      color: AppColors.primary,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ],
               ),
@@ -117,15 +142,19 @@ class _CartItemTile extends ConsumerWidget {
               children: [
                 IconButton(
                   icon: const Icon(Icons.remove_circle_outline),
-                  onPressed: () => ref.read(cartControllerProvider.notifier).updateQuantity(item.id, item.quantity - 1),
+                  onPressed: () => ref
+                      .read(cartControllerProvider.notifier)
+                      .updateQuantity(item.id, item.quantity - 1),
                 ),
                 Text('${item.quantity}'),
                 IconButton(
                   icon: const Icon(Icons.add_circle_outline),
-                  onPressed: () => ref.read(cartControllerProvider.notifier).updateQuantity(item.id, item.quantity + 1),
+                  onPressed: () => ref
+                      .read(cartControllerProvider.notifier)
+                      .updateQuantity(item.id, item.quantity + 1),
                 ),
               ],
-            )
+            ),
           ],
         ),
       ),

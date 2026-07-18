@@ -13,6 +13,10 @@ import '../../features/auth/presentation/views/register_view.dart';
 import '../../features/auth/presentation/views/forgot_password_view.dart';
 import '../../features/auth/presentation/views/mock_screens.dart';
 
+// Seller Views
+import '../../features/seller/presentation/views/seller_apply_view.dart';
+import '../../features/seller/presentation/views/seller_center_shell.dart';
+
 import '../../features/commerce/presentation/views/main_screen.dart';
 
 import '../../features/commerce/presentation/views/product_list_view.dart';
@@ -62,7 +66,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         // Cố tình vào trang admin nhưng không phải admin -> Về trang chủ
         return '/';
       }
-      if (path.startsWith('/seller') &&
+      if ((path.startsWith('/seller/') || path == '/seller') &&
           user.role != AppUserRole.seller &&
           user.role != AppUserRole.admin) {
         // Cố tình vào trang seller nhưng không có quyền seller/admin -> Về trang chủ
@@ -90,7 +94,11 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/help', builder: (context, state) => const HelpView()),
       GoRoute(
         path: '/seller/dashboard',
-        builder: (context, state) => const SellerDashboardScreen(),
+        builder: (context, state) => const SellerCenterShell(),
+      ),
+      GoRoute(
+        path: '/seller-apply',
+        builder: (context, state) => const SellerApplyView(),
       ),
       GoRoute(
         path: '/admin/dashboard',
@@ -107,10 +115,7 @@ final routerProvider = Provider<GoRouter>((ref) {
           return ProductDetailView(productId: id);
         },
       ),
-      GoRoute(
-        path: '/cart',
-        builder: (context, state) => const CartView(),
-      ),
+      GoRoute(path: '/cart', builder: (context, state) => const CartView()),
       GoRoute(
         path: '/checkout',
         builder: (context, state) => const CheckoutView(),

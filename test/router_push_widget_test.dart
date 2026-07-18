@@ -17,9 +17,13 @@ import 'package:finalprm/features/commerce/presentation/providers/commerce_provi
 import 'package:finalprm/core/result/result.dart';
 
 class MockAuthRepository extends Mock implements AuthRepository {}
+
 class MockCatalogRepository extends Mock implements CatalogRepository {}
+
 class MockCartRepository extends Mock implements CartRepository {}
+
 class MockOrderRepository extends Mock implements OrderRepository {}
+
 class MockSharedPreferences extends Mock implements SharedPreferences {}
 
 class HttpOverridesMock extends HttpOverrides {
@@ -34,7 +38,8 @@ class _HttpClientMock extends Mock implements HttpClient {
   Future<HttpClientRequest> getUrl(Uri url) async => _HttpClientRequestMock();
 
   @override
-  Future<HttpClientRequest> openUrl(String method, Uri url) async => _HttpClientRequestMock();
+  Future<HttpClientRequest> openUrl(String method, Uri url) async =>
+      _HttpClientRequestMock();
 }
 
 class _HttpClientRequestMock extends Mock implements HttpClientRequest {
@@ -75,12 +80,73 @@ class _HttpClientResponseMock extends Mock implements HttpClientResponse {
 }
 
 final List<int> _transparentImage = [
-  0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A, 0x00, 0x00, 0x00, 0x0D, 0x49,
-  0x48, 0x44, 0x52, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01, 0x08, 0x06,
-  0x00, 0x00, 0x00, 0x1F, 0x15, 0xC4, 0x89, 0x00, 0x00, 0x00, 0x0A, 0x49, 0x44,
-  0x41, 0x54, 0x78, 0x9C, 0x63, 0x00, 0x01, 0x00, 0x00, 0x05, 0x00, 0x01, 0x0D,
-  0x0A, 0x2D, 0xB4, 0x00, 0x00, 0x00, 0x00, 0x49, 0x45, 0x4E, 0x44, 0xAE, 0x42,
-  0x60, 0x82
+  0x89,
+  0x50,
+  0x4E,
+  0x47,
+  0x0D,
+  0x0A,
+  0x1A,
+  0x0A,
+  0x00,
+  0x00,
+  0x00,
+  0x0D,
+  0x49,
+  0x48,
+  0x44,
+  0x52,
+  0x00,
+  0x00,
+  0x00,
+  0x01,
+  0x00,
+  0x00,
+  0x00,
+  0x01,
+  0x08,
+  0x06,
+  0x00,
+  0x00,
+  0x00,
+  0x1F,
+  0x15,
+  0xC4,
+  0x89,
+  0x00,
+  0x00,
+  0x00,
+  0x0A,
+  0x49,
+  0x44,
+  0x41,
+  0x54,
+  0x78,
+  0x9C,
+  0x63,
+  0x00,
+  0x01,
+  0x00,
+  0x00,
+  0x05,
+  0x00,
+  0x01,
+  0x0D,
+  0x0A,
+  0x2D,
+  0xB4,
+  0x00,
+  0x00,
+  0x00,
+  0x00,
+  0x49,
+  0x45,
+  0x4E,
+  0x44,
+  0xAE,
+  0x42,
+  0x60,
+  0x82,
 ];
 
 void main() {
@@ -90,7 +156,7 @@ void main() {
 
   testWidgets('Clicking register navigates correctly', (tester) async {
     SharedPreferences.setMockInitialValues({});
-    
+
     final mockRepo = MockAuthRepository();
     final mockCatalogRepo = MockCatalogRepository();
     final mockCartRepo = MockCartRepository();
@@ -98,13 +164,23 @@ void main() {
     final mockSharedPrefs = MockSharedPreferences();
 
     final authStream = StreamController<AppUser>.broadcast();
-    
+
     when(() => mockRepo.authStateChanges).thenAnswer((_) => authStream.stream);
-    when(() => mockCatalogRepo.getCategories()).thenAnswer((_) async => const Success([]));
-    when(() => mockCatalogRepo.getProducts(categoryId: any(named: 'categoryId'))).thenAnswer((_) async => const Success([]));
-    when(() => mockCatalogRepo.getProducts()).thenAnswer((_) async => const Success([]));
-    when(() => mockCartRepo.getCartItems(any())).thenAnswer((_) async => const Success([]));
-    when(() => mockOrderRepo.watchUserOrders(any())).thenAnswer((_) => const Stream.empty());
+    when(
+      () => mockCatalogRepo.getCategories(),
+    ).thenAnswer((_) async => const Success([]));
+    when(
+      () => mockCatalogRepo.getProducts(categoryId: any(named: 'categoryId')),
+    ).thenAnswer((_) async => const Success([]));
+    when(
+      () => mockCatalogRepo.getProducts(),
+    ).thenAnswer((_) async => const Success([]));
+    when(
+      () => mockCartRepo.getCartItems(any()),
+    ).thenAnswer((_) async => const Success([]));
+    when(
+      () => mockOrderRepo.watchUserOrders(any()),
+    ).thenAnswer((_) => const Stream.empty());
 
     await tester.pumpWidget(
       ProviderScope(
@@ -145,7 +221,7 @@ void main() {
     } else {
       print('Could not find Đăng ký ngay');
     }
-    
+
     authStream.close();
   });
 }

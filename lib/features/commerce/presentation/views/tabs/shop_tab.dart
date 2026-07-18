@@ -16,7 +16,8 @@ class ShopTab extends ConsumerStatefulWidget {
   ConsumerState<ShopTab> createState() => _ShopTabState();
 }
 
-class _ShopTabState extends ConsumerState<ShopTab> with SingleTickerProviderStateMixin {
+class _ShopTabState extends ConsumerState<ShopTab>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
   @override
@@ -37,9 +38,14 @@ class _ShopTabState extends ConsumerState<ShopTab> with SingleTickerProviderStat
     final isDark = theme.brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDark ? AppColors.backgroundDark : AppColors.backgroundLight,
+      backgroundColor: isDark
+          ? AppColors.backgroundDark
+          : AppColors.backgroundLight,
       appBar: AppBar(
-        title: const Text('Shop', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+        title: const Text(
+          'Shop',
+          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+        ),
         centerTitle: false,
         backgroundColor: isDark ? AppColors.surfaceDark : Colors.white,
         elevation: 0,
@@ -49,7 +55,10 @@ class _ShopTabState extends ConsumerState<ShopTab> with SingleTickerProviderStat
           unselectedLabelColor: Colors.grey,
           indicatorColor: isDark ? Colors.white : Colors.black,
           indicatorSize: TabBarIndicatorSize.label,
-          labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+          labelStyle: const TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 16,
+          ),
           tabs: const [
             Tab(text: 'Men'),
             Tab(text: 'Women'),
@@ -68,7 +77,11 @@ class _ShopTabState extends ConsumerState<ShopTab> with SingleTickerProviderStat
     );
   }
 
-  Widget _buildShopContent(BuildContext context, WidgetRef ref, String categoryName) {
+  Widget _buildShopContent(
+    BuildContext context,
+    WidgetRef ref,
+    String categoryName,
+  ) {
     final catalogState = ref.watch(catalogControllerProvider);
 
     if (catalogState.isLoading && catalogState.products.isEmpty) {
@@ -77,7 +90,9 @@ class _ShopTabState extends ConsumerState<ShopTab> with SingleTickerProviderStat
 
     if (catalogState.errorMessage != null && catalogState.products.isEmpty) {
       return ErrorView(
-        onRetry: () => ref.read(catalogControllerProvider.notifier).filterByCategory(catalogState.selectedCategoryId),
+        onRetry: () => ref
+            .read(catalogControllerProvider.notifier)
+            .filterByCategory(catalogState.selectedCategoryId),
       );
     }
 
@@ -96,18 +111,25 @@ class _ShopTabState extends ConsumerState<ShopTab> with SingleTickerProviderStat
     final highlights = products.skip(mid).toList();
 
     return ListView(
-      padding: const EdgeInsets.only(top: AppSpacing.lg, bottom: 120), // Padding cho floating nav bar
+      padding: const EdgeInsets.only(
+        top: AppSpacing.lg,
+        bottom: 120,
+      ), // Padding cho floating nav bar
       children: [
         _buildSection(context, 'New Arrivals', newArrivals),
         const SizedBox(height: AppSpacing.xl),
-        _buildSection(context, "This Week's Highlights", highlights.isEmpty ? newArrivals : highlights),
+        _buildSection(
+          context,
+          "This Week's Highlights",
+          highlights.isEmpty ? newArrivals : highlights,
+        ),
       ],
     );
   }
 
   Widget _buildSection(BuildContext context, String title, List products) {
     final theme = Theme.of(context);
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -115,17 +137,21 @@ class _ShopTabState extends ConsumerState<ShopTab> with SingleTickerProviderStat
           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
           child: Text(
             title,
-            style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+            style: theme.textTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
         const SizedBox(height: AppSpacing.md),
         SizedBox(
-          height: 320, // Chiều cao cố định cho horizontal list của product cards
+          height:
+              320, // Chiều cao cố định cho horizontal list của product cards
           child: ListView.separated(
             padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
             scrollDirection: Axis.horizontal,
             itemCount: products.length,
-            separatorBuilder: (context, index) => const SizedBox(width: AppSpacing.md),
+            separatorBuilder: (context, index) =>
+                const SizedBox(width: AppSpacing.md),
             itemBuilder: (context, index) {
               final product = products[index];
               return SizedBox(

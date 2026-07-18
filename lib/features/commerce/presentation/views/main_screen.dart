@@ -44,10 +44,7 @@ class MainScreen extends ConsumerWidget {
 
     return Scaffold(
       extendBody: true, // Cho phép body chìm dưới BottomNavBar
-      body: IndexedStack(
-        index: currentIndex,
-        children: tabs,
-      ),
+      body: IndexedStack(index: currentIndex, children: tabs),
       // Bố trí thanh điều hướng giả lập
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: Padding(
@@ -62,7 +59,9 @@ class MainScreen extends ConsumerWidget {
                   filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
                   child: Container(
                     height: 64,
-                    padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.sm,
+                    ),
                     decoration: BoxDecoration(
                       color: navBarBgColor,
                       borderRadius: BorderRadius.circular(40),
@@ -70,10 +69,46 @@ class MainScreen extends ConsumerWidget {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        _buildNavItem(0, Icons.home_outlined, Icons.home_rounded, 'Home', currentIndex, ref, navBarTextColor, navBarUnselectedColor),
-                        _buildNavItem(1, Icons.shopping_cart_outlined, Icons.shopping_cart_rounded, 'Shop', currentIndex, ref, navBarTextColor, navBarUnselectedColor),
-                        _buildNavItem(2, Icons.shopping_bag_outlined, Icons.shopping_bag_rounded, 'Bag', currentIndex, ref, navBarTextColor, navBarUnselectedColor),
-                        _buildNavItem(3, Icons.person_outline_rounded, Icons.person_rounded, 'Profile', currentIndex, ref, navBarTextColor, navBarUnselectedColor),
+                        _buildNavItem(
+                          0,
+                          Icons.home_outlined,
+                          Icons.home_rounded,
+                          'Home',
+                          currentIndex,
+                          ref,
+                          navBarTextColor,
+                          navBarUnselectedColor,
+                        ),
+                        _buildNavItem(
+                          1,
+                          Icons.shopping_cart_outlined,
+                          Icons.shopping_cart_rounded,
+                          'Shop',
+                          currentIndex,
+                          ref,
+                          navBarTextColor,
+                          navBarUnselectedColor,
+                        ),
+                        _buildNavItem(
+                          2,
+                          Icons.shopping_bag_outlined,
+                          Icons.shopping_bag_rounded,
+                          'Bag',
+                          currentIndex,
+                          ref,
+                          navBarTextColor,
+                          navBarUnselectedColor,
+                        ),
+                        _buildNavItem(
+                          3,
+                          Icons.person_outline_rounded,
+                          Icons.person_rounded,
+                          'Profile',
+                          currentIndex,
+                          ref,
+                          navBarTextColor,
+                          navBarUnselectedColor,
+                        ),
                       ],
                     ),
                   ),
@@ -129,7 +164,9 @@ class MainScreen extends ConsumerWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: isSelected
             ? BoxDecoration(
-                color: Colors.grey.withOpacity(0.3), // Hiệu ứng nền xám khi được chọn
+                color: Colors.grey.withOpacity(
+                  0.3,
+                ), // Hiệu ứng nền xám khi được chọn
                 borderRadius: BorderRadius.circular(20),
               )
             : const BoxDecoration(color: Colors.transparent),

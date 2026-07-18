@@ -37,7 +37,7 @@ class ProfileController extends StateNotifier<ProfileState> {
   final String _uid;
 
   ProfileController(this._repository, this._uid)
-      : super(ProfileState(profile: UserProfile.empty())) {
+    : super(ProfileState(profile: UserProfile.empty())) {
     if (_uid.isNotEmpty) {
       fetchProfile();
     }
@@ -131,7 +131,7 @@ class ProfileController extends StateNotifier<ProfileState> {
 
 final profileControllerProvider =
     StateNotifierProvider<ProfileController, ProfileState>((ref) {
-  final repository = ref.watch(profileRepositoryProvider);
-  final authUser = ref.watch(authStateProvider);
-  return ProfileController(repository, authUser.uid);
-});
+      final repository = ref.watch(profileRepositoryProvider);
+      final authUser = ref.watch(authStateProvider);
+      return ProfileController(repository, authUser.uid);
+    });
