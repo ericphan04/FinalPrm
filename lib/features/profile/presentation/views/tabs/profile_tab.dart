@@ -161,7 +161,7 @@ class ProfileTab extends ConsumerWidget {
                     context,
                     Icons.favorite_border_rounded,
                     'Favorites',
-                    () {},
+                    () => context.push('/favorites'),
                   ),
                   _buildActionItem(
                     context,

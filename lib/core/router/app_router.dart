@@ -24,6 +24,9 @@ import '../../features/commerce/presentation/views/product_detail_view.dart';
 import '../../features/commerce/presentation/views/cart_view.dart';
 import '../../features/commerce/presentation/views/checkout_view.dart';
 import '../../features/commerce/presentation/views/order_list_view.dart';
+import '../../features/commerce/presentation/views/favorites_view.dart';
+import '../../features/commerce/presentation/views/order_success_view.dart';
+import '../../features/commerce/domain/models/app_order.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   final router = GoRouter(
@@ -47,7 +50,8 @@ final routerProvider = Provider<GoRouter>((ref) {
             state.uri.path == '/help' ||
             state.uri.path.startsWith('/catalog') ||
             state.uri.path.startsWith('/product') ||
-            state.uri.path == '/cart') {
+            state.uri.path == '/cart' ||
+            state.uri.path == '/favorites') {
           return null;
         }
         // Các trang khác (như checkout, orders, profile, dashboard) yêu cầu đăng nhập
@@ -123,6 +127,17 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/orders',
         builder: (context, state) => const OrderListView(),
+      ),
+      GoRoute(
+        path: '/favorites',
+        builder: (context, state) => const FavoritesView(),
+      ),
+      GoRoute(
+        path: '/order-success',
+        builder: (context, state) {
+          final order = state.extra as AppOrder;
+          return OrderSuccessView(order: order);
+        },
       ),
     ],
   );

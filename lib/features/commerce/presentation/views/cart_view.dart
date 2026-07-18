@@ -22,7 +22,15 @@ class CartView extends ConsumerWidget {
     );
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Giỏ hàng')),
+      appBar: AppBar(
+        title: const Text(
+          'Bag',
+          style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+        ),
+        centerTitle: false,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+      ),
       body: cartState.isLoading && cartState.items.isEmpty
           ? const Center(child: CircularProgressIndicator())
           : cartState.items.isEmpty
@@ -44,41 +52,64 @@ class CartView extends ConsumerWidget {
       bottomNavigationBar: cartState.items.isEmpty
           ? null
           : Container(
-              padding: const EdgeInsets.all(AppSpacing.md),
+              padding: const EdgeInsets.fromLTRB(24, 24, 24, 100),
               decoration: BoxDecoration(
                 color: Theme.of(context).brightness == Brightness.dark
                     ? AppColors.surfaceDark
                     : Colors.white,
-                boxShadow: const [
-                  BoxShadow(
-                    color: AppColors.shadowColor,
-                    blurRadius: 10,
-                    offset: Offset(0, -4),
+                border: Border(
+                  top: BorderSide(
+                    color: Colors.grey.withOpacity(0.2),
+                    width: 1,
                   ),
-                ],
+                ),
               ),
               child: SafeArea(
-                child: Row(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Expanded(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('Tạm tính:', style: theme.textTheme.bodyMedium),
-                          Text(
-                            currencyFormatter.format(cartState.totalAmount),
-                            style: theme.textTheme.titleLarge?.copyWith(
-                              color: AppColors.primary,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('Subtotal', style: TextStyle(color: Colors.grey[600], fontSize: 16)),
+                        Text(currencyFormatter.format(cartState.totalAmount), style: TextStyle(color: Colors.grey[600], fontSize: 16)),
+                      ],
                     ),
-                    AppButton(
-                      text: 'Thanh toán',
-                      onPressed: () => context.push('/checkout'),
+                    const SizedBox(height: 12),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('Shipping', style: TextStyle(color: Colors.grey[600], fontSize: 16)),
+                        Text(currencyFormatter.format(250000), style: TextStyle(color: Colors.grey[600], fontSize: 16)), // Hardcoded shipping for UI matching
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text('Total', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                        Text(
+                          currencyFormatter.format(cartState.totalAmount + 250000),
+                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 24),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 56,
+                      child: ElevatedButton(
+                        onPressed: () => context.push('/checkout'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
+                          foregroundColor: Theme.of(context).brightness == Brightness.dark ? Colors.black : Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                          elevation: 0,
+                        ),
+                        child: const Text('Checkout', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                      ),
                     ),
                   ],
                 ),

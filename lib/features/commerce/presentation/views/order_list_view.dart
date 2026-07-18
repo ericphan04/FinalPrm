@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
@@ -20,10 +21,33 @@ class OrderListView extends ConsumerWidget {
     );
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Đơn hàng của tôi')),
-      body: orderState.isLoading && orderState.orders.isEmpty
-          ? const Center(child: CircularProgressIndicator())
-          : orderState.orders.isEmpty
+      appBar: AppBar(
+        title: const Text('Đơn hàng của tôi'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            if (context.canPop()) {
+              context.pop();
+            } else {
+              context.go('/');
+            }
+          },
+        ),
+      ),
+      body: orderState.errorMessage != null
+          ? Center(
+              child: Padding(
+                padding: const EdgeInsets.all(AppSpacing.lg),
+                child: Text(
+                  'Lỗi tải đơn hàng: ${orderState.errorMessage}',
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.bodyLarge?.copyWith(color: AppColors.error),
+                ),
+              ),
+            )
+          : orderState.isLoading && orderState.orders.isEmpty
+              ? const Center(child: CircularProgressIndicator())
+              : orderState.orders.isEmpty
           ? const EmptyView(
               title: 'Chưa có đơn hàng nào',
               description:
@@ -103,12 +127,63 @@ class OrderListView extends ConsumerWidget {
                             ),
                           ],
                         ),
+                        if (order.status == OrderStatus.pending) ...[
+                          const SizedBox(height: AppSpacing.md),
+                          SizedBox(
+                            width: double.infinity,
+                            child: OutlinedButton(
+                              onPressed: () => _handleCancelOrder(context, ref, order),
+                              style: OutlinedButton.styleFrom(
+                                foregroundColor: AppColors.error,
+                                side: const BorderSide(color: AppColors.error),
+                              ),
+                              child: const Text('Hủy đơn hàng'),
+                            ),
+                          ),
+                        ],
                       ],
                     ),
                   ),
                 );
               },
             ),
+    );
+  }
+
+  void _handleCancelOrder(BuildContext context, WidgetRef ref, AppOrder order) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Hủy đơn hàng'),
+        content: const Text('Bạn có chắc chắn muốn hủy đơn hàng này không?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Không'),
+          ),
+          TextButton(
+            onPressed: () async {
+              Navigator.pop(ctx);
+              final success = await ref
+                  .read(orderControllerProvider.notifier)
+                  .cancelOrder(order.id, 'Người dùng tự hủy đơn');
+              
+              if (success && context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Hủy đơn hàng thành công')),
+                );
+              } else if (!success && context.mounted) {
+                final error = ref.read(orderControllerProvider).errorMessage;
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text(error ?? 'Lỗi hủy đơn hàng')),
+                );
+              }
+            },
+            style: TextButton.styleFrom(foregroundColor: AppColors.error),
+            child: const Text('Có, hủy đơn'),
+          ),
+        ],
+      ),
     );
   }
 }

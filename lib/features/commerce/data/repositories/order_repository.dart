@@ -5,8 +5,11 @@ import '../../../../core/result/result.dart';
 import '../../domain/models/app_order.dart';
 import '../../domain/models/cart_item.dart';
 
+import 'package:firebase_auth/firebase_auth.dart';
+
 abstract class OrderRepository {
   Future<Result<AppOrder>> createCheckout(
+    String userId,
     List<CartItem> items,
     ShippingAddress address,
     String paymentMethod,
@@ -23,50 +26,40 @@ class OrderRepositoryImpl implements OrderRepository {
 
   @override
   Future<Result<AppOrder>> createCheckout(
+    String userId,
     List<CartItem> items,
     ShippingAddress address,
     String paymentMethod,
   ) async {
     try {
-      final callable = _functions.httpsCallable('createCheckout');
-      final response = await callable.call({
-        'items': items.map((e) => e.toJson()).toList(),
+      final orderRef = _firestore.collection('orders').doc();
+      final total = items.fold<double>(0, (sum, item) => sum + (item.price * item.quantity));
+      
+      final orderData = {
+        'userId': userId,
+        'status': 'pending',
+        'totalAmount': total,
         'shippingAddress': address.toJson(),
         'paymentMethod': paymentMethod,
-      });
-
-      final data = response.data as Map<String, dynamic>;
-
-      // Assumes function returns the created order data or ID
-      if (data.containsKey('orderId')) {
-        // Fetch the created order from firestore to return
-        final orderDoc = await _firestore
-            .collection('orders')
-            .doc(data['orderId'])
-            .get();
-        if (orderDoc.exists) {
-          final orderData = orderDoc.data()!;
-          orderData['id'] = orderDoc.id;
-          if (orderData['createdAt'] is Timestamp) {
-            orderData['createdAt'] = (orderData['createdAt'] as Timestamp)
-                .toDate()
-                .toIso8601String();
-          }
-          return Success(AppOrder.fromJson(orderData));
+        'items': items.map((e) => e.toJson()).toList(),
+        'createdAt': FieldValue.serverTimestamp(),
+      };
+      
+      await orderRef.set(orderData);
+      
+      final orderDoc = await orderRef.get();
+      if (orderDoc.exists) {
+        final savedData = orderDoc.data()!;
+        savedData['id'] = orderDoc.id;
+        if (savedData['createdAt'] is Timestamp) {
+          savedData['createdAt'] = (savedData['createdAt'] as Timestamp).toDate().toIso8601String();
+        } else {
+          savedData['createdAt'] = DateTime.now().toIso8601String();
         }
+        return Success(AppOrder.fromJson(savedData));
       }
-
-      return Failure(
-        AppFailure.serverError(
-          'Không thể tạo đơn hàng, định dạng trả về không hợp lệ',
-        ),
-      );
-    } on FirebaseFunctionsException catch (e) {
-      // Map functions errors to AppFailure
-      if (e.code == 'out-of-stock') {
-        return Failure(AppFailure.conflict('Sản phẩm đã hết hàng'));
-      }
-      return Failure(AppFailure.serverError(e.message ?? 'Lỗi thanh toán'));
+      
+      return Failure(AppFailure.serverError('Không thể lấy dữ liệu đơn hàng sau khi tạo'));
     } catch (e) {
       return Failure(AppFailure.serverError('Lỗi hệ thống: $e'));
     }
@@ -75,11 +68,12 @@ class OrderRepositoryImpl implements OrderRepository {
   @override
   Future<Result<void>> cancelOrder(String orderId, String reason) async {
     try {
-      final callable = _functions.httpsCallable('cancelOrder');
-      await callable.call({'orderId': orderId, 'reason': reason});
+      await _firestore.collection('orders').doc(orderId).update({
+        'status': 'cancelled',
+        'cancelReason': reason,
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
       return const Success(null);
-    } on FirebaseFunctionsException catch (e) {
-      return Failure(AppFailure.serverError(e.message ?? 'Lỗi hủy đơn'));
     } catch (e) {
       return Failure(AppFailure.serverError('Lỗi hệ thống: $e'));
     }
@@ -90,10 +84,9 @@ class OrderRepositoryImpl implements OrderRepository {
     return _firestore
         .collection('orders')
         .where('userId', isEqualTo: uid)
-        .orderBy('createdAt', descending: true)
         .snapshots()
         .map((snapshot) {
-          return snapshot.docs.map((doc) {
+          final orders = snapshot.docs.map((doc) {
             final data = doc.data();
             data['id'] = doc.id;
             if (data['createdAt'] is Timestamp) {
@@ -108,6 +101,9 @@ class OrderRepositoryImpl implements OrderRepository {
             }
             return AppOrder.fromJson(data);
           }).toList();
+          
+          orders.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+          return orders;
         });
   }
 }

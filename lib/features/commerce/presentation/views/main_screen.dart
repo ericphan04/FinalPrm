@@ -11,6 +11,7 @@ import 'tabs/home_tab.dart';
 import 'tabs/shop_tab.dart';
 import 'tabs/bag_tab.dart';
 import '../../../profile/presentation/views/tabs/profile_tab.dart';
+import '../providers/commerce_providers.dart';
 
 class MainScreen extends ConsumerWidget {
   const MainScreen({super.key});
@@ -18,6 +19,7 @@ class MainScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final currentIndex = ref.watch(mainTabIndexProvider);
+    final cartState = ref.watch(cartControllerProvider);
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
@@ -70,6 +72,7 @@ class MainScreen extends ConsumerWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
                         _buildNavItem(
+                          context,
                           0,
                           Icons.home_outlined,
                           Icons.home_rounded,
@@ -80,6 +83,7 @@ class MainScreen extends ConsumerWidget {
                           navBarUnselectedColor,
                         ),
                         _buildNavItem(
+                          context,
                           1,
                           Icons.shopping_cart_outlined,
                           Icons.shopping_cart_rounded,
@@ -90,6 +94,7 @@ class MainScreen extends ConsumerWidget {
                           navBarUnselectedColor,
                         ),
                         _buildNavItem(
+                          context,
                           2,
                           Icons.shopping_bag_outlined,
                           Icons.shopping_bag_rounded,
@@ -98,8 +103,10 @@ class MainScreen extends ConsumerWidget {
                           ref,
                           navBarTextColor,
                           navBarUnselectedColor,
+                          badgeCount: cartState.items.length,
                         ),
                         _buildNavItem(
+                          context,
                           3,
                           Icons.person_outline_rounded,
                           Icons.person_rounded,
@@ -144,6 +151,7 @@ class MainScreen extends ConsumerWidget {
   }
 
   Widget _buildNavItem(
+    BuildContext context,
     int index,
     IconData unselectedIcon,
     IconData selectedIcon,
@@ -151,8 +159,9 @@ class MainScreen extends ConsumerWidget {
     int currentIndex,
     WidgetRef ref,
     Color selectedColor,
-    Color unselectedColor,
-  ) {
+    Color unselectedColor, {
+    int badgeCount = 0,
+  }) {
     final isSelected = currentIndex == index;
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
@@ -174,10 +183,36 @@ class MainScreen extends ConsumerWidget {
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              isSelected ? selectedIcon : unselectedIcon,
-              color: isSelected ? selectedColor : unselectedColor,
-              size: 24,
+            Stack(
+              clipBehavior: Clip.none,
+              children: [
+                Icon(
+                  isSelected ? selectedIcon : unselectedIcon,
+                  color: isSelected ? selectedColor : unselectedColor,
+                  size: 24,
+                ),
+                if (badgeCount > 0)
+                  Positioned(
+                    right: -6,
+                    top: -4,
+                    child: Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                        color: selectedColor,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Text(
+                        badgeCount.toString(),
+                        style: TextStyle(
+                          color: Theme.of(context).brightness == Brightness.dark ? Colors.black : Colors.white,
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                          height: 1,
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
             ),
             const SizedBox(height: 2),
             Text(
