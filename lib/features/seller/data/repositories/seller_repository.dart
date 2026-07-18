@@ -220,6 +220,7 @@ class SellerRepositoryImpl implements SellerRepository {
       final data = product.toJson();
       data.remove('id'); // ID is the document name
       data['createdAt'] = Timestamp.fromDate(product.createdAt);
+      data['variants'] = product.variants.map((v) => v.toJson()).toList();
 
       await _firestore.collection('products').doc(product.id).set(data);
       return const Success(null);
