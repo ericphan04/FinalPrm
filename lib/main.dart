@@ -9,13 +9,9 @@ import 'core/theme/app_colors.dart';
 import 'core/theme/app_spacing.dart';
 
 // Shared widget imports
-import 'core/widgets/app_button.dart';
-import 'core/widgets/app_text_field.dart';
 import 'core/widgets/product_card_skeleton.dart';
-import 'core/widgets/loading_view.dart';
 import 'core/widgets/empty_view.dart';
 import 'core/widgets/error_view.dart';
-import 'core/widgets/confirm_dialog.dart';
 
 // Router import
 import 'core/router/app_router.dart';

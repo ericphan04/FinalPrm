@@ -24,7 +24,8 @@ class FirebaseBootstrap {
       // 2. Kiểm tra cờ sử dụng Emulator (phải bật tường minh bằng --dart-define=USE_EMULATOR=true)
       const bool useEmulator = bool.fromEnvironment(
         'USE_EMULATOR',
-        defaultValue: kDebugMode, // Auto-enable emulator in debug mode for seamless local development
+        defaultValue:
+            kDebugMode, // Auto-enable emulator in debug mode for seamless local development
       );
 
       if (useEmulator) {
@@ -59,7 +60,9 @@ class FirebaseBootstrap {
         Future.delayed(const Duration(milliseconds: 500), () async {
           try {
             await FirebaseSeed.seedAll();
-            AppLogger.info('Tự động nạp dữ liệu mẫu (Seed Data) lên Emulator thành công!');
+            AppLogger.info(
+              'Tự động nạp dữ liệu mẫu (Seed Data) lên Emulator thành công!',
+            );
           } catch (e) {
             AppLogger.error('Lỗi khi tự động nạp dữ liệu mẫu: $e');
           }
