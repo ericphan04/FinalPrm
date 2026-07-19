@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart' hide Result;
 import '../../../../core/error/app_failure.dart';
 import '../../../../core/error/error_handler.dart';
 import '../../../../core/logging/app_logger.dart';
@@ -48,6 +49,18 @@ class FirebaseAuthRepository implements AuthRepository {
           ),
         );
       }
+
+      // Gọi Cloud Function để đảm bảo Firestore profile + custom claims tồn tại
+      try {
+        final callable =
+            FirebaseFunctions.instance.httpsCallable('ensureUserProfile');
+        await callable.call();
+        // Force refresh token để nhận custom claims mới
+        await user.getIdToken(true);
+      } catch (e) {
+        AppLogger.error('Lỗi ensureUserProfile (tiếp tục bình thường)', e);
+      }
+
       final appUser = await _mapFirebaseUserToAppUser(user);
       AppLogger.info(
         'Đăng nhập thành công: email=${appUser.email}, role=${appUser.role}',
@@ -180,12 +193,25 @@ class FirebaseAuthRepository implements AuthRepository {
     }
   }
 
-  /// Map Firebase User thành AppUser nội bộ kèm theo lấy thông tin role từ Firestore
+  /// Suy luận role từ email (dùng cho tài khoản seed/test)
+  String _inferRoleFromEmail(String email) {
+    final emailLower = email.toLowerCase().trim();
+    if (emailLower.startsWith('admin') || emailLower.contains('admin@')) {
+      return 'admin';
+    } else if (emailLower.startsWith('seller') ||
+        emailLower.contains('seller@')) {
+      return 'seller';
+    }
+    return 'user';
+  }
+
+  /// Map Firebase User thành AppUser nội bộ kèm theo lấy thông tin role từ Firestore.
+  /// Nếu document Firestore chưa tồn tại cho UID này, tự động tạo mới với role
+  /// suy luận từ email để đảm bảo Firestore Security Rules hoạt động đúng.
   Future<AppUser> _mapFirebaseUserToAppUser(
     firebase_auth.User firebaseUser,
   ) async {
     try {
-      // Đọc thông tin role từ document Firestore của người dùng
       final userDoc = await _firestore
           .collection('users')
           .doc(firebaseUser.uid)
@@ -195,8 +221,42 @@ class FirebaseAuthRepository implements AuthRepository {
       if (userDoc.exists) {
         final data = userDoc.data();
         if (data != null) {
-          final roleClaim = data['role'] as String? ?? data['roleMirror'] as String?;
+          final roleClaim =
+              data['role'] as String? ?? data['roleMirror'] as String?;
           role = _parseRole(roleClaim);
+        }
+      } else {
+        // Document Firestore chưa tồn tại cho UID này
+        // → Gọi Cloud Function để tạo profile server-side (bypass security rules)
+        final inferredRole = _inferRoleFromEmail(firebaseUser.email ?? '');
+        role = _parseRole(inferredRole);
+        try {
+          final callable =
+              FirebaseFunctions.instance.httpsCallable('ensureUserProfile');
+          await callable.call();
+          // Force refresh token để nhận custom claims mới
+          await firebaseUser.getIdToken(true);
+          // Đọc lại document sau khi CF tạo xong
+          final refreshedDoc = await _firestore
+              .collection('users')
+              .doc(firebaseUser.uid)
+              .get();
+          if (refreshedDoc.exists) {
+            final data = refreshedDoc.data();
+            if (data != null) {
+              final roleClaim =
+                  data['role'] as String? ?? data['roleMirror'] as String?;
+              role = _parseRole(roleClaim);
+            }
+          }
+          AppLogger.info(
+            'ensureUserProfile CF đã tạo profile cho uid=${firebaseUser.uid}',
+          );
+        } catch (cfErr) {
+          AppLogger.error(
+            'Không thể gọi ensureUserProfile CF, dùng role suy luận từ email',
+            cfErr,
+          );
         }
       }
 
@@ -209,7 +269,6 @@ class FirebaseAuthRepository implements AuthRepository {
       );
     } catch (e) {
       AppLogger.error('Lỗi ánh xạ Firebase User sang AppUser', e);
-      // Fallback về role user cơ bản nếu có lỗi xảy ra
       return AppUser(
         uid: firebaseUser.uid,
         email: firebaseUser.email ?? '',

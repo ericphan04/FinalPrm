@@ -5,6 +5,55 @@ import { Timestamp, FieldValue } from 'firebase-admin/firestore';
 admin.initializeApp();
 const db = admin.firestore();
 
+// Helper: infer role from email for seed/test accounts
+function inferRoleFromEmail(email: string): string {
+  const e = email.toLowerCase().trim();
+  if (e.startsWith('admin') || e.includes('admin@')) return 'admin';
+  if (e.startsWith('seller') || e.includes('seller@')) return 'seller';
+  return 'user';
+}
+
+// 0. ENSURE USER PROFILE (auto-creates Firestore document + custom claims on first login)
+export const ensureUserProfile = functions.https.onCall(async (data, context) => {
+  const auth = context.auth;
+  if (!auth) {
+    throw new functions.https.HttpsError('unauthenticated', 'Chưa đăng nhập');
+  }
+  const uid = auth.uid;
+  const userRef = db.collection('users').doc(uid);
+  const userSnap = await userRef.get();
+
+  if (!userSnap.exists) {
+    // Document chưa tồn tại → tạo mới
+    const email = auth.token.email || '';
+    const role = inferRoleFromEmail(email);
+    await userRef.set({
+      uid,
+      email,
+      displayName: auth.token.name || '',
+      avatarUrl: auth.token.picture || '',
+      role,
+      roleMirror: role,
+      status: 'active',
+      createdAt: Timestamp.now(),
+    });
+    // Gán custom claims
+    await admin.auth().setCustomUserClaims(uid, { role });
+    console.log(`Created profile and set claims for ${uid}, role=${role}`);
+    return { created: true, role };
+  } else {
+    // Document đã tồn tại → đảm bảo custom claims được gán
+    const userData = userSnap.data()!;
+    const role = userData.role || userData.roleMirror || 'user';
+    try {
+      await admin.auth().setCustomUserClaims(uid, { role });
+    } catch (e) {
+      console.warn(`Could not set claims for ${uid}: ${e}`);
+    }
+    return { created: false, role };
+  }
+});
+
 // 1. CREATE CHECKOUT CALLABLE
 export const createCheckout = functions.https.onCall(async (data, context) => {
   const auth = context.auth;
