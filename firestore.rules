@@ -149,7 +149,7 @@ service cloud.firestore {
     // Quy tắc cho collection 'auditLogs'
     match /auditLogs/{logId} {
       allow read: if isAdmin();
-      allow write: if false; // Chỉ Cloud Functions ghi
+      allow write: if isAdmin();
     }
 
     // Quy tắc cho collection 'stats'

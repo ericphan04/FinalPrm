@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart' hide Result;
+import 'package:firebase_auth/firebase_auth.dart';
 import '../../../../core/error/app_failure.dart';
 import '../../../../core/result/result.dart';
 import '../../../auth/domain/models/app_user.dart';
@@ -72,12 +73,79 @@ class AdminRepositoryImpl implements AdminRepository {
     String? reason,
   }) async {
     try {
-      final callable = _functions.httpsCallable('reviewSellerApplication');
-      await callable.call({
-        'applicationId': appId,
-        'action': action,
-        if (reason != null) 'reason': reason,
-      });
+      final currentAdmin = FirebaseAuth.instance.currentUser;
+      final adminUid = currentAdmin?.uid ?? 'unknown';
+
+      // 1. Get Application Doc
+      final appRef = _firestore.collection('seller_applications').doc(appId);
+      final appSnap = await appRef.get();
+      if (!appSnap.exists) {
+        return const Failure(AppFailure(code: 'not_found', message: 'Không tìm thấy hồ sơ đăng ký'));
+      }
+      final appData = appSnap.data()!;
+
+      final batch = _firestore.batch();
+
+      if (action == 'reject') {
+        batch.update(appRef, {
+          'status': 'rejected',
+          'rejectReason': reason,
+          'reviewedBy': adminUid,
+          'updatedAt': FieldValue.serverTimestamp(),
+        });
+
+        final auditRef = _firestore.collection('auditLogs').doc();
+        batch.set(auditRef, {
+          'actorUid': adminUid,
+          'actorRole': 'admin',
+          'action': 'rejectSellerApplication',
+          'targetType': 'seller_application',
+          'targetId': appId,
+          'reason': reason ?? 'Từ chối đơn ứng tuyển',
+          'createdAt': FieldValue.serverTimestamp(),
+        });
+      } else {
+        // action == 'approve'
+        batch.update(appRef, {
+          'status': 'approved',
+          'reviewedBy': adminUid,
+          'updatedAt': FieldValue.serverTimestamp(),
+        });
+
+        // Update User Doc
+        final userRef = _firestore.collection('users').doc(appId);
+        batch.update(userRef, {
+          'role': 'seller',
+          'roleMirror': 'seller',
+          'updatedAt': FieldValue.serverTimestamp(),
+        });
+
+        // Set Store Doc
+        final storeRef = _firestore.collection('stores').doc(appId);
+        batch.set(storeRef, {
+          'ownerUid': appId,
+          'name': appData['storeName'] ?? 'Cửa hàng của bạn',
+          'slug': 'store-$appId',
+          'description': appData['description'] ?? 'Chưa có mô tả',
+          'status': 'active',
+          'rating': 5.0,
+          'createdAt': FieldValue.serverTimestamp(),
+          'updatedAt': FieldValue.serverTimestamp(),
+        });
+
+        final auditRef = _firestore.collection('auditLogs').doc();
+        batch.set(auditRef, {
+          'actorUid': adminUid,
+          'actorRole': 'admin',
+          'action': 'approveSellerApplication',
+          'targetType': 'seller_application',
+          'targetId': appId,
+          'createdAt': FieldValue.serverTimestamp(),
+          'reason': 'Phê duyệt tài khoản người bán thành công',
+        });
+      }
+
+      await batch.commit();
       return const Success(null);
     } catch (e) {
       return Failure(AppFailure.serverError('Lỗi duyệt đơn seller: $e'));
@@ -116,12 +184,39 @@ class AdminRepositoryImpl implements AdminRepository {
     String? reason,
   }) async {
     try {
-      final callable = _functions.httpsCallable('reviewProduct');
-      await callable.call({
-        'productId': productId,
-        'action': action,
-        if (reason != null) 'reason': reason,
+      final currentAdmin = FirebaseAuth.instance.currentUser;
+      final adminUid = currentAdmin?.uid ?? 'unknown';
+
+      final productRef = _firestore.collection('products').doc(productId);
+
+      String status = 'draft';
+      if (action == 'approve') {
+        status = 'published';
+      } else if (action == 'reject') {
+        status = 'rejected';
+      } else if (action == 'hide') {
+        status = 'draft';
+      }
+
+      final batch = _firestore.batch();
+      batch.update(productRef, {
+        'status': status,
+        'rejectReason': action == 'reject' ? reason : null,
+        'updatedAt': FieldValue.serverTimestamp(),
       });
+
+      final auditRef = _firestore.collection('auditLogs').doc();
+      batch.set(auditRef, {
+        'actorUid': adminUid,
+        'actorRole': 'admin',
+        'action': '${action}Product',
+        'targetType': 'product',
+        'targetId': productId,
+        'reason': reason ?? 'Thao tác sản phẩm: $action',
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+
+      await batch.commit();
       return const Success(null);
     } catch (e) {
       return Failure(AppFailure.serverError('Lỗi duyệt sản phẩm: $e'));
