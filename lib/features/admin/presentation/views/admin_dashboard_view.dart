@@ -186,7 +186,7 @@ class _AdminDashboardViewState extends ConsumerState<AdminDashboardView>
                     physics: const NeverScrollableScrollPhysics(),
                     crossAxisSpacing: AppSpacing.md,
                     mainAxisSpacing: AppSpacing.md,
-                    childAspectRatio: 1.5,
+                    childAspectRatio: 1.2,
                     children: [
                       _buildStatCard(
                         title: 'Doanh thu hoàn thành',
@@ -237,18 +237,23 @@ class _AdminDashboardViewState extends ConsumerState<AdminDashboardView>
       ),
       color: isDark ? AppColors.surfaceDark : Colors.white,
       child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.md),
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.md,
+          vertical: AppSpacing.xs,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, size: 36, color: color),
-            const SizedBox(height: AppSpacing.sm),
+            Icon(icon, size: 28, color: color),
+            const SizedBox(height: AppSpacing.xxs),
             Text(
               title,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
               style: const TextStyle(fontSize: 12, color: Colors.grey),
             ),
-            const SizedBox(height: AppSpacing.xs),
+            const SizedBox(height: AppSpacing.xxs),
             FittedBox(
               fit: BoxFit.scaleDown,
               child: Text(
