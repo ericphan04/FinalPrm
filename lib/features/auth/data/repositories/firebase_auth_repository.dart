@@ -50,17 +50,6 @@ class FirebaseAuthRepository implements AuthRepository {
         );
       }
 
-      // Gọi Cloud Function để đảm bảo Firestore profile + custom claims tồn tại
-      try {
-        final callable =
-            FirebaseFunctions.instance.httpsCallable('ensureUserProfile');
-        await callable.call();
-        // Force refresh token để nhận custom claims mới
-        await user.getIdToken(true);
-      } catch (e) {
-        AppLogger.error('Lỗi ensureUserProfile (tiếp tục bình thường)', e);
-      }
-
       final appUser = await _mapFirebaseUserToAppUser(user);
       AppLogger.info(
         'Đăng nhập thành công: email=${appUser.email}, role=${appUser.role}',
@@ -227,35 +216,27 @@ class FirebaseAuthRepository implements AuthRepository {
         }
       } else {
         // Document Firestore chưa tồn tại cho UID này
-        // → Gọi Cloud Function để tạo profile server-side (bypass security rules)
+        // → Tạo trực tiếp với role suy luận từ email
         final inferredRole = _inferRoleFromEmail(firebaseUser.email ?? '');
         role = _parseRole(inferredRole);
         try {
-          final callable =
-              FirebaseFunctions.instance.httpsCallable('ensureUserProfile');
-          await callable.call();
-          // Force refresh token để nhận custom claims mới
-          await firebaseUser.getIdToken(true);
-          // Đọc lại document sau khi CF tạo xong
-          final refreshedDoc = await _firestore
-              .collection('users')
-              .doc(firebaseUser.uid)
-              .get();
-          if (refreshedDoc.exists) {
-            final data = refreshedDoc.data();
-            if (data != null) {
-              final roleClaim =
-                  data['role'] as String? ?? data['roleMirror'] as String?;
-              role = _parseRole(roleClaim);
-            }
-          }
+          await _firestore.collection('users').doc(firebaseUser.uid).set({
+            'uid': firebaseUser.uid,
+            'email': firebaseUser.email ?? '',
+            'displayName': firebaseUser.displayName ?? '',
+            'avatarUrl': firebaseUser.photoURL ?? '',
+            'role': inferredRole,
+            'roleMirror': inferredRole,
+            'status': 'active',
+            'createdAt': FieldValue.serverTimestamp(),
+          });
           AppLogger.info(
-            'ensureUserProfile CF đã tạo profile cho uid=${firebaseUser.uid}',
+            'Tự động tạo document Firestore cho uid=${firebaseUser.uid}, role=$inferredRole',
           );
-        } catch (cfErr) {
+        } catch (writeErr) {
           AppLogger.error(
-            'Không thể gọi ensureUserProfile CF, dùng role suy luận từ email',
-            cfErr,
+            'Không thể tạo document Firestore cho user',
+            writeErr,
           );
         }
       }

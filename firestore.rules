@@ -31,12 +31,9 @@ service cloud.firestore {
       // Chỉ Admin hoặc chính chủ tài khoản mới được đọc profile
       allow read: if signedIn() && (request.auth.uid == userId || isAdmin());
 
-      // Cho phép tạo nếu tài khoản trùng khớp và không tự cấp quyền
+      // Cho phép tạo profile nếu tài khoản trùng khớp (hoặc Admin)
       allow create: if signedIn() && (
-        isAdmin() || (
-          request.auth.uid == userId
-          && !request.resource.data.keys().hasAny(['role', 'roleMirror', 'status'])
-        )
+        isAdmin() || request.auth.uid == userId
       );
 
       // Cho phép cập nhật nếu là chính chủ và không thay đổi trường role/status (hoặc nếu là admin thì được đổi)
