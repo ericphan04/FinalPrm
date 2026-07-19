@@ -228,12 +228,14 @@ class FirebaseAuthRepository implements AuthRepository {
           .get();
       AppUserRole role = AppUserRole.user;
 
+      String status = 'active';
       if (userDoc.exists) {
         final data = userDoc.data();
         if (data != null) {
           final roleClaim =
               data['role'] as String? ?? data['roleMirror'] as String?;
           role = _parseRole(roleClaim);
+          status = data['status'] as String? ?? 'active';
         }
       } else {
         // Document Firestore chưa tồn tại cho UID này
@@ -268,6 +270,7 @@ class FirebaseAuthRepository implements AuthRepository {
         displayName: firebaseUser.displayName ?? '',
         photoUrl: firebaseUser.photoURL ?? '',
         role: role,
+        status: status,
       );
     } catch (e) {
       AppLogger.error('Lỗi ánh xạ Firebase User sang AppUser', e);
@@ -277,6 +280,7 @@ class FirebaseAuthRepository implements AuthRepository {
         displayName: firebaseUser.displayName ?? '',
         photoUrl: firebaseUser.photoURL ?? '',
         role: AppUserRole.user,
+        status: 'active',
       );
     }
   }

@@ -12,6 +12,7 @@ _AppUser _$AppUserFromJson(Map<String, dynamic> json) => _AppUser(
   displayName: json['displayName'] as String,
   photoUrl: json['photoUrl'] as String,
   role: $enumDecode(_$AppUserRoleEnumMap, json['role']),
+  status: json['status'] as String? ?? 'active',
 );
 
 Map<String, dynamic> _$AppUserToJson(_AppUser instance) => <String, dynamic>{
@@ -20,6 +21,7 @@ Map<String, dynamic> _$AppUserToJson(_AppUser instance) => <String, dynamic>{
   'displayName': instance.displayName,
   'photoUrl': instance.photoUrl,
   'role': _$AppUserRoleEnumMap[instance.role]!,
+  'status': instance.status,
 };
 
 const _$AppUserRoleEnumMap = {

@@ -541,79 +541,134 @@ class _AdminDashboardViewState extends ConsumerState<AdminDashboardView>
           itemCount: users.length,
           itemBuilder: (context, index) {
             final u = users[index];
+            final isBlocked = u.status == 'blocked' || u.status == 'locked';
             return Card(
               margin: const EdgeInsets.only(bottom: AppSpacing.sm),
               child: ListTile(
                 leading: CircleAvatar(
+                  backgroundColor: isBlocked
+                      ? Colors.red.shade50
+                      : AppColors.primary.withOpacity(0.1),
+                  foregroundColor:
+                      isBlocked ? Colors.red.shade700 : AppColors.primary,
                   child: Text(
                     u.displayName.isNotEmpty
                         ? u.displayName[0].toUpperCase()
                         : 'U',
                   ),
                 ),
-                title: Text(u.displayName),
-                subtitle: Text('${u.email} | Vai trò: ${u.role.nameVi}'),
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
+                title: Text(
+                  u.displayName,
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    decoration: isBlocked ? TextDecoration.lineThrough : null,
+                    color: isBlocked ? Colors.grey : null,
+                  ),
+                ),
+                subtitle: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    IconButton(
-                      icon: const Icon(Icons.block_flipped, color: Colors.red),
-                      tooltip: 'Khóa tài khoản',
-                      onPressed: () async {
-                        // User blocking function
-                        final repo = ref.read(adminRepositoryProvider);
-                        final res = await repo.updateUserStatus(
-                          u.uid,
-                          'blocked',
-                        );
-                        res.when(
-                          onSuccess: (_) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Đã khóa tài khoản thành công'),
-                              ),
-                            );
-                            ref.refresh(allUsersProvider);
-                          },
-                          onFailure: (fail) =>
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text('Lỗi: ${fail.message}')),
-                              ),
-                        );
-                      },
-                    ),
-                    IconButton(
-                      icon: const Icon(
-                        Icons.check_circle_outline,
-                        color: Colors.green,
+                    Text('${u.email} | Vai trò: ${u.role.nameVi}'),
+                    const SizedBox(height: AppSpacing.xs),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 2,
                       ),
-                      tooltip: 'Mở khóa',
-                      onPressed: () async {
-                        final repo = ref.read(adminRepositoryProvider);
-                        final res = await repo.updateUserStatus(
-                          u.uid,
-                          'active',
-                        );
-                        res.when(
-                          onSuccess: (_) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text(
-                                  'Đã kích hoạt tài khoản thành công',
-                                ),
-                              ),
-                            );
-                            ref.refresh(allUsersProvider);
-                          },
-                          onFailure: (fail) =>
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text('Lỗi: ${fail.message}')),
-                              ),
-                        );
-                      },
+                      decoration: BoxDecoration(
+                        color: isBlocked
+                            ? Colors.red.shade50
+                            : Colors.green.shade50,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: isBlocked
+                              ? Colors.red.shade200
+                              : Colors.green.shade200,
+                          width: 1,
+                        ),
+                      ),
+                      child: Text(
+                        isBlocked ? 'Đã khóa' : 'Hoạt động',
+                        style: TextStyle(
+                          color: isBlocked
+                              ? Colors.red.shade700
+                              : Colors.green.shade700,
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
                   ],
                 ),
+                trailing: isBlocked
+                    ? IconButton(
+                        icon: const Icon(
+                          Icons.check_circle_outline,
+                          color: Colors.green,
+                          size: 26,
+                        ),
+                        tooltip: 'Mở khóa',
+                        onPressed: () async {
+                          final repo = ref.read(adminRepositoryProvider);
+                          final res = await repo.updateUserStatus(
+                            u.uid,
+                            'active',
+                          );
+                          res.when(
+                            onSuccess: (_) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                    'Đã kích hoạt tài khoản thành công',
+                                  ),
+                                  backgroundColor: AppColors.success,
+                                ),
+                              );
+                              ref.refresh(allUsersProvider);
+                            },
+                            onFailure: (fail) =>
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text('Lỗi: ${fail.message}'),
+                                    backgroundColor: AppColors.error,
+                                  ),
+                                ),
+                          );
+                        },
+                      )
+                    : IconButton(
+                        icon: const Icon(
+                          Icons.block_flipped,
+                          color: Colors.red,
+                          size: 26,
+                        ),
+                        tooltip: 'Khóa tài khoản',
+                        onPressed: () async {
+                          final repo = ref.read(adminRepositoryProvider);
+                          final res = await repo.updateUserStatus(
+                            u.uid,
+                            'blocked',
+                          );
+                          res.when(
+                            onSuccess: (_) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Đã khóa tài khoản thành công'),
+                                  backgroundColor: AppColors.success,
+                                ),
+                              );
+                              ref.refresh(allUsersProvider);
+                            },
+                            onFailure: (fail) =>
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text('Lỗi: ${fail.message}'),
+                                    backgroundColor: AppColors.error,
+                                  ),
+                                ),
+                          );
+                        },
+                      ),
               ),
             );
           },

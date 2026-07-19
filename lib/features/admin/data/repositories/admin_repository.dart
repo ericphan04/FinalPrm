@@ -242,6 +242,7 @@ class AdminRepositoryImpl implements AdminRepository {
           displayName: data['displayName'] as String? ?? 'Người dùng',
           photoUrl: data['avatarUrl'] as String? ?? '',
           role: role,
+          status: data['status'] as String? ?? 'active',
         );
       }).toList();
       return Success(list);
