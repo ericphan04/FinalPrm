@@ -280,10 +280,12 @@ class _AdminDashboardViewState extends ConsumerState<AdminDashboardView>
     return pendingAppsAsync.when(
       loading: () => const LoadingView(),
       error: (err, stack) => ErrorView(
+        message: err.toString(),
         onRetry: () => ref.refresh(pendingSellerApplicationsProvider),
       ),
       data: (apps) {
-        final pendingApps = apps.where((a) => a.status == 'pending').toList();
+        final pendingApps =
+            apps.where((a) => a.status == SellerApplicationStatus.pending).toList();
         if (pendingApps.isEmpty) {
           return const EmptyView(
             title: 'Hồ sơ trống',

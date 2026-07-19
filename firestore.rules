@@ -14,9 +14,9 @@ service cloud.firestore {
     function roleIs(role) {
       return signedIn() && (
         request.auth.token.role == role ||
-        (exists(/databases/(default)/documents/users/$(request.auth.uid)) &&
-         (get(/databases/(default)/documents/users/$(request.auth.uid)).data.role == role ||
-          get(/databases/(default)/documents/users/$(request.auth.uid)).data.roleMirror == role))
+        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+         (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.get('role', '') == role ||
+          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.get('roleMirror', '') == role))
       );
     }
     function isAdmin() {
