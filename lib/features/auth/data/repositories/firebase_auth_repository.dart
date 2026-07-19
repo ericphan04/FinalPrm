@@ -194,8 +194,8 @@ class FirebaseAuthRepository implements AuthRepository {
 
       if (userDoc.exists) {
         final data = userDoc.data();
-        if (data != null && data.containsKey('role')) {
-          final roleClaim = data['role'] as String?;
+        if (data != null) {
+          final roleClaim = data['role'] as String? ?? data['roleMirror'] as String?;
           role = _parseRole(roleClaim);
         }
       }

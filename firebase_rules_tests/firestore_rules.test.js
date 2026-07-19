@@ -127,5 +127,15 @@ describe('Firestore Security Rules', () => {
       // Attempt to delete own profile -> fails
       await assertFails(user1Db.collection('users').doc('user_1').delete());
     });
+
+    it('allows fallback admin (no custom claim, but has role admin in users document) to read config', async () => {
+      // 1. Create a user doc with role: 'admin' using admin context
+      const adminDb = testEnv.authenticatedContext('admin_1', { role: 'admin' }).firestore();
+      await adminDb.collection('users').doc('fallback_admin').set({ role: 'admin' });
+
+      // 2. Access config system using fallback_admin user (no claims)
+      const fallbackDb = testEnv.authenticatedContext('fallback_admin').firestore();
+      await assertSucceeds(fallbackDb.collection('config').doc('system').get());
+    });
   });
 });

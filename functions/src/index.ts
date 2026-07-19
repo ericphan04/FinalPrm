@@ -731,3 +731,18 @@ export const scheduledCleanup = functions.pubsub.schedule('every 24 hours').onRu
   console.log('Cleanup job completed');
   return null;
 });
+
+// 11. FIRESTORE USER ROLE SYNC TRIGGER (to sync roles to custom claims in auth)
+export const onUserWrite = functions.firestore
+  .document('users/{userId}')
+  .onWrite(async (change, context) => {
+    const data = change.after.data();
+    if (!data) return;
+    const role = data.role || data.roleMirror || 'user';
+    try {
+      await admin.auth().setCustomUserClaims(context.params.userId, { role });
+      console.log(`Successfully synced role '${role}' to custom claims for user ${context.params.userId}`);
+    } catch (e) {
+      console.warn(`Could not set custom claims for user ${context.params.userId}: ${e}`);
+    }
+  });
