@@ -52,13 +52,13 @@ describe('Firestore Security Rules', () => {
     it('allows sellers (claim role: seller) to create products', async () => {
       const sellerDb = testEnv.authenticatedContext('seller_1', { role: 'seller' }).firestore();
       const productRef = sellerDb.collection('products').doc('nike_shoe');
-      await assertSucceeds(productRef.set({ name: 'Nike Air', price: 100 }));
+      await assertSucceeds(productRef.set({ name: 'Nike Air', price: 100, sellerId: 'seller_1', status: 'draft' }));
     });
 
     it('allows admins (claim role: admin) to create/update/delete products', async () => {
       const adminDb = testEnv.authenticatedContext('admin_1', { role: 'admin' }).firestore();
       const productRef = adminDb.collection('products').doc('nike_shoe');
-      await assertSucceeds(productRef.set({ name: 'Nike Air', price: 100 }));
+      await assertSucceeds(productRef.set({ name: 'Nike Air', price: 100, sellerId: 'seller_1', status: 'draft' }));
       await assertSucceeds(productRef.update({ price: 120 }));
       await assertSucceeds(productRef.delete());
     });

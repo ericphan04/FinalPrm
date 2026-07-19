@@ -7,6 +7,8 @@ import '../../domain/models/cart_item.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
 
+import 'package:uuid/uuid.dart';
+
 abstract class OrderRepository {
   Future<Result<AppOrder>> createCheckout(
     String userId,
@@ -32,50 +34,67 @@ class OrderRepositoryImpl implements OrderRepository {
     String paymentMethod,
   ) async {
     try {
-      final orderRef = _firestore.collection('orders').doc();
-      final total = items.fold<double>(0, (sum, item) => sum + (item.price * item.quantity));
-      
-      final orderData = {
-        'userId': userId,
-        'status': 'pending',
-        'totalAmount': total,
-        'shippingAddress': address.toJson(),
+      final idempotencyKey = const Uuid().v4();
+      final callable = _functions.httpsCallable('createCheckout');
+
+      final response = await callable.call({
+        'items': items
+            .map(
+              (e) => {
+                'cartItemId': e.id,
+                'productId': e.productId,
+                'variantId': e.variantId,
+                'quantity': e.quantity,
+              },
+            )
+            .toList(),
+        'address': address.toJson(),
         'paymentMethod': paymentMethod,
-        'items': items.map((e) => e.toJson()).toList(),
-        'createdAt': FieldValue.serverTimestamp(),
-      };
-      
-      await orderRef.set(orderData);
-      
-      final orderDoc = await orderRef.get();
-      if (orderDoc.exists) {
-        final savedData = orderDoc.data()!;
-        savedData['id'] = orderDoc.id;
-        if (savedData['createdAt'] is Timestamp) {
-          savedData['createdAt'] = (savedData['createdAt'] as Timestamp).toDate().toIso8601String();
-        } else {
-          savedData['createdAt'] = DateTime.now().toIso8601String();
+        'idempotencyKey': idempotencyKey,
+      });
+
+      final data = response.data;
+      final orderIds = List<String>.from(data['orderIds']);
+      if (orderIds.isNotEmpty) {
+        final orderDoc = await _firestore
+            .collection('orders')
+            .doc(orderIds.first)
+            .get();
+        if (orderDoc.exists) {
+          final savedData = orderDoc.data()!;
+          savedData['id'] = orderDoc.id;
+          if (savedData['createdAt'] is Timestamp) {
+            savedData['createdAt'] = (savedData['createdAt'] as Timestamp)
+                .toDate()
+                .toIso8601String();
+          } else {
+            savedData['createdAt'] = DateTime.now().toIso8601String();
+          }
+          if (savedData['updatedAt'] is Timestamp) {
+            savedData['updatedAt'] = (savedData['updatedAt'] as Timestamp)
+                .toDate()
+                .toIso8601String();
+          }
+          return Success(AppOrder.fromJson(savedData));
         }
-        return Success(AppOrder.fromJson(savedData));
       }
-      
-      return Failure(AppFailure.serverError('Không thể lấy dữ liệu đơn hàng sau khi tạo'));
+
+      return Failure(
+        AppFailure.serverError('Không thể lấy dữ liệu đơn hàng sau khi tạo'),
+      );
     } catch (e) {
-      return Failure(AppFailure.serverError('Lỗi hệ thống: $e'));
+      return Failure(AppFailure.serverError('Lỗi đặt hàng: $e'));
     }
   }
 
   @override
   Future<Result<void>> cancelOrder(String orderId, String reason) async {
     try {
-      await _firestore.collection('orders').doc(orderId).update({
-        'status': 'cancelled',
-        'cancelReason': reason,
-        'updatedAt': FieldValue.serverTimestamp(),
-      });
+      final callable = _functions.httpsCallable('cancelOrder');
+      await callable.call({'orderId': orderId, 'reason': reason});
       return const Success(null);
     } catch (e) {
-      return Failure(AppFailure.serverError('Lỗi hệ thống: $e'));
+      return Failure(AppFailure.serverError('Lỗi hủy đơn hàng: $e'));
     }
   }
 
@@ -101,7 +120,7 @@ class OrderRepositoryImpl implements OrderRepository {
             }
             return AppOrder.fromJson(data);
           }).toList();
-          
+
           orders.sort((a, b) => b.createdAt.compareTo(a.createdAt));
           return orders;
         });

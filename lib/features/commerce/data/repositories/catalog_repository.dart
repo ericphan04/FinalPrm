@@ -68,7 +68,7 @@ class CatalogRepositoryImpl implements CatalogRepository {
 
       final snapshot = await query.get();
       final List<Product> products = [];
-      
+
       for (final doc in snapshot.docs) {
         final data = doc.data() as Map<String, dynamic>;
         data['id'] = doc.id;

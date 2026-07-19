@@ -20,7 +20,6 @@ void main() {
     registerFallbackValue(ProductStatus.draft);
   });
 
-
   group('SellerProductController & Repository Validations', () {
     test(
       'saveProductDraft validates VND pricing and prevents non-integers',

@@ -7,34 +7,56 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
-    // Helper function to get role of logged in user from Firestore
-    function getUserRole() {
-      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role;
+    // Helper functions to check authentication and roles
+    function signedIn() {
+      return request.auth != null;
+    }
+    function roleIs(role) {
+      return signedIn() && request.auth.token.role == role;
+    }
+    function isAdmin() {
+      return roleIs('admin');
+    }
+    function isSeller() {
+      return roleIs('seller');
     }
 
     // Quy tắc cho collection 'users'
     match /users/{userId} {
       // Chỉ Admin hoặc chính chủ tài khoản mới được đọc profile
-      allow read: if request.auth != null && (request.auth.uid == userId || getUserRole() == 'admin');
+      allow read: if signedIn() && (request.auth.uid == userId || isAdmin());
 
-      // Cho phép tạo nếu tài khoản trùng khớp
-      allow create: if request.auth != null && request.auth.uid == userId;
+      // Cho phép tạo nếu tài khoản trùng khớp và không tự cấp quyền
+      allow create: if signedIn() && (
+        isAdmin() || (
+          request.auth.uid == userId
+          && !request.resource.data.keys().hasAny(['role', 'roleMirror', 'status'])
+        )
+      );
 
       // Cho phép cập nhật nếu là chính chủ và không thay đổi trường role/status (hoặc nếu là admin thì được đổi)
-      allow update: if request.auth != null && (
-        getUserRole() == 'admin' || (
+      allow update: if signedIn() && (
+        isAdmin() || (
           request.auth.uid == userId 
-          && (!request.resource.data.keys().hasAny(['role', 'status']) 
-              || (resource.data != null && request.resource.data.role == resource.data.role && request.resource.data.status == resource.data.status))
+          && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['role', 'roleMirror', 'status'])
         )
       );
 
       // Chỉ Admin mới có quyền xóa tài khoản người dùng
-      allow delete: if request.auth != null && getUserRole() == 'admin';
+      allow delete: if isAdmin();
 
       // Cho phép truy cập vào các collection con (cart, favorites, v.v) của chính User đó
-      match /{document=**} {
-        allow read, write: if request.auth != null && (request.auth.uid == userId || getUserRole() == 'admin');
+      match /cart/{itemId} {
+        allow read, write: if signedIn() && (request.auth.uid == userId || isAdmin());
+      }
+      match /favorites/{productId} {
+        allow read, write: if signedIn() && (request.auth.uid == userId || isAdmin());
+      }
+      match /addresses/{addressId} {
+        allow read, write: if signedIn() && (request.auth.uid == userId || isAdmin());
+      }
+      match /fcm_tokens/{tokenId} {
+        allow read, write: if signedIn() && (request.auth.uid == userId || isAdmin());
       }
     }
 
@@ -43,52 +65,101 @@ service cloud.firestore {
       // Bất kỳ ai cũng có thể đọc danh sách sản phẩm (kể cả Guest)
       allow read: if true;
 
-      // Chỉ Seller hoặc Admin mới có quyền tạo, sửa đổi hoặc xóa sản phẩm
-      allow write: if request.auth != null && (
-        getUserRole() == 'seller' || getUserRole() == 'admin'
+      // Chỉ Seller mới được tạo sản phẩm (ở trạng thái draft), Admin được ghi đè mọi thứ
+      allow create: if isAdmin() || (
+        isSeller()
+        && request.resource.data.sellerId == request.auth.uid
+        && request.resource.data.status == 'draft'
       );
+
+      // Chỉ Seller sở hữu sản phẩm mới được sửa, hoặc Admin
+      allow update: if isAdmin() || (
+        isSeller()
+        && resource.data.sellerId == request.auth.uid
+        && request.resource.data.sellerId == resource.data.sellerId
+      );
+
+      // Chỉ Admin mới có quyền xóa sản phẩm
+      allow delete: if isAdmin();
+
+      // Variants subcollection
+      match /variants/{variantId} {
+        allow read: if true;
+        allow write: if isAdmin() || (
+          isSeller()
+          && get(/databases/$(database)/documents/products/$(productId)).data.sellerId == request.auth.uid
+        );
+      }
     }
 
     // Quy tắc cho collection 'orders'
     match /orders/{orderId} {
-      // Bất kỳ ai cũng có thể đọc, tạo và cập nhật đơn hàng (để cho phép khách hủy đơn)
-      allow read, create, update: if true;
-      
-      // Cho phép Seller và Admin xóa đơn
-      allow delete: if request.auth != null && (
-        getUserRole() == 'seller' ||
-        getUserRole() == 'admin'
+      // Chỉ buyer, seller sở hữu đơn hoặc admin mới được đọc đơn
+      allow read: if signedIn() && (
+        resource.data.buyerId == request.auth.uid
+        || resource.data.sellerId == request.auth.uid
+        || isAdmin()
       );
+      
+      // Chỉ Cloud Functions ghi (client không được write)
+      allow write: if false;
+    }
+
+    // Quy tắc cho collection 'checkouts'
+    match /checkouts/{checkoutId} {
+      allow read: if signedIn() && (resource.data.buyerId == request.auth.uid || isAdmin());
+      allow write: if false; // Chỉ Cloud Functions ghi
     }
 
     // Quy tắc cho collection 'stores'
     match /stores/{storeId} {
-      // Bất kỳ ai cũng có thể xem thông tin cửa hàng
       allow read: if true;
-      
-      // Chỉ chính chủ cửa hàng hoặc Admin mới được ghi
-      allow write: if request.auth != null && (
-        request.auth.uid == storeId ||
-        getUserRole() == 'admin'
-      );
+      allow write: if isAdmin() || (isSeller() && request.auth.uid == storeId);
     }
 
     // Quy tắc cho collection 'seller_applications'
     match /seller_applications/{applicationId} {
-      // Chỉ chính chủ đơn ứng tuyển hoặc Admin mới có quyền đọc/ghi
-      allow read, write: if request.auth != null && (
-        request.auth.uid == applicationId ||
-        getUserRole() == 'admin'
-      );
+      // Chỉ chính chủ đơn ứng tuyển hoặc Admin mới có quyền đọc
+      allow read: if signedIn() && (request.auth.uid == applicationId || isAdmin());
+      // Cho phép gửi đơn ứng tuyển (chỉ tạo ở trạng thái pending)
+      allow create: if signedIn() && request.auth.uid == applicationId
+        && request.resource.data.status == 'pending';
+      // Cho phép admin cập nhật (duyệt/từ chối)
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
     }
 
     // Quy tắc cho collection 'categories'
     match /categories/{categoryId} {
-      // Bất kỳ ai cũng có thể đọc danh mục (kể cả Guest)
       allow read: if true;
-      
-      // Cho phép ghi nếu đã đăng nhập (phục vụ tự động seed ở client)
-      allow write: if request.auth != null;
+      allow write: if isAdmin() || signedIn(); // Cho phép write nếu đã đăng nhập phục vụ seed
+    }
+
+    // Quy tắc cho collection 'notifications'
+    match /notifications/{userId}/items/{notificationId} {
+      allow read: if signedIn() && request.auth.uid == userId;
+      // Chỉ cho phép cập nhật readAt từ client
+      allow update: if signedIn() && request.auth.uid == userId
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['readAt']);
+      allow write: if false; // Tạo/Xóa do Cloud Functions
+    }
+
+    // Quy tắc cho collection 'auditLogs'
+    match /auditLogs/{logId} {
+      allow read: if isAdmin();
+      allow write: if false; // Chỉ Cloud Functions ghi
+    }
+
+    // Quy tắc cho collection 'stats'
+    match /stats/{statId} {
+      allow read: if isAdmin() || roleIs('seller');
+      allow write: if false; // Chỉ Cloud Functions ghi
+    }
+
+    // Quy tắc cho collection 'reviews'
+    match /reviews/{reviewId} {
+      allow read: if true;
+      allow write: if false; // Chỉ Cloud Functions ghi
     }
   }
 }

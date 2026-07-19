@@ -22,7 +22,9 @@ class FavoriteRepositoryImpl implements FavoriteRepository {
     try {
       if (uid == null) {
         // Guest Favorites
-        final List<String>? favorites = _prefs.getStringList(_guestFavoritesKey);
+        final List<String>? favorites = _prefs.getStringList(
+          _guestFavoritesKey,
+        );
         return Success(favorites ?? []);
       } else {
         // User Favorites
@@ -43,7 +45,8 @@ class FavoriteRepositoryImpl implements FavoriteRepository {
   Future<Result<void>> addFavorite(String? uid, String productId) async {
     try {
       if (uid == null) {
-        final List<String> favorites = _prefs.getStringList(_guestFavoritesKey) ?? [];
+        final List<String> favorites =
+            _prefs.getStringList(_guestFavoritesKey) ?? [];
         if (!favorites.contains(productId)) {
           favorites.add(productId);
           await _prefs.setStringList(_guestFavoritesKey, favorites);
@@ -66,7 +69,8 @@ class FavoriteRepositoryImpl implements FavoriteRepository {
   Future<Result<void>> removeFavorite(String? uid, String productId) async {
     try {
       if (uid == null) {
-        final List<String> favorites = _prefs.getStringList(_guestFavoritesKey) ?? [];
+        final List<String> favorites =
+            _prefs.getStringList(_guestFavoritesKey) ?? [];
         if (favorites.contains(productId)) {
           favorites.remove(productId);
           await _prefs.setStringList(_guestFavoritesKey, favorites);
@@ -88,12 +92,18 @@ class FavoriteRepositoryImpl implements FavoriteRepository {
   @override
   Future<Result<void>> mergeGuestFavorites(String uid) async {
     try {
-      final List<String> guestFavorites = _prefs.getStringList(_guestFavoritesKey) ?? [];
+      final List<String> guestFavorites =
+          _prefs.getStringList(_guestFavoritesKey) ?? [];
       if (guestFavorites.isNotEmpty) {
         final batch = _firestore.batch();
-        final coll = _firestore.collection('users').doc(uid).collection('favorites');
+        final coll = _firestore
+            .collection('users')
+            .doc(uid)
+            .collection('favorites');
         for (var productId in guestFavorites) {
-          batch.set(coll.doc(productId), {'addedAt': FieldValue.serverTimestamp()});
+          batch.set(coll.doc(productId), {
+            'addedAt': FieldValue.serverTimestamp(),
+          });
         }
         await batch.commit();
         await _prefs.remove(_guestFavoritesKey);

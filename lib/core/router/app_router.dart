@@ -6,12 +6,15 @@ import '../../features/auth/presentation/providers/auth_providers.dart';
 import '../../features/profile/presentation/views/about_view.dart';
 import '../../features/profile/presentation/views/help_view.dart';
 import '../../features/profile/presentation/views/profile_view.dart';
+import '../../features/profile/presentation/views/notification_history_view.dart';
 
 // Authentication Views
 import '../../features/auth/presentation/views/login_view.dart';
 import '../../features/auth/presentation/views/register_view.dart';
 import '../../features/auth/presentation/views/forgot_password_view.dart';
 import '../../features/auth/presentation/views/mock_screens.dart';
+
+import '../../features/admin/presentation/views/admin_dashboard_view.dart';
 
 // Seller Views
 import '../../features/seller/presentation/views/seller_apply_view.dart';
@@ -94,6 +97,10 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/profile',
         builder: (context, state) => const ProfileView(),
       ),
+      GoRoute(
+        path: '/notifications',
+        builder: (context, state) => const NotificationHistoryView(),
+      ),
       GoRoute(path: '/about', builder: (context, state) => const AboutView()),
       GoRoute(path: '/help', builder: (context, state) => const HelpView()),
       GoRoute(
@@ -106,7 +113,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: '/admin/dashboard',
-        builder: (context, state) => const AdminDashboardScreen(),
+        builder: (context, state) => const AdminDashboardView(),
       ),
       GoRoute(
         path: '/catalog',

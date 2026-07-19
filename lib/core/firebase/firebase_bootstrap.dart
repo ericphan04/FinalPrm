@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/foundation.dart' show kDebugMode, kIsWeb;
 import '../../firebase_options.dart';
 import '../logging/app_logger.dart';
@@ -45,6 +46,9 @@ class FirebaseBootstrap {
 
         // Cấu hình Storage Emulator
         await FirebaseStorage.instance.useStorageEmulator(host, 9199);
+
+        // Cấu hình Functions Emulator
+        FirebaseFunctions.instance.useFunctionsEmulator(host, 5001);
 
         AppLogger.info(
           'Kết nối Firebase Local Emulators thành công (Auth: 9099, Firestore: 8080, Storage: 9199)',
