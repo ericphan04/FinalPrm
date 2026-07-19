@@ -71,26 +71,61 @@ class CartView extends ConsumerWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('Subtotal', style: TextStyle(color: Colors.grey[600], fontSize: 16)),
-                        Text(currencyFormatter.format(cartState.totalAmount), style: TextStyle(color: Colors.grey[600], fontSize: 16)),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text('Shipping', style: TextStyle(color: Colors.grey[600], fontSize: 16)),
-                        Text(currencyFormatter.format(250000), style: TextStyle(color: Colors.grey[600], fontSize: 16)), // Hardcoded shipping for UI matching
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text('Total', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                         Text(
-                          currencyFormatter.format(cartState.totalAmount + 250000),
-                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                          'Subtotal',
+                          style: TextStyle(
+                            color: Colors.grey[600],
+                            fontSize: 16,
+                          ),
+                        ),
+                        Text(
+                          currencyFormatter.format(cartState.totalAmount),
+                          style: TextStyle(
+                            color: Colors.grey[600],
+                            fontSize: 16,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Shipping',
+                          style: TextStyle(
+                            color: Colors.grey[600],
+                            fontSize: 16,
+                          ),
+                        ),
+                        Text(
+                          currencyFormatter.format(250000),
+                          style: TextStyle(
+                            color: Colors.grey[600],
+                            fontSize: 16,
+                          ),
+                        ), // Hardcoded shipping for UI matching
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'Total',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                        Text(
+                          currencyFormatter.format(
+                            cartState.totalAmount + 250000,
+                          ),
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
                         ),
                       ],
                     ),
@@ -101,14 +136,26 @@ class CartView extends ConsumerWidget {
                       child: ElevatedButton(
                         onPressed: () => context.push('/checkout'),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
-                          foregroundColor: Theme.of(context).brightness == Brightness.dark ? Colors.black : Colors.white,
+                          backgroundColor:
+                              Theme.of(context).brightness == Brightness.dark
+                              ? Colors.white
+                              : Colors.black,
+                          foregroundColor:
+                              Theme.of(context).brightness == Brightness.dark
+                              ? Colors.black
+                              : Colors.white,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(30),
                           ),
                           elevation: 0,
                         ),
-                        child: const Text('Checkout', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                        child: const Text(
+                          'Checkout',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ),
                     ),
                   ],

@@ -3,14 +3,14 @@ import 'package:flutter/material.dart';
 class AppColors {
   AppColors._();
 
-  // Primary brand color (vibrant active orange, reminiscent of premium sports brands)
-  static const Color primary = Color(0xFFFF5F1F);
-  static const Color primaryDark = Color(0xFFE04F15);
-  static const Color primaryLight = Color(0xFFFFECE5);
+  // Primary brand color (Sleek Monochrome Luxury - Deep Black)
+  static const Color primary = Color(0xFF0F172A);
+  static const Color primaryDark = Color(0xFF000000);
+  static const Color primaryLight = Color(0xFFF1F5F9);
 
-  // Secondary brand color (deep cool slate)
-  static const Color secondary = Color(0xFF0F172A);
-  static const Color secondaryLight = Color(0xFF1E293B);
+  // Secondary brand color (Cool slate accent)
+  static const Color secondary = Color(0xFF334155);
+  static const Color secondaryLight = Color(0xFFE2E8F0);
 
   // Light Mode Colors
   static const Color backgroundLight = Color(0xFFF8FAFC);

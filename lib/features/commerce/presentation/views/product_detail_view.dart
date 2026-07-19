@@ -56,15 +56,21 @@ class _ProductDetailViewState extends ConsumerState<ProductDetailView> {
             builder: (context, ref, _) {
               // Watch state so it rebuilds when favorites change
               ref.watch(favoriteControllerProvider);
-              final isFavorite = ref.read(favoriteControllerProvider.notifier).isFavorite(product.id);
-              
+              final isFavorite = ref
+                  .read(favoriteControllerProvider.notifier)
+                  .isFavorite(product.id);
+
               return IconButton(
                 icon: Icon(
-                  isFavorite ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+                  isFavorite
+                      ? Icons.favorite_rounded
+                      : Icons.favorite_border_rounded,
                   color: isFavorite ? Colors.redAccent : null,
                 ),
                 onPressed: () {
-                  ref.read(favoriteControllerProvider.notifier).toggleFavorite(product.id);
+                  ref
+                      .read(favoriteControllerProvider.notifier)
+                      .toggleFavorite(product.id);
                 },
               );
             },
@@ -72,8 +78,11 @@ class _ProductDetailViewState extends ConsumerState<ProductDetailView> {
           Consumer(
             builder: (context, ref, _) {
               final cartState = ref.watch(cartControllerProvider);
-              final itemCount = cartState.items.fold(0, (sum, item) => sum + item.quantity);
-              
+              final itemCount = cartState.items.fold(
+                0,
+                (sum, item) => sum + item.quantity,
+              );
+
               return IconButton(
                 icon: Badge(
                   isLabelVisible: itemCount > 0,

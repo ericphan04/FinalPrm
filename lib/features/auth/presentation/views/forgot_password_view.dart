@@ -73,74 +73,145 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
       }
     });
 
+    final backgroundColor = isDark
+        ? AppColors.backgroundDark
+        : AppColors.backgroundLight;
+    final primaryTextColor = isDark
+        ? AppColors.textDarkPrimary
+        : AppColors.textLightPrimary;
+    final secondaryTextColor = isDark
+        ? AppColors.textDarkSecondary
+        : AppColors.textLightSecondary;
+    final cardColor = isDark ? AppColors.surfaceDark : AppColors.surfaceLight;
+
     return Stack(
       children: [
         Scaffold(
+          backgroundColor: backgroundColor,
           appBar: AppBar(
-            title: const Text('Khôi phục mật khẩu'),
+            backgroundColor: Colors.transparent,
+            elevation: 0,
             leading: IconButton(
-              icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
+              icon: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: isDark
+                      ? Colors.white.withValues(alpha: 0.1)
+                      : Colors.black.withValues(alpha: 0.05),
+                ),
+                child: Icon(
+                  Icons.arrow_back_ios_new_rounded,
+                  size: 18,
+                  color: primaryTextColor,
+                ),
+              ),
               onPressed: () => context.pop(),
+              tooltip: 'Quay lại',
             ),
           ),
           body: SafeArea(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(AppSpacing.lg),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: AppSpacing.lg),
-                    Text(
-                      'Quên mật khẩu?',
-                      style: theme.textTheme.headlineMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: isDark
-                            ? AppColors.textDarkPrimary
-                            : AppColors.textLightPrimary,
+            child: Center(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+                child: Container(
+                  constraints: const BoxConstraints(maxWidth: 440),
+                  padding: const EdgeInsets.all(AppSpacing.xl),
+                  decoration: BoxDecoration(
+                    color: cardColor,
+                    borderRadius: BorderRadius.circular(AppSpacing.radiusXl),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(
+                          alpha: isDark ? 0.4 : 0.06,
+                        ),
+                        blurRadius: 24,
+                        offset: const Offset(0, 8),
                       ),
+                    ],
+                    border: Border.all(
+                      color: isDark
+                          ? AppColors.borderDark
+                          : AppColors.borderLight,
+                      width: 1,
                     ),
-                    const SizedBox(height: AppSpacing.sm),
-                    Text(
-                      'Nhập địa chỉ email của bạn dưới đây, chúng tôi sẽ gửi liên kết để đặt lại mật khẩu mới.',
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: isDark
-                            ? AppColors.textDarkSecondary
-                            : AppColors.textLightSecondary,
-                      ),
+                  ),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        // Header Icon
+                        Center(
+                          child: Container(
+                            width: 64,
+                            height: 64,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: isDark ? Colors.white : AppColors.primary,
+                            ),
+                            child: Icon(
+                              Icons.lock_reset_rounded,
+                              size: 32,
+                              color: isDark ? AppColors.primary : Colors.white,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: AppSpacing.md),
+
+                        // Title & Subtitle
+                        Text(
+                          'KHÔI PHỤC MẬT KHẨU',
+                          textAlign: TextAlign.center,
+                          style: theme.textTheme.headlineSmall?.copyWith(
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: 1.2,
+                            color: primaryTextColor,
+                          ),
+                        ),
+                        const SizedBox(height: AppSpacing.xs),
+                        Text(
+                          'Nhập email của bạn để nhận liên kết khôi phục mật khẩu mới',
+                          textAlign: TextAlign.center,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: secondaryTextColor,
+                          ),
+                        ),
+                        const SizedBox(height: AppSpacing.xxl),
+
+                        AppTextField(
+                          controller: _emailController,
+                          labelText: 'Địa chỉ Email',
+                          hintText: 'email@domain.com',
+                          keyboardType: TextInputType.emailAddress,
+                          prefixIcon: Icon(
+                            Icons.email_outlined,
+                            color: primaryTextColor.withValues(alpha: 0.7),
+                          ),
+                          validator: (value) {
+                            if (value == null || value.trim().isEmpty) {
+                              return 'Vui lòng nhập email';
+                            }
+                            final emailRegExp = RegExp(
+                              r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
+                            );
+                            if (!emailRegExp.hasMatch(value.trim())) {
+                              return 'Định dạng email không hợp lệ';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: AppSpacing.xl),
+
+                        AppButton(
+                          text: 'GỬI YÊU CẦU',
+                          onPressed: _onSubmit,
+                          variant: AppButtonVariant.primary,
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: AppSpacing.xl),
-                    AppTextField(
-                      controller: _emailController,
-                      labelText: 'Địa chỉ Email',
-                      hintText: 'vi_du@email.com',
-                      keyboardType: TextInputType.emailAddress,
-                      prefixIcon: const Icon(
-                        Icons.email_outlined,
-                        color: AppColors.primary,
-                      ),
-                      validator: (value) {
-                        if (value == null || value.trim().isEmpty) {
-                          return 'Vui lòng nhập email';
-                        }
-                        final emailRegExp = RegExp(
-                          r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
-                        );
-                        if (!emailRegExp.hasMatch(value.trim())) {
-                          return 'Định dạng email không hợp lệ';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: AppSpacing.xl),
-                    AppButton(
-                      text: 'Gửi yêu cầu',
-                      onPressed: _onSubmit,
-                      variant: AppButtonVariant.primary,
-                      width: double.infinity,
-                    ),
-                  ],
+                  ),
                 ),
               ),
             ),

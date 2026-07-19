@@ -124,6 +124,28 @@ class AuthController extends StateNotifier<AuthState> {
     );
   }
 
+  /// Thay đổi mật khẩu người dùng
+  Future<bool> changePassword({
+    required String currentPassword,
+    required String newPassword,
+  }) async {
+    state = state.copyWith(isLoading: true, errorMessage: null);
+    final result = await _repository.changePassword(
+      currentPassword: currentPassword,
+      newPassword: newPassword,
+    );
+    return result.when(
+      onSuccess: (_) {
+        state = state.copyWith(isLoading: false);
+        return true;
+      },
+      onFailure: (failure) {
+        state = state.copyWith(isLoading: false, errorMessage: failure.message);
+        return false;
+      },
+    );
+  }
+
   @override
   void dispose() {
     _subscription?.cancel();

@@ -82,9 +82,43 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       }
     });
 
+    final backgroundColor = isDark
+        ? AppColors.backgroundDark
+        : AppColors.backgroundLight;
+    final primaryTextColor = isDark
+        ? AppColors.textDarkPrimary
+        : AppColors.textLightPrimary;
+    final secondaryTextColor = isDark
+        ? AppColors.textDarkSecondary
+        : AppColors.textLightSecondary;
+    final cardColor = isDark ? AppColors.surfaceDark : AppColors.surfaceLight;
+
     return Stack(
       children: [
         Scaffold(
+          backgroundColor: backgroundColor,
+          appBar: AppBar(
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            leading: IconButton(
+              icon: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: isDark
+                      ? Colors.white.withValues(alpha: 0.1)
+                      : Colors.black.withValues(alpha: 0.05),
+                ),
+                child: Icon(
+                  Icons.arrow_back_ios_new_rounded,
+                  size: 18,
+                  color: primaryTextColor,
+                ),
+              ),
+              onPressed: () => context.pop(),
+              tooltip: 'Quay lại',
+            ),
+          ),
           body: SafeArea(
             child: Center(
               child: SingleChildScrollView(
@@ -92,159 +126,191 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   horizontal: AppSpacing.lg,
                   vertical: AppSpacing.md,
                 ),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      // Header Section
-                      const Icon(
-                        Icons.app_registration_rounded,
-                        size: 64,
-                        color: AppColors.primary,
-                      ),
-                      const SizedBox(height: AppSpacing.md),
-                      Text(
-                        'Tạo tài khoản mới',
-                        textAlign: TextAlign.center,
-                        style: theme.textTheme.headlineMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: isDark
-                              ? AppColors.textDarkPrimary
-                              : AppColors.textLightPrimary,
+                child: Container(
+                  constraints: const BoxConstraints(maxWidth: 440),
+                  padding: const EdgeInsets.all(AppSpacing.xl),
+                  decoration: BoxDecoration(
+                    color: cardColor,
+                    borderRadius: BorderRadius.circular(AppSpacing.radiusXl),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(
+                          alpha: isDark ? 0.4 : 0.06,
                         ),
-                      ),
-                      const SizedBox(height: AppSpacing.xs),
-                      Text(
-                        'Đăng ký tài khoản để bắt đầu trải nghiệm mua sắm giày dép tiện ích',
-                        textAlign: TextAlign.center,
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: isDark
-                              ? AppColors.textDarkSecondary
-                              : AppColors.textLightSecondary,
-                        ),
-                      ),
-                      const SizedBox(height: AppSpacing.xl),
-
-                      // Input Fields
-                      AppTextField(
-                        controller: _nameController,
-                        labelText: 'Họ và tên',
-                        hintText: 'Nhập họ và tên...',
-                        prefixIcon: const Icon(
-                          Icons.person_outline_rounded,
-                          color: AppColors.primary,
-                        ),
-                        validator: (value) {
-                          if (value == null || value.trim().isEmpty) {
-                            return 'Họ và tên không được để trống';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: AppSpacing.md),
-
-                      AppTextField(
-                        controller: _emailController,
-                        labelText: 'Địa chỉ Email',
-                        hintText: 'vi_du@email.com',
-                        keyboardType: TextInputType.emailAddress,
-                        prefixIcon: const Icon(
-                          Icons.email_outlined,
-                          color: AppColors.primary,
-                        ),
-                        validator: (value) {
-                          if (value == null || value.trim().isEmpty) {
-                            return 'Email không được để trống';
-                          }
-                          final emailRegExp = RegExp(
-                            r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
-                          );
-                          if (!emailRegExp.hasMatch(value.trim())) {
-                            return 'Định dạng email không hợp lệ';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: AppSpacing.md),
-
-                      AppTextField(
-                        controller: _passwordController,
-                        labelText: 'Mật khẩu',
-                        hintText: 'Nhập mật khẩu...',
-                        isPassword: true,
-                        prefixIcon: const Icon(
-                          Icons.lock_outline_rounded,
-                          color: AppColors.primary,
-                        ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Mật khẩu không được để trống';
-                          }
-                          if (value.length < 6) {
-                            return 'Mật khẩu tối thiểu từ 6 ký tự';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: AppSpacing.md),
-
-                      AppTextField(
-                        controller: _confirmPasswordController,
-                        labelText: 'Xác nhận mật khẩu',
-                        hintText: 'Nhập lại mật khẩu...',
-                        isPassword: true,
-                        prefixIcon: const Icon(
-                          Icons.lock_reset_rounded,
-                          color: AppColors.primary,
-                        ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Vui lòng xác nhận mật khẩu';
-                          }
-                          if (value != _passwordController.text) {
-                            return 'Mật khẩu xác nhận không khớp';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: AppSpacing.xl),
-
-                      // Action Button
-                      AppButton(
-                        text: 'Đăng Ký',
-                        onPressed: _onRegister,
-                        variant: AppButtonVariant.primary,
-                      ),
-                      const SizedBox(height: AppSpacing.lg),
-
-                      // Footer Navigation link
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            'Đã có tài khoản? ',
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              color: isDark
-                                  ? AppColors.textDarkSecondary
-                                  : AppColors.textLightSecondary,
-                            ),
-                          ),
-                          GestureDetector(
-                            behavior: HitTestBehavior.opaque,
-                            onTap: () => context.pop(),
-                            child: Text(
-                              'Đăng nhập ngay',
-                              style: theme.textTheme.bodyMedium?.copyWith(
-                                color: AppColors.primary,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ],
+                        blurRadius: 24,
+                        offset: const Offset(0, 8),
                       ),
                     ],
+                    border: Border.all(
+                      color: isDark
+                          ? AppColors.borderDark
+                          : AppColors.borderLight,
+                      width: 1,
+                    ),
+                  ),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        // Header Icon
+                        Center(
+                          child: Container(
+                            width: 64,
+                            height: 64,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: isDark ? Colors.white : AppColors.primary,
+                            ),
+                            child: Icon(
+                              Icons.person_add_outlined,
+                              size: 32,
+                              color: isDark ? AppColors.primary : Colors.white,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: AppSpacing.md),
+
+                        // Title & Subtitle
+                        Text(
+                          'Tạo tài khoản mới',
+                          textAlign: TextAlign.center,
+                          style: theme.textTheme.headlineSmall?.copyWith(
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: 1.2,
+                            color: primaryTextColor,
+                          ),
+                        ),
+                        const SizedBox(height: AppSpacing.xs),
+                        Text(
+                          'Đăng ký để bắt đầu trải nghiệm mua sắm đẳng cấp',
+                          textAlign: TextAlign.center,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: secondaryTextColor,
+                          ),
+                        ),
+                        const SizedBox(height: AppSpacing.xl),
+
+                        // Input Fields
+                        AppTextField(
+                          controller: _nameController,
+                          labelText: 'Họ và tên',
+                          hintText: 'Nhập họ và tên...',
+                          prefixIcon: Icon(
+                            Icons.person_outline_rounded,
+                            color: primaryTextColor.withValues(alpha: 0.7),
+                          ),
+                          validator: (value) {
+                            if (value == null || value.trim().isEmpty) {
+                              return 'Họ và tên không được để trống';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: AppSpacing.md),
+
+                        AppTextField(
+                          controller: _emailController,
+                          labelText: 'Địa chỉ Email',
+                          hintText: 'email@domain.com',
+                          keyboardType: TextInputType.emailAddress,
+                          prefixIcon: Icon(
+                            Icons.email_outlined,
+                            color: primaryTextColor.withValues(alpha: 0.7),
+                          ),
+                          validator: (value) {
+                            if (value == null || value.trim().isEmpty) {
+                              return 'Email không được để trống';
+                            }
+                            final emailRegExp = RegExp(
+                              r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
+                            );
+                            if (!emailRegExp.hasMatch(value.trim())) {
+                              return 'Định dạng email không hợp lệ';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: AppSpacing.md),
+
+                        AppTextField(
+                          controller: _passwordController,
+                          labelText: 'Mật khẩu',
+                          hintText: 'Tối thiểu 6 ký tự',
+                          isPassword: true,
+                          prefixIcon: Icon(
+                            Icons.lock_outline_rounded,
+                            color: primaryTextColor.withValues(alpha: 0.7),
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Mật khẩu không được để trống';
+                            }
+                            if (value.length < 6) {
+                              return 'Mật khẩu tối thiểu từ 6 ký tự';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: AppSpacing.md),
+
+                        AppTextField(
+                          controller: _confirmPasswordController,
+                          labelText: 'Xác nhận mật khẩu',
+                          hintText: 'Nhập lại mật khẩu...',
+                          isPassword: true,
+                          prefixIcon: Icon(
+                            Icons.lock_reset_rounded,
+                            color: primaryTextColor.withValues(alpha: 0.7),
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Vui lòng xác nhận mật khẩu';
+                            }
+                            if (value != _passwordController.text) {
+                              return 'Mật khẩu xác nhận không khớp';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: AppSpacing.xl),
+
+                        // Action Button
+                        AppButton(
+                          text: 'ĐĂNG KÝ NGAY',
+                          onPressed: _onRegister,
+                          variant: AppButtonVariant.primary,
+                        ),
+                        const SizedBox(height: AppSpacing.xl),
+
+                        // Footer Navigation link
+                        Wrap(
+                          alignment: WrapAlignment.center,
+                          crossAxisAlignment: WrapCrossAlignment.center,
+                          children: [
+                            Text(
+                              'Đã có tài khoản? ',
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                color: secondaryTextColor,
+                              ),
+                            ),
+                            GestureDetector(
+                              behavior: HitTestBehavior.opaque,
+                              onTap: () => context.pop(),
+                              child: Text(
+                                'Đăng nhập ngay',
+                                style: theme.textTheme.bodyMedium?.copyWith(
+                                  color: primaryTextColor,
+                                  fontWeight: FontWeight.bold,
+                                  decoration: TextDecoration.underline,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),

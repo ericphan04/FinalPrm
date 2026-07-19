@@ -40,8 +40,8 @@ class AppButton extends StatelessWidget {
     switch (variant) {
       case AppButtonVariant.primary:
         buttonStyle = ElevatedButton.styleFrom(
-          backgroundColor: AppColors.primary,
-          foregroundColor: Colors.white,
+          backgroundColor: isDark ? Colors.white : AppColors.primary,
+          foregroundColor: isDark ? AppColors.primary : Colors.white,
           disabledBackgroundColor: isDark
               ? AppColors.surfaceDark
               : AppColors.borderLight,
@@ -50,7 +50,7 @@ class AppButton extends StatelessWidget {
               : AppColors.textLightMuted,
           elevation: 0,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+            borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
           ),
         );
         break;
@@ -126,8 +126,8 @@ class AppButton extends StatelessWidget {
               strokeWidth: 2,
               valueColor: AlwaysStoppedAnimation<Color>(
                 variant == AppButtonVariant.primary
-                    ? Colors.white
-                    : AppColors.primary,
+                    ? (isDark ? AppColors.primary : Colors.white)
+                    : (isDark ? Colors.white : AppColors.primary),
               ),
             ),
           )
@@ -137,9 +137,9 @@ class AppButton extends StatelessWidget {
             style: theme.textTheme.labelLarge?.copyWith(
               color: enabled
                   ? (variant == AppButtonVariant.primary
-                        ? Colors.white
+                        ? (isDark ? AppColors.primary : Colors.white)
                         : (variant == AppButtonVariant.text
-                              ? AppColors.primary
+                              ? (isDark ? Colors.white : AppColors.primary)
                               : theme.colorScheme.onSurface))
                   : (isDark
                         ? AppColors.textDarkMuted

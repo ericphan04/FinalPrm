@@ -24,8 +24,11 @@ class ProductListView extends ConsumerWidget {
           Consumer(
             builder: (context, ref, _) {
               final cartState = ref.watch(cartControllerProvider);
-              final itemCount = cartState.items.fold(0, (sum, item) => sum + item.quantity);
-              
+              final itemCount = cartState.items.fold(
+                0,
+                (sum, item) => sum + item.quantity,
+              );
+
               return IconButton(
                 icon: Badge(
                   isLabelVisible: itemCount > 0,

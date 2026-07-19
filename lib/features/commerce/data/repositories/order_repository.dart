@@ -33,8 +33,11 @@ class OrderRepositoryImpl implements OrderRepository {
   ) async {
     try {
       final orderRef = _firestore.collection('orders').doc();
-      final total = items.fold<double>(0, (sum, item) => sum + (item.price * item.quantity));
-      
+      final total = items.fold<double>(
+        0,
+        (sum, item) => sum + (item.price * item.quantity),
+      );
+
       final orderData = {
         'userId': userId,
         'status': 'pending',
@@ -44,22 +47,26 @@ class OrderRepositoryImpl implements OrderRepository {
         'items': items.map((e) => e.toJson()).toList(),
         'createdAt': FieldValue.serverTimestamp(),
       };
-      
+
       await orderRef.set(orderData);
-      
+
       final orderDoc = await orderRef.get();
       if (orderDoc.exists) {
         final savedData = orderDoc.data()!;
         savedData['id'] = orderDoc.id;
         if (savedData['createdAt'] is Timestamp) {
-          savedData['createdAt'] = (savedData['createdAt'] as Timestamp).toDate().toIso8601String();
+          savedData['createdAt'] = (savedData['createdAt'] as Timestamp)
+              .toDate()
+              .toIso8601String();
         } else {
           savedData['createdAt'] = DateTime.now().toIso8601String();
         }
         return Success(AppOrder.fromJson(savedData));
       }
-      
-      return Failure(AppFailure.serverError('Không thể lấy dữ liệu đơn hàng sau khi tạo'));
+
+      return Failure(
+        AppFailure.serverError('Không thể lấy dữ liệu đơn hàng sau khi tạo'),
+      );
     } catch (e) {
       return Failure(AppFailure.serverError('Lỗi hệ thống: $e'));
     }
@@ -101,7 +108,7 @@ class OrderRepositoryImpl implements OrderRepository {
             }
             return AppOrder.fromJson(data);
           }).toList();
-          
+
           orders.sort((a, b) => b.createdAt.compareTo(a.createdAt));
           return orders;
         });

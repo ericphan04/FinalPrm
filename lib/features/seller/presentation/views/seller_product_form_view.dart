@@ -469,9 +469,7 @@ class _SellerProductFormViewState extends ConsumerState<SellerProductFormView> {
                 width: 100,
                 margin: const EdgeInsets.only(right: AppSpacing.sm),
                 decoration: BoxDecoration(
-                  border: Border.all(
-                    color: AppColors.primary.withOpacity(0.5),
-                  ),
+                  border: Border.all(color: AppColors.primary.withOpacity(0.5)),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: const Column(

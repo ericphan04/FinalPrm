@@ -83,21 +83,22 @@ final favoriteRepositoryProvider = Provider<FavoriteRepository>((ref) {
   return FavoriteRepositoryImpl(FirebaseFirestore.instance, prefs);
 });
 
-final favoriteControllerProvider = StateNotifierProvider<FavoriteController, FavoriteState>(
-  (ref) {
-    final repository = ref.watch(favoriteRepositoryProvider);
-    final authState = ref.watch(authControllerProvider);
-    final uid = authState.user.uid.isEmpty ? null : authState.user.uid;
-    return FavoriteController(repository, uid);
-  },
-);
+final favoriteControllerProvider =
+    StateNotifierProvider<FavoriteController, FavoriteState>((ref) {
+      final repository = ref.watch(favoriteRepositoryProvider);
+      final authState = ref.watch(authControllerProvider);
+      final uid = authState.user.uid.isEmpty ? null : authState.user.uid;
+      return FavoriteController(repository, uid);
+    });
 
 final favoriteMergeListenerProvider = Provider<void>((ref) {
   ref.listen(authControllerProvider, (previous, next) {
     final prevUid = previous?.user.uid;
     final nextUid = next.user.uid;
     if ((prevUid == null || prevUid.isEmpty) && nextUid.isNotEmpty) {
-      ref.read(favoriteRepositoryProvider).mergeGuestFavorites(nextUid).then((_) {
+      ref.read(favoriteRepositoryProvider).mergeGuestFavorites(nextUid).then((
+        _,
+      ) {
         ref.invalidate(favoriteControllerProvider);
       });
     }

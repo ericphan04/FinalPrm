@@ -9,7 +9,6 @@ import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_text_field.dart';
 import '../../../../core/widgets/confirm_dialog.dart';
 import '../../../../core/widgets/loading_view.dart';
-import '../../../auth/presentation/providers/auth_providers.dart';
 import '../controllers/profile_controller.dart';
 
 class ProfileView extends ConsumerStatefulWidget {
@@ -39,7 +38,6 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
     super.dispose();
   }
 
-  // Helper method to get initials for profile avatar fallback
   String _getInitials(String name) {
     if (name.trim().isEmpty) return '?';
     final parts = name.trim().split(' ');
@@ -112,6 +110,16 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
+    final primaryTextColor = isDark
+        ? AppColors.textDarkPrimary
+        : AppColors.textLightPrimary;
+    final secondaryTextColor = isDark
+        ? AppColors.textDarkSecondary
+        : AppColors.textLightSecondary;
+    final backgroundColor = isDark
+        ? AppColors.backgroundDark
+        : AppColors.backgroundLight;
+
     // Initialize text fields when profile data loads
     if (!state.isLoading && state.profile.uid.isNotEmpty && !_isInitialized) {
       _nameController.text = state.profile.displayName;
@@ -146,10 +154,32 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
     return Stack(
       children: [
         Scaffold(
+          backgroundColor: backgroundColor,
           appBar: AppBar(
-            title: const Text('Thông tin cá nhân'),
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            title: Text(
+              'Chỉnh sửa hồ sơ',
+              style: TextStyle(
+                color: primaryTextColor,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
             leading: IconButton(
-              icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
+              icon: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: isDark
+                      ? Colors.white.withValues(alpha: 0.1)
+                      : Colors.black.withValues(alpha: 0.05),
+                ),
+                child: Icon(
+                  Icons.arrow_back_ios_new_rounded,
+                  size: 18,
+                  color: primaryTextColor,
+                ),
+              ),
               onPressed: () => context.pop(),
             ),
           ),
@@ -173,21 +203,23 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             border: Border.all(
-                              color: AppColors.primary,
+                              color: isDark ? Colors.white : AppColors.primary,
                               width: 3,
                             ),
-                            boxShadow: const [
+                            boxShadow: [
                               BoxShadow(
-                                color: AppColors.shadowColor,
-                                blurRadius: 12,
-                                offset: Offset(0, 4),
+                                color: Colors.black.withValues(
+                                  alpha: isDark ? 0.4 : 0.08,
+                                ),
+                                blurRadius: 16,
+                                offset: const Offset(0, 4),
                               ),
                             ],
                           ),
                           child: CircleAvatar(
                             backgroundColor: isDark
                                 ? AppColors.surfaceDark
-                                : AppColors.primaryLight,
+                                : AppColors.secondaryLight,
                             backgroundImage: state.profile.avatarUrl.isNotEmpty
                                 ? (state.profile.avatarUrl.startsWith('http')
                                       ? NetworkImage(state.profile.avatarUrl)
@@ -199,7 +231,9 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                                     _getInitials(state.profile.displayName),
                                     style: theme.textTheme.headlineMedium
                                         ?.copyWith(
-                                          color: AppColors.primary,
+                                          color: isDark
+                                              ? Colors.white
+                                              : AppColors.primary,
                                           fontWeight: FontWeight.bold,
                                           fontSize: 32,
                                         ),
@@ -211,34 +245,34 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                         Container(
                           width: 36,
                           height: 36,
-                          decoration: const BoxDecoration(
-                            color: AppColors.primary,
+                          decoration: BoxDecoration(
+                            color: isDark ? Colors.white : AppColors.primary,
                             shape: BoxShape.circle,
                           ),
-                          child: const Icon(
+                          child: Icon(
                             Icons.camera_alt_rounded,
-                            color: Colors.white,
+                            color: isDark ? AppColors.primary : Colors.white,
                             size: 18,
                           ),
                         ),
                       ],
                     ),
                   ),
-                  const SizedBox(height: AppSpacing.sm),
+                  const SizedBox(height: AppSpacing.md),
                   Text(
                     state.profile.displayName.isNotEmpty
                         ? state.profile.displayName
                         : 'Tài khoản mới',
                     style: theme.textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.bold,
+                      color: primaryTextColor,
                     ),
                   ),
+                  const SizedBox(height: 2),
                   Text(
                     state.profile.email,
                     style: theme.textTheme.bodyMedium?.copyWith(
-                      color: isDark
-                          ? AppColors.textDarkMuted
-                          : AppColors.textLightMuted,
+                      color: secondaryTextColor,
                     ),
                   ),
                   const SizedBox(height: AppSpacing.xl),
@@ -248,9 +282,9 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                     controller: _nameController,
                     labelText: 'Họ và tên',
                     hintText: 'Nhập họ và tên của bạn',
-                    prefixIcon: const Icon(
+                    prefixIcon: Icon(
                       Icons.person_outline_rounded,
-                      color: AppColors.primary,
+                      color: primaryTextColor.withValues(alpha: 0.7),
                     ),
                     validator: (val) {
                       if (val == null || val.trim().isEmpty) {
@@ -266,9 +300,9 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                     labelText: 'Số điện thoại',
                     hintText: 'Nhập số điện thoại nhận hàng',
                     keyboardType: TextInputType.phone,
-                    prefixIcon: const Icon(
+                    prefixIcon: Icon(
                       Icons.phone_iphone_rounded,
-                      color: AppColors.primary,
+                      color: primaryTextColor.withValues(alpha: 0.7),
                     ),
                     validator: (val) {
                       if (val == null || val.trim().isEmpty) {
@@ -290,9 +324,7 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                     readOnly: true,
                     prefixIcon: Icon(
                       Icons.email_outlined,
-                      color: isDark
-                          ? AppColors.textDarkMuted
-                          : AppColors.textLightMuted,
+                      color: secondaryTextColor,
                     ),
                   ),
                   const SizedBox(height: AppSpacing.xl),
@@ -317,51 +349,7 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: AppSpacing.xxl),
-
-                  // Footer links
-                  const Divider(height: 1),
-                  ListTile(
-                    leading: const Icon(
-                      Icons.help_outline_rounded,
-                      color: AppColors.primary,
-                    ),
-                    title: const Text('Trợ giúp & FAQ'),
-                    trailing: const Icon(
-                      Icons.arrow_forward_ios_rounded,
-                      size: 14,
-                    ),
-                    onTap: () => context.push('/help'),
-                  ),
-                  const Divider(height: 1),
-                  ListTile(
-                    leading: const Icon(
-                      Icons.info_outline_rounded,
-                      color: AppColors.primary,
-                    ),
-                    title: const Text('Về ứng dụng'),
-                    trailing: const Icon(
-                      Icons.arrow_forward_ios_rounded,
-                      size: 14,
-                    ),
-                    onTap: () => context.push('/about'),
-                  ),
-                  const Divider(height: 1),
-                  ListTile(
-                    leading: const Icon(
-                      Icons.logout_rounded,
-                      color: AppColors.error,
-                    ),
-                    title: const Text(
-                      'Đăng xuất',
-                      style: TextStyle(color: AppColors.error),
-                    ),
-                    onTap: () async {
-                      await ref.read(authControllerProvider.notifier).signOut();
-                      if (context.mounted) context.go('/');
-                    },
-                  ),
-                  const Divider(height: 1),
+                  const SizedBox(height: AppSpacing.lg),
                 ],
               ),
             ),

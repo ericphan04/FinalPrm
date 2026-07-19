@@ -66,6 +66,10 @@ class ProfileController extends StateNotifier<ProfileState> {
     required String displayName,
     required String phone,
   }) async {
+    if (_uid.isEmpty) {
+      state = state.copyWith(errorMessage: 'Phiên đăng nhập không hợp lệ.');
+      return;
+    }
     if (displayName.trim().isEmpty) {
       state = state.copyWith(errorMessage: 'Tên hiển thị không được để trống.');
       return;
@@ -83,7 +87,18 @@ class ProfileController extends StateNotifier<ProfileState> {
       isSaveSuccess: false,
     );
     try {
-      final updatedProfile = state.profile.copyWith(
+      final currentProfile = state.profile.uid.isNotEmpty
+          ? state.profile
+          : UserProfile(
+              uid: _uid,
+              email: '',
+              displayName: displayName,
+              phone: phone,
+              avatarUrl: '',
+            );
+
+      final updatedProfile = currentProfile.copyWith(
+        uid: _uid,
         displayName: displayName,
         phone: phone,
       );
@@ -102,6 +117,11 @@ class ProfileController extends StateNotifier<ProfileState> {
   }
 
   Future<void> updateAvatar(File imageFile) async {
+    if (_uid.isEmpty) {
+      state = state.copyWith(errorMessage: 'Phiên đăng nhập không hợp lệ.');
+      return;
+    }
+
     state = state.copyWith(
       isLoading: true,
       errorMessage: null,
@@ -109,7 +129,19 @@ class ProfileController extends StateNotifier<ProfileState> {
     );
     try {
       final newAvatarUrl = await _repository.uploadAvatar(_uid, imageFile);
-      final updatedProfile = state.profile.copyWith(avatarUrl: newAvatarUrl);
+      final currentProfile = state.profile.uid.isNotEmpty
+          ? state.profile
+          : UserProfile(
+              uid: _uid,
+              email: '',
+              displayName: '',
+              phone: '',
+              avatarUrl: '',
+            );
+      final updatedProfile = currentProfile.copyWith(
+        uid: _uid,
+        avatarUrl: newAvatarUrl,
+      );
       await _repository.updateProfile(updatedProfile);
       state = state.copyWith(
         profile: updatedProfile,

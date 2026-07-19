@@ -191,20 +191,31 @@ class FirebaseAuthRepository implements AuthRepository {
           .doc(firebaseUser.uid)
           .get();
       AppUserRole role = AppUserRole.user;
+      String displayName = firebaseUser.displayName ?? '';
+      String photoUrl = firebaseUser.photoURL ?? '';
 
       if (userDoc.exists) {
         final data = userDoc.data();
-        if (data != null && data.containsKey('role')) {
-          final roleClaim = data['role'] as String?;
-          role = _parseRole(roleClaim);
+        if (data != null) {
+          if (data['role'] != null) {
+            role = _parseRole(data['role'] as String?);
+          }
+          if (data['displayName'] != null &&
+              (data['displayName'] as String).trim().isNotEmpty) {
+            displayName = (data['displayName'] as String).trim();
+          }
+          if (data['avatarUrl'] != null &&
+              (data['avatarUrl'] as String).trim().isNotEmpty) {
+            photoUrl = (data['avatarUrl'] as String).trim();
+          }
         }
       }
 
       return AppUser(
         uid: firebaseUser.uid,
         email: firebaseUser.email ?? '',
-        displayName: firebaseUser.displayName ?? '',
-        photoUrl: firebaseUser.photoURL ?? '',
+        displayName: displayName,
+        photoUrl: photoUrl,
         role: role,
       );
     } catch (e) {
@@ -232,6 +243,36 @@ class FirebaseAuthRepository implements AuthRepository {
       case 'user':
       default:
         return AppUserRole.user;
+    }
+  }
+
+  @override
+  Future<Result<void>> changePassword({
+    required String currentPassword,
+    required String newPassword,
+  }) async {
+    try {
+      final user = _firebaseAuth.currentUser;
+      if (user == null || user.email == null) {
+        return const Failure(
+          AppFailure(
+            code: 'no_authenticated_user',
+            message: 'Không tìm thấy phiên đăng nhập hoạt động.',
+          ),
+        );
+      }
+
+      final cred = firebase_auth.EmailAuthProvider.credential(
+        email: user.email!,
+        password: currentPassword,
+      );
+      await user.reauthenticateWithCredential(cred);
+      await user.updatePassword(newPassword);
+      AppLogger.info('Đổi mật khẩu thành công cho email=${user.email}');
+      return const Success(null);
+    } catch (e) {
+      AppLogger.error('Lỗi đổi mật khẩu', e);
+      return Failure(ErrorHandler.handle(e));
     }
   }
 }

@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:finalprm/features/commerce/presentation/views/product_list_view.dart';
 import 'package:finalprm/features/commerce/presentation/controllers/catalog_controller.dart';
+import 'package:finalprm/features/commerce/presentation/controllers/cart_controller.dart';
 import 'package:finalprm/features/commerce/presentation/providers/commerce_providers.dart';
 import 'package:finalprm/core/widgets/product_card_skeleton.dart';
 import 'package:finalprm/core/widgets/empty_view.dart';
@@ -16,12 +17,43 @@ class MockCatalogController extends StateNotifier<CatalogState>
   Future<void> filterByCategory(String? categoryId) async {}
 }
 
+class MockCartController extends StateNotifier<CartState>
+    implements CartController {
+  MockCartController(super.state);
+
+  @override
+  Future<void> addToCart(
+    dynamic product, {
+    int quantity = 1,
+    String? selectedSize,
+  }) async {}
+
+  @override
+  Future<void> clearCart() async {}
+
+  @override
+  Future<void> removeFromCart(String productId, {String? selectedSize}) async {}
+
+  @override
+  Future<void> updateQuantity(
+    String productId,
+    int quantity, {
+    String? selectedSize,
+  }) async {}
+
+  @override
+  Future<void> mergeCart() async {}
+}
+
 void main() {
   Widget createWidgetUnderTest(CatalogState state) {
     return ProviderScope(
       overrides: [
         catalogControllerProvider.overrideWith(
           (ref) => MockCatalogController(state),
+        ),
+        cartControllerProvider.overrideWith(
+          (ref) => MockCartController(CartState()),
         ),
       ],
       child: const MaterialApp(home: ProductListView()),

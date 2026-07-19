@@ -8,34 +8,49 @@ class ErrorHandler {
   static AppFailure handle(Object error) {
     if (error is FirebaseAuthException) {
       switch (error.code) {
+        case 'wrong-password':
+        case 'invalid-credential':
+        case 'INVALID_LOGIN_CREDENTIALS':
+          return AppFailure(
+            code: error.code,
+            message: 'Mật khẩu hoặc thông tin đăng nhập không chính xác.',
+            originalError: error,
+          );
         case 'user-not-found':
           return AppFailure(
             code: error.code,
-            message: 'Tài khoản không tồn tại trên hệ thống.',
-            originalError: error,
-          );
-        case 'wrong-password':
-          return AppFailure(
-            code: error.code,
-            message: 'Mật khẩu đăng nhập không chính xác.',
+            message: 'Tài khoản email này chưa được đăng ký.',
             originalError: error,
           );
         case 'email-already-in-use':
           return AppFailure(
             code: error.code,
-            message: 'Địa chỉ email này đã được sử dụng bởi tài khoản khác.',
+            message: 'Địa chỉ email này đã được đăng ký tài khoản khác.',
             originalError: error,
           );
         case 'weak-password':
           return AppFailure(
             code: error.code,
-            message: 'Mật khẩu quá yếu. Vui lòng sử dụng tối thiểu 6 ký tự.',
+            message:
+                'Mật khẩu quá yếu. Vui lòng đặt mật khẩu từ 6 ký tự trở lên.',
             originalError: error,
           );
         case 'invalid-email':
           return AppFailure(
             code: error.code,
             message: 'Định dạng địa chỉ email không hợp lệ.',
+            originalError: error,
+          );
+        case 'user-disabled':
+          return AppFailure(
+            code: error.code,
+            message: 'Tài khoản của bạn đã bị khóa hoặc vô hiệu hóa.',
+            originalError: error,
+          );
+        case 'requires-recent-login':
+          return AppFailure(
+            code: error.code,
+            message: 'Vui lòng đăng nhập lại trước khi thực hiện thao tác này.',
             originalError: error,
           );
         case 'operation-not-allowed':
@@ -54,7 +69,8 @@ class ErrorHandler {
         case 'network-request-failed':
           return AppFailure(
             code: error.code,
-            message: 'Lỗi kết nối mạng. Vui lòng kiểm tra lại thiết bị.',
+            message:
+                'Lỗi kết nối mạng. Vui lòng kiểm tra lại đường truyền internet.',
             originalError: error,
           );
         default:
