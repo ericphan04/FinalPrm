@@ -1,8 +1,28 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class FirebaseSeed {
   static Future<void> seedAll() async {
     final firestore = FirebaseFirestore.instance;
+    final auth = FirebaseAuth.instance;
+
+    // Seed pre-configured Auth test users in Auth Emulator if they don't exist
+    final testUsers = {
+      'admin@example.com': 'admin123',
+      'seller@example.com': 'seller123',
+      'user@example.com': 'user123',
+    };
+
+    for (final entry in testUsers.entries) {
+      try {
+        await auth.createUserWithEmailAndPassword(
+          email: entry.key,
+          password: entry.value,
+        );
+      } catch (_) {
+        // Ignored if user already exists or in production
+      }
+    }
 
     // 1. Seed Categories
     final categories = {
@@ -205,6 +225,10 @@ class FirebaseSeed {
             .doc(variantId)
             .set(v);
       }
+      // Also update the product document to contain nested variants array for the Flutter UI
+      await firestore.collection('products').doc(prodId).update({
+        'variants': entry.value,
+      });
     }
   }
 }

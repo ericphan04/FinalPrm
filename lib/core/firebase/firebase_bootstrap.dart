@@ -7,6 +7,7 @@ import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/foundation.dart' show kDebugMode, kIsWeb;
 import '../../firebase_options.dart';
 import '../logging/app_logger.dart';
+import 'firebase_seed.dart';
 
 /// Lớp điều khiển khởi tạo Firebase và cấu hình kết nối Emulator.
 class FirebaseBootstrap {
@@ -53,6 +54,16 @@ class FirebaseBootstrap {
         AppLogger.info(
           'Kết nối Firebase Local Emulators thành công (Auth: 9099, Firestore: 8080, Storage: 9199)',
         );
+
+        // Tự động nạp dữ liệu mẫu lên Emulator
+        Future.delayed(const Duration(milliseconds: 500), () async {
+          try {
+            await FirebaseSeed.seedAll();
+            AppLogger.info('Tự động nạp dữ liệu mẫu (Seed Data) lên Emulator thành công!');
+          } catch (e) {
+            AppLogger.error('Lỗi khi tự động nạp dữ liệu mẫu: $e');
+          }
+        });
       } else {
         AppLogger.info(
           kDebugMode
