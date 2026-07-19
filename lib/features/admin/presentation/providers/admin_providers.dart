@@ -77,3 +77,14 @@ final systemConfigProvider = FutureProvider.autoDispose<Map<String, dynamic>>((
     onFailure: (failure) => throw failure.message,
   );
 });
+
+final allProductsProvider = FutureProvider.autoDispose<List<Product>>((
+  ref,
+) async {
+  final repo = ref.watch(adminRepositoryProvider);
+  final result = await repo.getAllProducts();
+  return result.when(
+    onSuccess: (data) => data,
+    onFailure: (failure) => throw failure.message,
+  );
+});

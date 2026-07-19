@@ -39,6 +39,7 @@ class _AdminDashboardViewState extends ConsumerState<AdminDashboardView>
   final _lowStockController = TextEditingController();
   final _cancelHoursController = TextEditingController();
   bool _isSavingConfig = false;
+  int _productTabSelection = 0; // 0 = Chờ duyệt, 1 = Kho hàng
 
   @override
   void initState() {
@@ -407,7 +408,7 @@ class _AdminDashboardViewState extends ConsumerState<AdminDashboardView>
   }
 
   // 3. PRODUCT MODERATION TAB
-  Widget _buildProductModerationTab() {
+  Widget _buildPendingProductsList() {
     final pendingProductsAsync = ref.watch(pendingProductsProvider);
     return pendingProductsAsync.when(
       loading: () => const LoadingView(),
@@ -525,6 +526,240 @@ class _AdminDashboardViewState extends ConsumerState<AdminDashboardView>
           },
         );
       },
+    );
+  }
+
+  Widget _buildAllProductsInventory() {
+    final allProductsAsync = ref.watch(allProductsProvider);
+    return allProductsAsync.when(
+      loading: () => const LoadingView(),
+      error: (err, stack) =>
+          ErrorView(onRetry: () => ref.refresh(allProductsProvider)),
+      data: (products) {
+        if (products.isEmpty) {
+          return const EmptyView(
+            title: 'Không có sản phẩm nào',
+            description: 'Hệ thống chưa có sản phẩm nào được đăng bán.',
+            icon: Icons.inventory_2_outlined,
+          );
+        }
+        return ListView.builder(
+          padding: const EdgeInsets.all(AppSpacing.md),
+          itemCount: products.length,
+          itemBuilder: (context, index) {
+            final prod = products[index];
+            
+            // Calculate total stock
+            final totalStock = prod.variants.fold<int>(
+              0,
+              (sum, item) => sum + item.stockQuantity,
+            );
+
+            // Determine stock status indicator color
+            Color stockColor;
+            String stockLabel;
+            if (totalStock == 0) {
+              stockColor = AppColors.error;
+              stockLabel = 'Hết hàng';
+            } else if (totalStock <= 5) {
+              stockColor = Colors.orange;
+              stockLabel = 'Sắp hết hàng ($totalStock)';
+            } else {
+              stockColor = Colors.green;
+              stockLabel = 'Sẵn sàng ($totalStock)';
+            }
+
+            return Card(
+              margin: const EdgeInsets.only(bottom: AppSpacing.md),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+              ),
+              child: ExpansionTile(
+                leading: CircleAvatar(
+                  backgroundColor: AppColors.primary.withOpacity(0.1),
+                  child: const Icon(Icons.shopping_bag_rounded, color: AppColors.primary),
+                ),
+                title: Text(
+                  prod.name,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+                subtitle: Wrap(
+                  spacing: AppSpacing.xs,
+                  runSpacing: 4,
+                  children: [
+                    Text(
+                      'Giá: ${_currencyFormat.format(prod.basePrice)}',
+                      style: const TextStyle(fontSize: 13),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: stockColor.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Text(
+                        stockLabel,
+                        style: TextStyle(
+                          color: stockColor,
+                          fontSize: 11,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: prod.status == ProductStatus.published
+                            ? Colors.blue.withOpacity(0.1)
+                            : Colors.grey.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Text(
+                        prod.status.nameVi,
+                        style: TextStyle(
+                          color: prod.status == ProductStatus.published
+                              ? Colors.blue
+                              : Colors.grey[700],
+                          fontSize: 11,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(AppSpacing.md),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Mô tả: ${prod.description}', style: const TextStyle(fontSize: 13)),
+                        const SizedBox(height: AppSpacing.xs),
+                        Text('ID sản phẩm: ${prod.id}', style: TextStyle(color: Colors.grey[600], fontSize: 12)),
+                        Text('ID người bán: ${prod.sellerId}', style: TextStyle(color: Colors.grey[600], fontSize: 12)),
+                        const SizedBox(height: AppSpacing.sm),
+                        const Text(
+                          'Chi tiết tồn kho biến thể:',
+                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                        ),
+                        const SizedBox(height: AppSpacing.xs),
+                        if (prod.variants.isEmpty)
+                          const Text('Không có biến thể nào được cấu hình.', style: TextStyle(fontStyle: FontStyle.italic, fontSize: 12))
+                        else
+                          Table(
+                            columnWidths: const {
+                              0: FlexColumnWidth(2),
+                              1: FlexColumnWidth(2),
+                              2: FlexColumnWidth(3),
+                              3: FlexColumnWidth(2),
+                            },
+                            border: TableBorder.all(color: Colors.grey[300]!, width: 0.5),
+                            children: [
+                              TableRow(
+                                decoration: BoxDecoration(color: Colors.grey[100]),
+                                children: const [
+                                  Padding(
+                                    padding: EdgeInsets.all(6.0),
+                                    child: Text('Kích cỡ', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsets.all(6.0),
+                                    child: Text('Màu sắc', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsets.all(6.0),
+                                    child: Text('SKU', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsets.all(6.0),
+                                    child: Text('Tồn kho', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+                                  ),
+                                ],
+                              ),
+                              ...prod.variants.map((v) {
+                                return TableRow(
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.all(6.0),
+                                      child: Text(v.size, style: const TextStyle(fontSize: 12)),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(6.0),
+                                      child: Text(v.color, style: const TextStyle(fontSize: 12)),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(6.0),
+                                      child: Text(v.sku, style: const TextStyle(fontSize: 12)),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(6.0),
+                                      child: Text(
+                                        '${v.stockQuantity}',
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          color: v.stockQuantity == 0 ? Colors.red : Colors.black,
+                                          fontSize: 12,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              }),
+                            ],
+                          ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildProductModerationTab() {
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(AppSpacing.md),
+          child: SegmentedButton<int>(
+            segments: const [
+              ButtonSegment<int>(
+                value: 0,
+                label: Text('Chờ duyệt'),
+                icon: Icon(Icons.pending_actions_rounded),
+              ),
+              ButtonSegment<int>(
+                value: 1,
+                label: Text('Kho hàng'),
+                icon: Icon(Icons.inventory_2_rounded),
+              ),
+            ],
+            selected: {_productTabSelection},
+            onSelectionChanged: (Set<int> newSelection) {
+              setState(() {
+                _productTabSelection = newSelection.first;
+              });
+            },
+          ),
+        ),
+        Expanded(
+          child: RefreshIndicator(
+            onRefresh: () async {
+              if (_productTabSelection == 0) {
+                ref.refresh(pendingProductsProvider);
+              } else {
+                ref.refresh(allProductsProvider);
+              }
+            },
+            child: _productTabSelection == 0
+                ? _buildPendingProductsList()
+                : _buildAllProductsInventory(),
+          ),
+        ),
+      ],
     );
   }
 

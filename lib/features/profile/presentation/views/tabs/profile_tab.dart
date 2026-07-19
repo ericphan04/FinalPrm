@@ -199,8 +199,7 @@ class ProfileTab extends ConsumerWidget {
                       ),
                       const Divider(height: 1, indent: 16, endIndent: 16),
                     ],
-                    if (user.role == AppUserRole.seller ||
-                        user.role == AppUserRole.admin)
+                    if (user.role == AppUserRole.seller)
                       ListTile(
                         leading: const Icon(
                           Icons.storefront_rounded,

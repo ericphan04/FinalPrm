@@ -18,6 +18,7 @@ abstract class AdminRepository {
     String? reason,
   });
   Future<Result<List<Product>>> getPendingProducts();
+  Future<Result<List<Product>>> getAllProducts();
   Future<Result<void>> reviewProduct(
     String productId,
     String action, {
@@ -173,6 +174,31 @@ class AdminRepositoryImpl implements AdminRepository {
     } catch (e) {
       return Failure(
         AppFailure.serverError('Lỗi lấy danh sách sản phẩm chờ duyệt: $e'),
+      );
+    }
+  }
+
+  @override
+  Future<Result<List<Product>>> getAllProducts() async {
+    try {
+      final snapshot = await _firestore
+          .collection('products')
+          .orderBy('createdAt', descending: true)
+          .get();
+      final list = snapshot.docs.map((doc) {
+        final data = doc.data();
+        data['id'] = doc.id;
+        if (data['createdAt'] is Timestamp) {
+          data['createdAt'] = (data['createdAt'] as Timestamp)
+              .toDate()
+              .toIso8601String();
+        }
+        return Product.fromJson(data);
+      }).toList();
+      return Success(list);
+    } catch (e) {
+      return Failure(
+        AppFailure.serverError('Lỗi lấy danh sách tất cả sản phẩm: $e'),
       );
     }
   }
