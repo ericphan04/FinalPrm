@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart' hide Result;
 import '../../../../core/error/app_failure.dart';
 import '../../../../core/error/error_handler.dart';
 import '../../../../core/logging/app_logger.dart';
@@ -48,6 +49,28 @@ class FirebaseAuthRepository implements AuthRepository {
           ),
         );
       }
+
+      // Kiểm tra trạng thái tài khoản trong Firestore
+      final userDoc =
+          await _firestore.collection('users').doc(user.uid).get();
+      if (userDoc.exists) {
+        final status = userDoc.data()?['status'] as String?;
+        if (status == 'locked' || status == 'banned' || status == 'disabled' || status == 'blocked') {
+          // Tài khoản bị khóa → đăng xuất ngay và trả về lỗi
+          await _firebaseAuth.signOut();
+          AppLogger.warning(
+            'Tài khoản bị khóa: uid=${user.uid}, status=$status',
+          );
+          return Failure(
+            AppFailure(
+              code: 'account_locked',
+              message:
+                  'Tài khoản của bạn đã bị khóa bởi quản trị viên. Vui lòng liên hệ hỗ trợ.',
+            ),
+          );
+        }
+      }
+
       final appUser = await _mapFirebaseUserToAppUser(user);
       AppLogger.info(
         'Đăng nhập thành công: email=${appUser.email}, role=${appUser.role}',
@@ -180,7 +203,21 @@ class FirebaseAuthRepository implements AuthRepository {
     }
   }
 
-  /// Map Firebase User thành AppUser nội bộ kèm theo lấy thông tin role từ Firestore
+  /// Suy luận role từ email (dùng cho tài khoản seed/test)
+  String _inferRoleFromEmail(String email) {
+    final emailLower = email.toLowerCase().trim();
+    if (emailLower.startsWith('admin') || emailLower.contains('admin@')) {
+      return 'admin';
+    } else if (emailLower.startsWith('seller') ||
+        emailLower.contains('seller@')) {
+      return 'seller';
+    }
+    return 'user';
+  }
+
+  /// Map Firebase User thành AppUser nội bộ kèm theo lấy thông tin role từ Firestore.
+  /// Nếu document Firestore chưa tồn tại cho UID này, tự động tạo mới với role
+  /// suy luận từ email để đảm bảo Firestore Security Rules hoạt động đúng.
   Future<AppUser> _mapFirebaseUserToAppUser(
     firebase_auth.User firebaseUser,
   ) async {
@@ -194,29 +231,49 @@ class FirebaseAuthRepository implements AuthRepository {
       String displayName = firebaseUser.displayName ?? '';
       String photoUrl = firebaseUser.photoURL ?? '';
 
+      String status = 'active';
       if (userDoc.exists) {
         final data = userDoc.data();
         if (data != null) {
-          if (data['role'] != null) {
-            role = _parseRole(data['role'] as String?);
-          }
-          if (data['displayName'] != null &&
-              (data['displayName'] as String).trim().isNotEmpty) {
-            displayName = (data['displayName'] as String).trim();
-          }
-          if (data['avatarUrl'] != null &&
-              (data['avatarUrl'] as String).trim().isNotEmpty) {
-            photoUrl = (data['avatarUrl'] as String).trim();
-          }
+          final roleClaim =
+              data['role'] as String? ?? data['roleMirror'] as String?;
+          role = _parseRole(roleClaim);
+          status = data['status'] as String? ?? 'active';
+        }
+      } else {
+        // Document Firestore chưa tồn tại cho UID này
+        // → Tạo trực tiếp với role suy luận từ email
+        final inferredRole = _inferRoleFromEmail(firebaseUser.email ?? '');
+        role = _parseRole(inferredRole);
+        try {
+          await _firestore.collection('users').doc(firebaseUser.uid).set({
+            'uid': firebaseUser.uid,
+            'email': firebaseUser.email ?? '',
+            'displayName': firebaseUser.displayName ?? '',
+            'avatarUrl': firebaseUser.photoURL ?? '',
+            'role': inferredRole,
+            'roleMirror': inferredRole,
+            'status': 'active',
+            'createdAt': FieldValue.serverTimestamp(),
+          });
+          AppLogger.info(
+            'Tự động tạo document Firestore cho uid=${firebaseUser.uid}, role=$inferredRole',
+          );
+        } catch (writeErr) {
+          AppLogger.error(
+            'Không thể tạo document Firestore cho user',
+            writeErr,
+          );
         }
       }
 
       return AppUser(
         uid: firebaseUser.uid,
         email: firebaseUser.email ?? '',
-        displayName: displayName,
-        photoUrl: photoUrl,
+        displayName: firebaseUser.displayName ?? '',
+        photoUrl: firebaseUser.photoURL ?? '',
         role: role,
+        status: status,
       );
     } catch (e) {
       AppLogger.error('Lỗi ánh xạ Firebase User sang AppUser', e);
@@ -227,6 +284,7 @@ class FirebaseAuthRepository implements AuthRepository {
         displayName: firebaseUser.displayName ?? '',
         photoUrl: firebaseUser.photoURL ?? '',
         role: AppUserRole.user,
+        status: 'active',
       );
     }
   }
@@ -243,36 +301,6 @@ class FirebaseAuthRepository implements AuthRepository {
       case 'user':
       default:
         return AppUserRole.user;
-    }
-  }
-
-  @override
-  Future<Result<void>> changePassword({
-    required String currentPassword,
-    required String newPassword,
-  }) async {
-    try {
-      final user = _firebaseAuth.currentUser;
-      if (user == null || user.email == null) {
-        return const Failure(
-          AppFailure(
-            code: 'no_authenticated_user',
-            message: 'Không tìm thấy phiên đăng nhập hoạt động.',
-          ),
-        );
-      }
-
-      final cred = firebase_auth.EmailAuthProvider.credential(
-        email: user.email!,
-        password: currentPassword,
-      );
-      await user.reauthenticateWithCredential(cred);
-      await user.updatePassword(newPassword);
-      AppLogger.info('Đổi mật khẩu thành công cho email=${user.email}');
-      return const Success(null);
-    } catch (e) {
-      AppLogger.error('Lỗi đổi mật khẩu', e);
-      return Failure(ErrorHandler.handle(e));
     }
   }
 }

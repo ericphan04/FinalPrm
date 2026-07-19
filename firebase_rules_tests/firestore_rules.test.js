@@ -52,13 +52,13 @@ describe('Firestore Security Rules', () => {
     it('allows sellers (claim role: seller) to create products', async () => {
       const sellerDb = testEnv.authenticatedContext('seller_1', { role: 'seller' }).firestore();
       const productRef = sellerDb.collection('products').doc('nike_shoe');
-      await assertSucceeds(productRef.set({ name: 'Nike Air', price: 100 }));
+      await assertSucceeds(productRef.set({ name: 'Nike Air', price: 100, sellerId: 'seller_1', status: 'draft' }));
     });
 
     it('allows admins (claim role: admin) to create/update/delete products', async () => {
       const adminDb = testEnv.authenticatedContext('admin_1', { role: 'admin' }).firestore();
       const productRef = adminDb.collection('products').doc('nike_shoe');
-      await assertSucceeds(productRef.set({ name: 'Nike Air', price: 100 }));
+      await assertSucceeds(productRef.set({ name: 'Nike Air', price: 100, sellerId: 'seller_1', status: 'draft' }));
       await assertSucceeds(productRef.update({ price: 120 }));
       await assertSucceeds(productRef.delete());
     });
@@ -126,6 +126,16 @@ describe('Firestore Security Rules', () => {
       const user1Db = testEnv.authenticatedContext('user_1', { role: 'user' }).firestore();
       // Attempt to delete own profile -> fails
       await assertFails(user1Db.collection('users').doc('user_1').delete());
+    });
+
+    it('allows fallback admin (no custom claim, but has role admin in users document) to read config', async () => {
+      // 1. Create a user doc with role: 'admin' using admin context
+      const adminDb = testEnv.authenticatedContext('admin_1', { role: 'admin' }).firestore();
+      await adminDb.collection('users').doc('fallback_admin').set({ role: 'admin' });
+
+      // 2. Access config system using fallback_admin user (no claims)
+      const fallbackDb = testEnv.authenticatedContext('fallback_admin').firestore();
+      await assertSucceeds(fallbackDb.collection('config').doc('system').get());
     });
   });
 });

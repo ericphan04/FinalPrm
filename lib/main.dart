@@ -20,6 +20,7 @@ import 'core/widgets/confirm_dialog.dart';
 // Router import
 import 'core/router/app_router.dart';
 import 'core/firebase/firebase_bootstrap.dart';
+import 'core/notification/notification_service.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 import 'features/commerce/presentation/providers/commerce_providers.dart';
@@ -48,6 +49,7 @@ class MyApp extends ConsumerWidget {
     // Initialize listener for cart and favorite merge on login
     ref.watch(cartMergeListenerProvider);
     ref.watch(favoriteMergeListenerProvider);
+    ref.watch(notificationInitializerProvider);
 
     final themeMode = ref.watch(themeModeProvider);
     final router = ref.watch(routerProvider);

@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
-// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
+// ignore_for_file: type=lint
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'app_user.dart';
@@ -9,14 +9,13 @@ part of 'app_user.dart';
 // FreezedGenerator
 // **************************************************************************
 
-// GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 T _$identity<T>(T value) => value;
 
 /// @nodoc
 mixin _$AppUser {
 
- String get uid; String get email; String get displayName; String get photoUrl; AppUserRole get role;
+ String get uid; String get email; String get displayName; String get photoUrl; AppUserRole get role; String get status;
 /// Create a copy of AppUser
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -29,16 +28,16 @@ $AppUserCopyWith<AppUser> get copyWith => _$AppUserCopyWithImpl<AppUser>(this as
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is AppUser&&(identical(other.uid, uid) || other.uid == uid)&&(identical(other.email, email) || other.email == email)&&(identical(other.displayName, displayName) || other.displayName == displayName)&&(identical(other.photoUrl, photoUrl) || other.photoUrl == photoUrl)&&(identical(other.role, role) || other.role == role));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is AppUser&&(identical(other.uid, uid) || other.uid == uid)&&(identical(other.email, email) || other.email == email)&&(identical(other.displayName, displayName) || other.displayName == displayName)&&(identical(other.photoUrl, photoUrl) || other.photoUrl == photoUrl)&&(identical(other.role, role) || other.role == role)&&(identical(other.status, status) || other.status == status));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,uid,email,displayName,photoUrl,role);
+int get hashCode => Object.hash(runtimeType,uid,email,displayName,photoUrl,role,status);
 
 @override
 String toString() {
-  return 'AppUser(uid: $uid, email: $email, displayName: $displayName, photoUrl: $photoUrl, role: $role)';
+  return 'AppUser(uid: $uid, email: $email, displayName: $displayName, photoUrl: $photoUrl, role: $role, status: $status)';
 }
 
 
@@ -49,7 +48,7 @@ abstract mixin class $AppUserCopyWith<$Res>  {
   factory $AppUserCopyWith(AppUser value, $Res Function(AppUser) _then) = _$AppUserCopyWithImpl;
 @useResult
 $Res call({
- String uid, String email, String displayName, String photoUrl, AppUserRole role
+ String uid, String email, String displayName, String photoUrl, AppUserRole role, String status
 });
 
 
@@ -66,14 +65,15 @@ class _$AppUserCopyWithImpl<$Res>
 
 /// Create a copy of AppUser
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? uid = null,Object? email = null,Object? displayName = null,Object? photoUrl = null,Object? role = null,}) {
-  return _then(AppUser(
+@pragma('vm:prefer-inline') @override $Res call({Object? uid = null,Object? email = null,Object? displayName = null,Object? photoUrl = null,Object? role = null,Object? status = null,}) {
+  return _then(_self.copyWith(
 uid: null == uid ? _self.uid : uid // ignore: cast_nullable_to_non_nullable
 as String,email: null == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
 as String,displayName: null == displayName ? _self.displayName : displayName // ignore: cast_nullable_to_non_nullable
 as String,photoUrl: null == photoUrl ? _self.photoUrl : photoUrl // ignore: cast_nullable_to_non_nullable
 as String,role: null == role ? _self.role : role // ignore: cast_nullable_to_non_nullable
-as AppUserRole,
+as AppUserRole,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
+as String,
   ));
 }
 
@@ -158,10 +158,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String uid,  String email,  String displayName,  String photoUrl,  AppUserRole role)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String uid,  String email,  String displayName,  String photoUrl,  AppUserRole role,  String status)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _AppUser() when $default != null:
-return $default(_that.uid,_that.email,_that.displayName,_that.photoUrl,_that.role);case _:
+return $default(_that.uid,_that.email,_that.displayName,_that.photoUrl,_that.role,_that.status);case _:
   return orElse();
 
 }
@@ -179,10 +179,10 @@ return $default(_that.uid,_that.email,_that.displayName,_that.photoUrl,_that.rol
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String uid,  String email,  String displayName,  String photoUrl,  AppUserRole role)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String uid,  String email,  String displayName,  String photoUrl,  AppUserRole role,  String status)  $default,) {final _that = this;
 switch (_that) {
 case _AppUser():
-return $default(_that.uid,_that.email,_that.displayName,_that.photoUrl,_that.role);case _:
+return $default(_that.uid,_that.email,_that.displayName,_that.photoUrl,_that.role,_that.status);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -199,10 +199,10 @@ return $default(_that.uid,_that.email,_that.displayName,_that.photoUrl,_that.rol
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String uid,  String email,  String displayName,  String photoUrl,  AppUserRole role)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String uid,  String email,  String displayName,  String photoUrl,  AppUserRole role,  String status)?  $default,) {final _that = this;
 switch (_that) {
 case _AppUser() when $default != null:
-return $default(_that.uid,_that.email,_that.displayName,_that.photoUrl,_that.role);case _:
+return $default(_that.uid,_that.email,_that.displayName,_that.photoUrl,_that.role,_that.status);case _:
   return null;
 
 }
@@ -214,7 +214,7 @@ return $default(_that.uid,_that.email,_that.displayName,_that.photoUrl,_that.rol
 @JsonSerializable()
 
 class _AppUser extends AppUser {
-  const _AppUser({required this.uid, required this.email, required this.displayName, required this.photoUrl, required this.role}): super._();
+  const _AppUser({required this.uid, required this.email, required this.displayName, required this.photoUrl, required this.role, this.status = 'active'}): super._();
   factory _AppUser.fromJson(Map<String, dynamic> json) => _$AppUserFromJson(json);
 
 @override final  String uid;
@@ -222,6 +222,7 @@ class _AppUser extends AppUser {
 @override final  String displayName;
 @override final  String photoUrl;
 @override final  AppUserRole role;
+@override@JsonKey() final  String status;
 
 /// Create a copy of AppUser
 /// with the given fields replaced by the non-null parameter values.
@@ -236,16 +237,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AppUser&&(identical(other.uid, uid) || other.uid == uid)&&(identical(other.email, email) || other.email == email)&&(identical(other.displayName, displayName) || other.displayName == displayName)&&(identical(other.photoUrl, photoUrl) || other.photoUrl == photoUrl)&&(identical(other.role, role) || other.role == role));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AppUser&&(identical(other.uid, uid) || other.uid == uid)&&(identical(other.email, email) || other.email == email)&&(identical(other.displayName, displayName) || other.displayName == displayName)&&(identical(other.photoUrl, photoUrl) || other.photoUrl == photoUrl)&&(identical(other.role, role) || other.role == role)&&(identical(other.status, status) || other.status == status));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,uid,email,displayName,photoUrl,role);
+int get hashCode => Object.hash(runtimeType,uid,email,displayName,photoUrl,role,status);
 
 @override
 String toString() {
-  return 'AppUser(uid: $uid, email: $email, displayName: $displayName, photoUrl: $photoUrl, role: $role)';
+  return 'AppUser(uid: $uid, email: $email, displayName: $displayName, photoUrl: $photoUrl, role: $role, status: $status)';
 }
 
 
@@ -256,7 +257,7 @@ abstract mixin class _$AppUserCopyWith<$Res> implements $AppUserCopyWith<$Res> {
   factory _$AppUserCopyWith(_AppUser value, $Res Function(_AppUser) _then) = __$AppUserCopyWithImpl;
 @override @useResult
 $Res call({
- String uid, String email, String displayName, String photoUrl, AppUserRole role
+ String uid, String email, String displayName, String photoUrl, AppUserRole role, String status
 });
 
 
@@ -273,14 +274,15 @@ class __$AppUserCopyWithImpl<$Res>
 
 /// Create a copy of AppUser
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? uid = null,Object? email = null,Object? displayName = null,Object? photoUrl = null,Object? role = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? uid = null,Object? email = null,Object? displayName = null,Object? photoUrl = null,Object? role = null,Object? status = null,}) {
   return _then(_AppUser(
 uid: null == uid ? _self.uid : uid // ignore: cast_nullable_to_non_nullable
 as String,email: null == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
 as String,displayName: null == displayName ? _self.displayName : displayName // ignore: cast_nullable_to_non_nullable
 as String,photoUrl: null == photoUrl ? _self.photoUrl : photoUrl // ignore: cast_nullable_to_non_nullable
 as String,role: null == role ? _self.role : role // ignore: cast_nullable_to_non_nullable
-as AppUserRole,
+as AppUserRole,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
+as String,
   ));
 }
 

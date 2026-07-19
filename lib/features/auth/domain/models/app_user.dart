@@ -14,6 +14,7 @@ abstract class AppUser with _$AppUser {
     required String displayName,
     required String photoUrl,
     required AppUserRole role,
+    @Default('active') String status,
   }) = _AppUser;
 
   factory AppUser.fromJson(Map<String, dynamic> json) =>
