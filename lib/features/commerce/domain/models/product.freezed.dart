@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'product.dart';
@@ -9,6 +9,7 @@ part of 'product.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 T _$identity<T>(T value) => value;
 
@@ -66,7 +67,7 @@ class _$ProductCopyWithImpl<$Res>
 /// Create a copy of Product
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? description = null,Object? categoryId = null,Object? basePrice = null,Object? sellerId = null,Object? status = null,Object? rejectReason = freezed,Object? images = null,Object? isAvailable = null,Object? createdAt = null,Object? variants = null,}) {
-  return _then(_self.copyWith(
+  return _then(Product(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,description: null == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
@@ -220,7 +221,7 @@ return $default(_that.id,_that.name,_that.description,_that.categoryId,_that.bas
 @JsonSerializable()
 
 class _Product implements Product {
-  const _Product({required this.id, required this.name, required this.description, required this.categoryId, required this.basePrice, required this.sellerId, this.status = ProductStatus.draft, this.rejectReason, final  List<String> images = const [], this.isAvailable = true, required this.createdAt, final  List<ProductVariant> variants = const []}): _images = images,_variants = variants;
+  const _Product({required this.id, required this.name, required this.description, required this.categoryId, required this.basePrice, required this.sellerId, this.status = ProductStatus.draft, this.rejectReason,  List<String> images = const [], this.isAvailable = true, required this.createdAt,  List<ProductVariant> variants = const []}): _images = images,_variants = variants;
   factory _Product.fromJson(Map<String, dynamic> json) => _$ProductFromJson(json);
 
 @override final  String id;
@@ -374,7 +375,7 @@ class _$ProductVariantCopyWithImpl<$Res>
 /// Create a copy of ProductVariant
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? size = null,Object? color = null,Object? sku = null,Object? stockQuantity = null,Object? priceDifference = null,}) {
-  return _then(_self.copyWith(
+  return _then(ProductVariant(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,size: null == size ? _self.size : size // ignore: cast_nullable_to_non_nullable
 as String,color: null == color ? _self.color : color // ignore: cast_nullable_to_non_nullable
