@@ -150,13 +150,17 @@ class _AdminDashboardViewState extends ConsumerState<AdminDashboardView>
 
     return usersAsync.when(
       loading: () => const LoadingView(),
-      error: (err, stack) =>
-          ErrorView(onRetry: () => ref.refresh(allUsersProvider)),
+      error: (err, stack) => ErrorView(
+        message: err.toString(),
+        onRetry: () => ref.refresh(allUsersProvider),
+      ),
       data: (users) {
         return ordersAsync.when(
           loading: () => const LoadingView(),
-          error: (err, stack) =>
-              ErrorView(onRetry: () => ref.refresh(allOrdersProvider)),
+          error: (err, stack) => ErrorView(
+            message: err.toString(),
+            onRetry: () => ref.refresh(allOrdersProvider),
+          ),
           data: (orders) {
             final sellerCount = users
                 .where((u) => u.role == AppUserRole.seller)
@@ -707,8 +711,10 @@ class _AdminDashboardViewState extends ConsumerState<AdminDashboardView>
     final logsAsync = ref.watch(auditLogsProvider);
     return logsAsync.when(
       loading: () => const LoadingView(),
-      error: (err, stack) =>
-          ErrorView(onRetry: () => ref.refresh(auditLogsProvider)),
+      error: (err, stack) => ErrorView(
+        message: err.toString(),
+        onRetry: () => ref.refresh(auditLogsProvider),
+      ),
       data: (logs) {
         if (logs.isEmpty) {
           return const EmptyView(
@@ -746,8 +752,10 @@ class _AdminDashboardViewState extends ConsumerState<AdminDashboardView>
     final configAsync = ref.watch(systemConfigProvider);
     return configAsync.when(
       loading: () => const LoadingView(),
-      error: (err, stack) =>
-          ErrorView(onRetry: () => ref.refresh(systemConfigProvider)),
+      error: (err, stack) => ErrorView(
+        message: err.toString(),
+        onRetry: () => ref.refresh(systemConfigProvider),
+      ),
       data: (config) {
         if (_lowStockController.text.isEmpty) {
           _lowStockController.text = '${config['lowStockThreshold'] ?? 5}';
