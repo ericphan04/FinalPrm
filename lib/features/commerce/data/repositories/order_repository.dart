@@ -7,8 +7,6 @@ import '../../domain/models/cart_item.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
 
-import 'package:uuid/uuid.dart';
-
 abstract class OrderRepository {
   Future<Result<AppOrder>> createCheckout(
     String userId,
@@ -78,12 +76,10 @@ class OrderRepositoryImpl implements OrderRepository {
           return Success(AppOrder.fromJson(savedData));
         }
       }
-
-      return Failure(
-        AppFailure.serverError('Không thể lấy dữ liệu đơn hàng sau khi tạo'),
-      );
+      
+      return Failure(AppFailure.serverError('Không thể lấy dữ liệu đơn hàng sau khi tạo'));
     } catch (e) {
-      return Failure(AppFailure.serverError('Lỗi đặt hàng: $e'));
+      return Failure(AppFailure.serverError('Lỗi hệ thống: $e'));
     }
   }
 
@@ -120,7 +116,7 @@ class OrderRepositoryImpl implements OrderRepository {
             }
             return AppOrder.fromJson(data);
           }).toList();
-
+          
           orders.sort((a, b) => b.createdAt.compareTo(a.createdAt));
           return orders;
         });

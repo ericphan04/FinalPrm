@@ -30,4 +30,10 @@ abstract class AuthRepository {
 
   /// Ép buộc làm mới (force refresh) ID Token để cập nhật các Claims phân quyền mới.
   Future<Result<void>> forceRefreshIdToken();
+
+  /// Đổi mật khẩu cho người dùng hiện tại (yêu cầu mật khẩu cũ để xác thực lại).
+  Future<Result<void>> changePassword({
+    required String currentPassword,
+    required String newPassword,
+  });
 }

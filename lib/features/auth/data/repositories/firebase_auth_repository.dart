@@ -222,11 +222,14 @@ class FirebaseAuthRepository implements AuthRepository {
     firebase_auth.User firebaseUser,
   ) async {
     try {
+      // Đọc thông tin role từ document Firestore của người dùng
       final userDoc = await _firestore
           .collection('users')
           .doc(firebaseUser.uid)
           .get();
       AppUserRole role = AppUserRole.user;
+      String displayName = firebaseUser.displayName ?? '';
+      String photoUrl = firebaseUser.photoURL ?? '';
 
       String status = 'active';
       if (userDoc.exists) {
@@ -274,6 +277,7 @@ class FirebaseAuthRepository implements AuthRepository {
       );
     } catch (e) {
       AppLogger.error('Lỗi ánh xạ Firebase User sang AppUser', e);
+      // Fallback về role user cơ bản nếu có lỗi xảy ra
       return AppUser(
         uid: firebaseUser.uid,
         email: firebaseUser.email ?? '',
