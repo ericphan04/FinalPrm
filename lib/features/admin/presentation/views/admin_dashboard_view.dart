@@ -14,6 +14,11 @@ import '../../../auth/domain/models/app_user_role.dart';
 import '../../../auth/presentation/providers/auth_providers.dart';
 import '../providers/admin_providers.dart';
 
+import '../../../auth/domain/models/app_user.dart';
+import '../../../commerce/domain/models/app_order.dart';
+import '../../../commerce/domain/models/product.dart';
+import '../../../seller/domain/models/seller_application.dart';
+
 class AdminDashboardView extends ConsumerStatefulWidget {
   const AdminDashboardView({super.key});
 
@@ -301,8 +306,8 @@ class _AdminDashboardViewState extends ConsumerState<AdminDashboardView>
                       ),
                     ),
                     const SizedBox(height: AppSpacing.xs),
-                    Text('Email: ${app.email}'),
-                    Text('Mô tả: ${app.storeDescription}'),
+                    Text('SĐT: ${app.phone}'),
+                    Text('Mô tả: ${app.description}'),
                     const SizedBox(height: AppSpacing.md),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
