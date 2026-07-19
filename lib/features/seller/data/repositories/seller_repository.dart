@@ -273,21 +273,12 @@ class SellerRepositoryImpl implements SellerRepository {
   @override
   Future<Result<List<AppOrder>>> getSellerOrders(String sellerId) async {
     try {
-      // Fetch all orders
+      // Filter by sellerId in the query to satisfy Firestore Security Rules
       final snapshot = await _firestore
           .collection('orders')
-          .orderBy('createdAt', descending: true)
+          .where('sellerId', isEqualTo: sellerId)
           .get();
       final sellerOrders = <AppOrder>[];
-
-      // Fetch seller's products to identify which product IDs belong to this seller
-      final productsResult = await getSellerProducts(sellerId);
-      if (productsResult is Failure<List<Product>>) {
-        return Failure((productsResult as Failure<List<Product>>).failure);
-      }
-      final sellerProductIds = (productsResult as Success<List<Product>>).data
-          .map((e) => e.id)
-          .toSet();
 
       for (final doc in snapshot.docs) {
         final data = doc.data();
@@ -303,15 +294,11 @@ class SellerRepositoryImpl implements SellerRepository {
               .toIso8601String();
         }
         final order = AppOrder.fromJson(data);
-
-        // Filter order in memory: check if it contains any product belonging to this seller
-        final containsSellerProduct = order.items.any(
-          (item) => sellerProductIds.contains(item.productId),
-        );
-        if (containsSellerProduct) {
-          sellerOrders.add(order);
-        }
+        sellerOrders.add(order);
       }
+
+      // Sort by createdAt descending in memory
+      sellerOrders.sort((a, b) => b.createdAt.compareTo(a.createdAt));
       return Success(sellerOrders);
     } catch (e) {
       return Failure(AppFailure.serverError('Lỗi tải danh sách đơn hàng: $e'));
