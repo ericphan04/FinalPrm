@@ -746,3 +746,20 @@ export const onUserWrite = functions.firestore
       console.warn(`Could not set custom claims for user ${context.params.userId}: ${e}`);
     }
   });
+
+// 12. CALLABLE TO SYNC ALL USERS CLAIMS (for existing database seeds/users)
+export const syncAllUsersClaims = functions.https.onCall(async (data, context) => {
+  const usersSnap = await db.collection('users').get();
+  let count = 0;
+  for (const doc of usersSnap.docs) {
+    const userData = doc.data();
+    const role = userData.role || userData.roleMirror || 'user';
+    try {
+      await admin.auth().setCustomUserClaims(doc.id, { role });
+      count++;
+    } catch (e) {
+      console.warn(`Could not sync claims for user ${doc.id}: ${e}`);
+    }
+  }
+  return { success: true, syncedCount: count };
+});

@@ -44,6 +44,21 @@ class _AdminDashboardViewState extends ConsumerState<AdminDashboardView>
   void initState() {
     super.initState();
     _tabController = TabController(length: 7, vsync: this);
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      try {
+        final adminRepo = ref.read(adminRepositoryProvider);
+        await adminRepo.syncAllUsersClaims();
+        final authRepo = ref.read(authRepositoryProvider);
+        await authRepo.forceRefreshIdToken();
+      } catch (_) {}
+      if (mounted) {
+        ref.invalidate(auditLogsProvider);
+        ref.invalidate(systemConfigProvider);
+        ref.invalidate(pendingSellerApplicationsProvider);
+        ref.invalidate(allUsersProvider);
+        ref.invalidate(allOrdersProvider);
+      }
+    });
   }
 
   @override

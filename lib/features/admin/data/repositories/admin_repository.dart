@@ -28,6 +28,7 @@ abstract class AdminRepository {
   Future<Result<List<AuditLog>>> getAuditLogs();
   Future<Result<Map<String, dynamic>>> getSystemConfig();
   Future<Result<void>> updateSystemConfig(Map<String, dynamic> config);
+  Future<Result<void>> syncAllUsersClaims();
 }
 
 class AdminRepositoryImpl implements AdminRepository {
@@ -249,6 +250,19 @@ class AdminRepositoryImpl implements AdminRepository {
     } catch (e) {
       return Failure(
         AppFailure.serverError('Lỗi cập nhật cấu hình hệ thống: $e'),
+      );
+    }
+  }
+
+  @override
+  Future<Result<void>> syncAllUsersClaims() async {
+    try {
+      final callable = _functions.httpsCallable('syncAllUsersClaims');
+      await callable.call();
+      return const Success(null);
+    } catch (e) {
+      return Failure(
+        AppFailure.serverError('Lỗi đồng bộ Custom Claims: $e'),
       );
     }
   }
