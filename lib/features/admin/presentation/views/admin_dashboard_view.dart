@@ -541,7 +541,9 @@ class _AdminDashboardViewState extends ConsumerState<AdminDashboardView>
           itemCount: users.length,
           itemBuilder: (context, index) {
             final u = users[index];
-            final isBlocked = u.status == 'blocked' || u.status == 'locked';
+            // dynamic cast handles null values in older instances cached during hot reloads
+            final statusStr = (u.status as dynamic) ?? 'active';
+            final isBlocked = statusStr == 'blocked' || statusStr == 'locked';
             return Card(
               margin: const EdgeInsets.only(bottom: AppSpacing.sm),
               child: ListTile(
