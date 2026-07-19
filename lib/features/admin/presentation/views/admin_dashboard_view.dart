@@ -285,8 +285,9 @@ class _AdminDashboardViewState extends ConsumerState<AdminDashboardView>
         onRetry: () => ref.refresh(pendingSellerApplicationsProvider),
       ),
       data: (apps) {
-        final pendingApps =
-            apps.where((a) => a.status == SellerApplicationStatus.pending).toList();
+        final pendingApps = apps
+            .where((a) => a.status == SellerApplicationStatus.pending)
+            .toList();
         if (pendingApps.isEmpty) {
           return const EmptyView(
             title: 'Hồ sơ trống',
@@ -548,7 +549,7 @@ class _AdminDashboardViewState extends ConsumerState<AdminDashboardView>
           itemCount: products.length,
           itemBuilder: (context, index) {
             final prod = products[index];
-            
+
             // Calculate total stock
             final totalStock = prod.variants.fold<int>(
               0,
@@ -577,7 +578,10 @@ class _AdminDashboardViewState extends ConsumerState<AdminDashboardView>
               child: ExpansionTile(
                 leading: CircleAvatar(
                   backgroundColor: AppColors.primary.withOpacity(0.1),
-                  child: const Icon(Icons.shopping_bag_rounded, color: AppColors.primary),
+                  child: const Icon(
+                    Icons.shopping_bag_rounded,
+                    color: AppColors.primary,
+                  ),
                 ),
                 title: Text(
                   prod.name,
@@ -592,7 +596,10 @@ class _AdminDashboardViewState extends ConsumerState<AdminDashboardView>
                       style: const TextStyle(fontSize: 13),
                     ),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 6,
+                        vertical: 2,
+                      ),
                       decoration: BoxDecoration(
                         color: stockColor.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(4),
@@ -607,7 +614,10 @@ class _AdminDashboardViewState extends ConsumerState<AdminDashboardView>
                       ),
                     ),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 6,
+                        vertical: 2,
+                      ),
                       decoration: BoxDecoration(
                         color: prod.status == ProductStatus.published
                             ? Colors.blue.withOpacity(0.1)
@@ -633,18 +643,42 @@ class _AdminDashboardViewState extends ConsumerState<AdminDashboardView>
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Mô tả: ${prod.description}', style: const TextStyle(fontSize: 13)),
+                        Text(
+                          'Mô tả: ${prod.description}',
+                          style: const TextStyle(fontSize: 13),
+                        ),
                         const SizedBox(height: AppSpacing.xs),
-                        Text('ID sản phẩm: ${prod.id}', style: TextStyle(color: Colors.grey[600], fontSize: 12)),
-                        Text('ID người bán: ${prod.sellerId}', style: TextStyle(color: Colors.grey[600], fontSize: 12)),
+                        Text(
+                          'ID sản phẩm: ${prod.id}',
+                          style: TextStyle(
+                            color: Colors.grey[600],
+                            fontSize: 12,
+                          ),
+                        ),
+                        Text(
+                          'ID người bán: ${prod.sellerId}',
+                          style: TextStyle(
+                            color: Colors.grey[600],
+                            fontSize: 12,
+                          ),
+                        ),
                         const SizedBox(height: AppSpacing.sm),
                         const Text(
                           'Chi tiết tồn kho biến thể:',
-                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 13,
+                          ),
                         ),
                         const SizedBox(height: AppSpacing.xs),
                         if (prod.variants.isEmpty)
-                          const Text('Không có biến thể nào được cấu hình.', style: TextStyle(fontStyle: FontStyle.italic, fontSize: 12))
+                          const Text(
+                            'Không có biến thể nào được cấu hình.',
+                            style: TextStyle(
+                              fontStyle: FontStyle.italic,
+                              fontSize: 12,
+                            ),
+                          )
                         else
                           Table(
                             columnWidths: const {
@@ -653,26 +687,55 @@ class _AdminDashboardViewState extends ConsumerState<AdminDashboardView>
                               2: FlexColumnWidth(3),
                               3: FlexColumnWidth(2),
                             },
-                            border: TableBorder.all(color: Colors.grey[300]!, width: 0.5),
+                            border: TableBorder.all(
+                              color: Colors.grey[300]!,
+                              width: 0.5,
+                            ),
                             children: [
                               TableRow(
-                                decoration: BoxDecoration(color: Colors.grey[100]),
+                                decoration: BoxDecoration(
+                                  color: Colors.grey[100],
+                                ),
                                 children: const [
                                   Padding(
                                     padding: EdgeInsets.all(6.0),
-                                    child: Text('Kích cỡ', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+                                    child: Text(
+                                      'Kích cỡ',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 12,
+                                      ),
+                                    ),
                                   ),
                                   Padding(
                                     padding: EdgeInsets.all(6.0),
-                                    child: Text('Màu sắc', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+                                    child: Text(
+                                      'Màu sắc',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 12,
+                                      ),
+                                    ),
                                   ),
                                   Padding(
                                     padding: EdgeInsets.all(6.0),
-                                    child: Text('SKU', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+                                    child: Text(
+                                      'SKU',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 12,
+                                      ),
+                                    ),
                                   ),
                                   Padding(
                                     padding: EdgeInsets.all(6.0),
-                                    child: Text('Tồn kho', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+                                    child: Text(
+                                      'Tồn kho',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 12,
+                                      ),
+                                    ),
                                   ),
                                 ],
                               ),
@@ -681,15 +744,24 @@ class _AdminDashboardViewState extends ConsumerState<AdminDashboardView>
                                   children: [
                                     Padding(
                                       padding: const EdgeInsets.all(6.0),
-                                      child: Text(v.size, style: const TextStyle(fontSize: 12)),
+                                      child: Text(
+                                        v.size,
+                                        style: const TextStyle(fontSize: 12),
+                                      ),
                                     ),
                                     Padding(
                                       padding: const EdgeInsets.all(6.0),
-                                      child: Text(v.color, style: const TextStyle(fontSize: 12)),
+                                      child: Text(
+                                        v.color,
+                                        style: const TextStyle(fontSize: 12),
+                                      ),
                                     ),
                                     Padding(
                                       padding: const EdgeInsets.all(6.0),
-                                      child: Text(v.sku, style: const TextStyle(fontSize: 12)),
+                                      child: Text(
+                                        v.sku,
+                                        style: const TextStyle(fontSize: 12),
+                                      ),
                                     ),
                                     Padding(
                                       padding: const EdgeInsets.all(6.0),
@@ -697,7 +769,9 @@ class _AdminDashboardViewState extends ConsumerState<AdminDashboardView>
                                         '${v.stockQuantity}',
                                         style: TextStyle(
                                           fontWeight: FontWeight.bold,
-                                          color: v.stockQuantity == 0 ? Colors.red : Colors.black,
+                                          color: v.stockQuantity == 0
+                                              ? Colors.red
+                                              : Colors.black,
                                           fontSize: 12,
                                         ),
                                       ),
@@ -791,8 +865,9 @@ class _AdminDashboardViewState extends ConsumerState<AdminDashboardView>
                   backgroundColor: isBlocked
                       ? Colors.red.shade50
                       : AppColors.primary.withOpacity(0.1),
-                  foregroundColor:
-                      isBlocked ? Colors.red.shade700 : AppColors.primary,
+                  foregroundColor: isBlocked
+                      ? Colors.red.shade700
+                      : AppColors.primary,
                   child: Text(
                     u.displayName.isNotEmpty
                         ? u.displayName[0].toUpperCase()

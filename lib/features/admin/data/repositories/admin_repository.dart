@@ -81,7 +81,12 @@ class AdminRepositoryImpl implements AdminRepository {
       final appRef = _firestore.collection('seller_applications').doc(appId);
       final appSnap = await appRef.get();
       if (!appSnap.exists) {
-        return const Failure(AppFailure(code: 'not_found', message: 'Không tìm thấy hồ sơ đăng ký'));
+        return const Failure(
+          AppFailure(
+            code: 'not_found',
+            message: 'Không tìm thấy hồ sơ đăng ký',
+          ),
+        );
       }
       final appData = appSnap.data()!;
 
@@ -383,9 +388,7 @@ class AdminRepositoryImpl implements AdminRepository {
       await callable.call();
       return const Success(null);
     } catch (e) {
-      return Failure(
-        AppFailure.serverError('Lỗi đồng bộ Custom Claims: $e'),
-      );
+      return Failure(AppFailure.serverError('Lỗi đồng bộ Custom Claims: $e'));
     }
   }
 }

@@ -3,7 +3,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:finalprm/core/firebase/firebase_bootstrap.dart';
 import 'package:finalprm/core/firebase/firebase_seed.dart';
 import 'package:finalprm/features/commerce/data/repositories/order_repository.dart';
 import 'package:finalprm/features/commerce/domain/models/app_order.dart';

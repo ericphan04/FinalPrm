@@ -51,11 +51,13 @@ class FirebaseAuthRepository implements AuthRepository {
       }
 
       // Kiểm tra trạng thái tài khoản trong Firestore
-      final userDoc =
-          await _firestore.collection('users').doc(user.uid).get();
+      final userDoc = await _firestore.collection('users').doc(user.uid).get();
       if (userDoc.exists) {
         final status = userDoc.data()?['status'] as String?;
-        if (status == 'locked' || status == 'banned' || status == 'disabled' || status == 'blocked') {
+        if (status == 'locked' ||
+            status == 'banned' ||
+            status == 'disabled' ||
+            status == 'blocked') {
           // Tài khoản bị khóa → đăng xuất ngay và trả về lỗi
           await _firebaseAuth.signOut();
           AppLogger.warning(
@@ -178,6 +180,36 @@ class FirebaseAuthRepository implements AuthRepository {
       return Success(appUser);
     } catch (e) {
       AppLogger.error('Lỗi lấy thông tin người dùng hiện tại', e);
+      return Failure(ErrorHandler.handle(e));
+    }
+  }
+
+  @override
+  Future<Result<void>> changePassword({
+    required String currentPassword,
+    required String newPassword,
+  }) async {
+    try {
+      final user = _firebaseAuth.currentUser;
+      if (user == null || user.email == null) {
+        return Failure(
+          AppFailure(
+            code: 'unauthenticated',
+            message: 'Vui lòng đăng nhập lại trước khi đổi mật khẩu.',
+          ),
+        );
+      }
+
+      final credential = firebase_auth.EmailAuthProvider.credential(
+        email: user.email!,
+        password: currentPassword,
+      );
+      await user.reauthenticateWithCredential(credential);
+      await user.updatePassword(newPassword);
+      AppLogger.info('Đổi mật khẩu thành công cho: email=${user.email}');
+      return const Success(null);
+    } catch (e) {
+      AppLogger.error('Lỗi đổi mật khẩu', e);
       return Failure(ErrorHandler.handle(e));
     }
   }

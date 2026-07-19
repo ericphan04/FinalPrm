@@ -1,7 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:finalprm/core/result/result.dart';
-import 'package:finalprm/features/commerce/domain/models/cart_item.dart';
 import 'package:finalprm/features/commerce/data/repositories/cart_repository.dart';
 import 'package:finalprm/features/commerce/presentation/controllers/cart_controller.dart';
 
