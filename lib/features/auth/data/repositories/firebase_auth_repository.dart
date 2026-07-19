@@ -50,6 +50,27 @@ class FirebaseAuthRepository implements AuthRepository {
         );
       }
 
+      // Kiểm tra trạng thái tài khoản trong Firestore
+      final userDoc =
+          await _firestore.collection('users').doc(user.uid).get();
+      if (userDoc.exists) {
+        final status = userDoc.data()?['status'] as String?;
+        if (status == 'locked' || status == 'banned' || status == 'disabled' || status == 'blocked') {
+          // Tài khoản bị khóa → đăng xuất ngay và trả về lỗi
+          await _firebaseAuth.signOut();
+          AppLogger.warning(
+            'Tài khoản bị khóa: uid=${user.uid}, status=$status',
+          );
+          return Failure(
+            AppFailure(
+              code: 'account_locked',
+              message:
+                  'Tài khoản của bạn đã bị khóa bởi quản trị viên. Vui lòng liên hệ hỗ trợ.',
+            ),
+          );
+        }
+      }
+
       final appUser = await _mapFirebaseUserToAppUser(user);
       AppLogger.info(
         'Đăng nhập thành công: email=${appUser.email}, role=${appUser.role}',
