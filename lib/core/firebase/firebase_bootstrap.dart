@@ -24,7 +24,7 @@ class FirebaseBootstrap {
       // 2. Kiểm tra cờ sử dụng Emulator (phải bật tường minh bằng --dart-define=USE_EMULATOR=true)
       const bool useEmulator = bool.fromEnvironment(
         'USE_EMULATOR',
-        defaultValue: false,
+        defaultValue: kDebugMode, // Auto-enable emulator in debug mode for seamless local development
       );
 
       if (useEmulator) {
