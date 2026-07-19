@@ -41,13 +41,15 @@ class OrderListView extends ConsumerWidget {
                 child: Text(
                   'Lỗi tải đơn hàng: ${orderState.errorMessage}',
                   textAlign: TextAlign.center,
-                  style: theme.textTheme.bodyLarge?.copyWith(color: AppColors.error),
+                  style: theme.textTheme.bodyLarge?.copyWith(
+                    color: AppColors.error,
+                  ),
                 ),
               ),
             )
           : orderState.isLoading && orderState.orders.isEmpty
-              ? const Center(child: CircularProgressIndicator())
-              : orderState.orders.isEmpty
+          ? const Center(child: CircularProgressIndicator())
+          : orderState.orders.isEmpty
           ? const EmptyView(
               title: 'Chưa có đơn hàng nào',
               description:
@@ -132,7 +134,8 @@ class OrderListView extends ConsumerWidget {
                           SizedBox(
                             width: double.infinity,
                             child: OutlinedButton(
-                              onPressed: () => _handleCancelOrder(context, ref, order),
+                              onPressed: () =>
+                                  _handleCancelOrder(context, ref, order),
                               style: OutlinedButton.styleFrom(
                                 foregroundColor: AppColors.error,
                                 side: const BorderSide(color: AppColors.error),
@@ -167,7 +170,7 @@ class OrderListView extends ConsumerWidget {
               final success = await ref
                   .read(orderControllerProvider.notifier)
                   .cancelOrder(order.id, 'Người dùng tự hủy đơn');
-              
+
               if (success && context.mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('Hủy đơn hàng thành công')),

@@ -49,7 +49,9 @@ class SellerProductController extends StateNotifier<SellerProductState> {
     );
     result.when(
       onSuccess: (products) async {
-        final hasSeeded = products.any((p) => p.id.startsWith('seed-prod-$_uid-'));
+        final hasSeeded = products.any(
+          (p) => p.id.startsWith('seed-prod-$_uid-'),
+        );
         if (!hasSeeded && state.filterStatus == null) {
           // Catalog is empty of seed products, seed 10 high-fidelity shoe and sandal products!
           await _seedTenProducts(_uid!);
@@ -62,7 +64,10 @@ class SellerProductController extends StateNotifier<SellerProductState> {
               state = state.copyWith(isLoading: false, products: reProducts);
             },
             onFailure: (failure) {
-              state = state.copyWith(isLoading: false, errorMessage: failure.message);
+              state = state.copyWith(
+                isLoading: false,
+                errorMessage: failure.message,
+              );
             },
           );
         } else {
@@ -80,7 +85,8 @@ class SellerProductController extends StateNotifier<SellerProductState> {
       Product(
         id: 'seed-prod-$sellerId-1',
         name: 'Giày Sneaker Retro Classic',
-        description: 'Được thiết kế theo phong cách cổ điển thập niên 90 với đệm êm ái, thích hợp cho hoạt động đi lại hàng ngày.',
+        description:
+            'Được thiết kế theo phong cách cổ điển thập niên 90 với đệm êm ái, thích hợp cho hoạt động đi lại hàng ngày.',
         categoryId: 'cat-giay',
         basePrice: 1200000.0,
         sellerId: sellerId,
@@ -88,14 +94,29 @@ class SellerProductController extends StateNotifier<SellerProductState> {
         images: ['https://picsum.photos/300/300?random=11'],
         createdAt: DateTime.now(),
         variants: [
-          const ProductVariant(id: 'v-seed-1-1', size: '40', color: 'Trắng', sku: 'SNE-W-40', stockQuantity: 15, priceDifference: 0),
-          const ProductVariant(id: 'v-seed-1-2', size: '41', color: 'Trắng', sku: 'SNE-W-41', stockQuantity: 8, priceDifference: 0),
+          const ProductVariant(
+            id: 'v-seed-1-1',
+            size: '40',
+            color: 'Trắng',
+            sku: 'SNE-W-40',
+            stockQuantity: 15,
+            priceDifference: 0,
+          ),
+          const ProductVariant(
+            id: 'v-seed-1-2',
+            size: '41',
+            color: 'Trắng',
+            sku: 'SNE-W-41',
+            stockQuantity: 8,
+            priceDifference: 0,
+          ),
         ],
       ),
       Product(
         id: 'seed-prod-$sellerId-2',
         name: 'Giày Chạy Bộ Performance X',
-        description: 'Giày chạy bộ chuyên nghiệp, siêu nhẹ, hỗ trợ phản hồi lực kéo cực tốt cho các vận động viên marathon.',
+        description:
+            'Giày chạy bộ chuyên nghiệp, siêu nhẹ, hỗ trợ phản hồi lực kéo cực tốt cho các vận động viên marathon.',
         categoryId: 'cat-giay',
         basePrice: 1850000.0,
         sellerId: sellerId,
@@ -103,14 +124,29 @@ class SellerProductController extends StateNotifier<SellerProductState> {
         images: ['https://picsum.photos/300/300?random=12'],
         createdAt: DateTime.now(),
         variants: [
-          const ProductVariant(id: 'v-seed-2-1', size: '42', color: 'Đen', sku: 'RUN-B-42', stockQuantity: 2, priceDifference: 50000), // Low stock
-          const ProductVariant(id: 'v-seed-2-2', size: '43', color: 'Đen', sku: 'RUN-B-43', stockQuantity: 20, priceDifference: 50000),
+          const ProductVariant(
+            id: 'v-seed-2-1',
+            size: '42',
+            color: 'Đen',
+            sku: 'RUN-B-42',
+            stockQuantity: 2,
+            priceDifference: 50000,
+          ), // Low stock
+          const ProductVariant(
+            id: 'v-seed-2-2',
+            size: '43',
+            color: 'Đen',
+            sku: 'RUN-B-43',
+            stockQuantity: 20,
+            priceDifference: 50000,
+          ),
         ],
       ),
       Product(
         id: 'seed-prod-$sellerId-3',
         name: 'Giày Tây Oxford Classic Nâu',
-        description: 'Chất liệu da bò thật 100%, thiết kế phom dáng ôm chân sang trọng tôn dáng lịch lãm công sở.',
+        description:
+            'Chất liệu da bò thật 100%, thiết kế phom dáng ôm chân sang trọng tôn dáng lịch lãm công sở.',
         categoryId: 'cat-giay',
         basePrice: 2500000.0,
         sellerId: sellerId,
@@ -118,14 +154,29 @@ class SellerProductController extends StateNotifier<SellerProductState> {
         images: ['https://picsum.photos/300/300?random=13'],
         createdAt: DateTime.now(),
         variants: [
-          const ProductVariant(id: 'v-seed-3-1', size: '39', color: 'Nâu', sku: 'OXF-BR-39', stockQuantity: 5, priceDifference: 0),
-          const ProductVariant(id: 'v-seed-3-2', size: '40', color: 'Nâu', sku: 'OXF-BR-40', stockQuantity: 6, priceDifference: 0),
+          const ProductVariant(
+            id: 'v-seed-3-1',
+            size: '39',
+            color: 'Nâu',
+            sku: 'OXF-BR-39',
+            stockQuantity: 5,
+            priceDifference: 0,
+          ),
+          const ProductVariant(
+            id: 'v-seed-3-2',
+            size: '40',
+            color: 'Nâu',
+            sku: 'OXF-BR-40',
+            stockQuantity: 6,
+            priceDifference: 0,
+          ),
         ],
       ),
       Product(
         id: 'seed-prod-$sellerId-4',
         name: 'Dép Slide Sporty Quai Ngang',
-        description: 'Dép quai ngang thể thao êm ái chống trượt, phù hợp đi trong nhà, đi mưa, hoặc đi chơi dã ngoại dạo phố.',
+        description:
+            'Dép quai ngang thể thao êm ái chống trượt, phù hợp đi trong nhà, đi mưa, hoặc đi chơi dã ngoại dạo phố.',
         categoryId: 'cat-dep',
         basePrice: 250000.0,
         sellerId: sellerId,
@@ -133,14 +184,29 @@ class SellerProductController extends StateNotifier<SellerProductState> {
         images: ['https://picsum.photos/300/300?random=14'],
         createdAt: DateTime.now(),
         variants: [
-          const ProductVariant(id: 'v-seed-4-1', size: '40', color: 'Xám', sku: 'SLI-GR-40', stockQuantity: 3, priceDifference: 0), // Low stock
-          const ProductVariant(id: 'v-seed-4-2', size: '41', color: 'Xám', sku: 'SLI-GR-41', stockQuantity: 12, priceDifference: 0),
+          const ProductVariant(
+            id: 'v-seed-4-1',
+            size: '40',
+            color: 'Xám',
+            sku: 'SLI-GR-40',
+            stockQuantity: 3,
+            priceDifference: 0,
+          ), // Low stock
+          const ProductVariant(
+            id: 'v-seed-4-2',
+            size: '41',
+            color: 'Xám',
+            sku: 'SLI-GR-41',
+            stockQuantity: 12,
+            priceDifference: 0,
+          ),
         ],
       ),
       Product(
         id: 'seed-prod-$sellerId-5',
         name: 'Dép Sandal Adventure Quai Chéo',
-        description: 'Dép quai hậu sandal dã ngoại chắc chắn, quai vải dù nhanh khô, đế cao su bám đường đi phượt dã ngoại.',
+        description:
+            'Dép quai hậu sandal dã ngoại chắc chắn, quai vải dù nhanh khô, đế cao su bám đường đi phượt dã ngoại.',
         categoryId: 'cat-dep',
         basePrice: 650000.0,
         sellerId: sellerId,
@@ -148,30 +214,61 @@ class SellerProductController extends StateNotifier<SellerProductState> {
         images: ['https://picsum.photos/300/300?random=15'],
         createdAt: DateTime.now(),
         variants: [
-          const ProductVariant(id: 'v-seed-5-1', size: '41', color: 'Xanh Rêu', sku: 'SAN-G-41', stockQuantity: 8, priceDifference: 0),
-          const ProductVariant(id: 'v-seed-5-2', size: '42', color: 'Xanh Rêu', sku: 'SAN-G-42', stockQuantity: 10, priceDifference: 0),
+          const ProductVariant(
+            id: 'v-seed-5-1',
+            size: '41',
+            color: 'Xanh Rêu',
+            sku: 'SAN-G-41',
+            stockQuantity: 8,
+            priceDifference: 0,
+          ),
+          const ProductVariant(
+            id: 'v-seed-5-2',
+            size: '42',
+            color: 'Xanh Rêu',
+            sku: 'SAN-G-42',
+            stockQuantity: 10,
+            priceDifference: 0,
+          ),
         ],
       ),
       Product(
         id: 'seed-prod-$sellerId-6',
         name: 'Dép Xỏ Ngón Beach Walker',
-        description: 'Dép tông xỏ ngón đi biển siêu bền nhẹ, màu sắc năng động trẻ trung và cực kỳ thoải mái chân.',
+        description:
+            'Dép tông xỏ ngón đi biển siêu bền nhẹ, màu sắc năng động trẻ trung và cực kỳ thoải mái chân.',
         categoryId: 'cat-dep',
         basePrice: 180000.0,
         sellerId: sellerId,
         status: ProductStatus.rejected,
-        rejectReason: 'Hình ảnh sản phẩm mờ, không rõ chi tiết. Vui lòng chụp lại hình ảnh rõ nét hơn.',
+        rejectReason:
+            'Hình ảnh sản phẩm mờ, không rõ chi tiết. Vui lòng chụp lại hình ảnh rõ nét hơn.',
         images: ['https://picsum.photos/300/300?random=16'],
         createdAt: DateTime.now(),
         variants: [
-          const ProductVariant(id: 'v-seed-6-1', size: '39', color: 'Đen', sku: 'FLI-BLK-39', stockQuantity: 4, priceDifference: 0), // Low stock
-          const ProductVariant(id: 'v-seed-6-2', size: '40', color: 'Đen', sku: 'FLI-BLK-40', stockQuantity: 15, priceDifference: 0),
+          const ProductVariant(
+            id: 'v-seed-6-1',
+            size: '39',
+            color: 'Đen',
+            sku: 'FLI-BLK-39',
+            stockQuantity: 4,
+            priceDifference: 0,
+          ), // Low stock
+          const ProductVariant(
+            id: 'v-seed-6-2',
+            size: '40',
+            color: 'Đen',
+            sku: 'FLI-BLK-40',
+            stockQuantity: 15,
+            priceDifference: 0,
+          ),
         ],
       ),
       Product(
         id: 'seed-prod-$sellerId-7',
         name: 'Giày Cao Gót Nữ Glamour Pink',
-        description: 'Giày cao gót mũi nhọn gót mảnh 7 phân quý phái lịch thiệp dành cho quý cô dự tiệc hội nghị.',
+        description:
+            'Giày cao gót mũi nhọn gót mảnh 7 phân quý phái lịch thiệp dành cho quý cô dự tiệc hội nghị.',
         categoryId: 'cat-giay',
         basePrice: 1100000.0,
         sellerId: sellerId,
@@ -179,14 +276,29 @@ class SellerProductController extends StateNotifier<SellerProductState> {
         images: ['https://picsum.photos/300/300?random=17'],
         createdAt: DateTime.now(),
         variants: [
-          const ProductVariant(id: 'v-seed-7-1', size: '36', color: 'Hồng', sku: 'HEE-P-36', stockQuantity: 10, priceDifference: 0),
-          const ProductVariant(id: 'v-seed-7-2', size: '37', color: 'Hồng', sku: 'HEE-P-37', stockQuantity: 7, priceDifference: 0),
+          const ProductVariant(
+            id: 'v-seed-7-1',
+            size: '36',
+            color: 'Hồng',
+            sku: 'HEE-P-36',
+            stockQuantity: 10,
+            priceDifference: 0,
+          ),
+          const ProductVariant(
+            id: 'v-seed-7-2',
+            size: '37',
+            color: 'Hồng',
+            sku: 'HEE-P-37',
+            stockQuantity: 7,
+            priceDifference: 0,
+          ),
         ],
       ),
       Product(
         id: 'seed-prod-$sellerId-8',
         name: 'Giày Lười Loafer Suede Da Lộn',
-        description: 'Chất liệu da lộn mềm mại êm chân, màu bò cá tính phong lưu sang trọng cực kỳ hợp đồ dạo phố.',
+        description:
+            'Chất liệu da lộn mềm mại êm chân, màu bò cá tính phong lưu sang trọng cực kỳ hợp đồ dạo phố.',
         categoryId: 'cat-giay',
         basePrice: 1450000.0,
         sellerId: sellerId,
@@ -194,14 +306,29 @@ class SellerProductController extends StateNotifier<SellerProductState> {
         images: ['https://picsum.photos/300/300?random=18'],
         createdAt: DateTime.now(),
         variants: [
-          const ProductVariant(id: 'v-seed-8-1', size: '41', color: 'Da Bò', sku: 'LOA-TAN-41', stockQuantity: 4, priceDifference: 30000), // Low stock
-          const ProductVariant(id: 'v-seed-8-2', size: '42', color: 'Da Bò', sku: 'LOA-TAN-42', stockQuantity: 11, priceDifference: 30000),
+          const ProductVariant(
+            id: 'v-seed-8-1',
+            size: '41',
+            color: 'Da Bò',
+            sku: 'LOA-TAN-41',
+            stockQuantity: 4,
+            priceDifference: 30000,
+          ), // Low stock
+          const ProductVariant(
+            id: 'v-seed-8-2',
+            size: '42',
+            color: 'Da Bò',
+            sku: 'LOA-TAN-42',
+            stockQuantity: 11,
+            priceDifference: 30000,
+          ),
         ],
       ),
       Product(
         id: 'seed-prod-$sellerId-9',
         name: 'Dép Da Quai Chéo Premium',
-        description: 'Dép da quai chéo chất liệu da bò sang xịn đế đúc nguyên khối siêu sang thích hợp mặc đồ linen.',
+        description:
+            'Dép da quai chéo chất liệu da bò sang xịn đế đúc nguyên khối siêu sang thích hợp mặc đồ linen.',
         categoryId: 'cat-dep',
         basePrice: 750000.0,
         sellerId: sellerId,
@@ -209,24 +336,54 @@ class SellerProductController extends StateNotifier<SellerProductState> {
         images: ['https://picsum.photos/300/300?random=19'],
         createdAt: DateTime.now(),
         variants: [
-          const ProductVariant(id: 'v-seed-9-1', size: '40', color: 'Đen', sku: 'LEA-BLK-40', stockQuantity: 12, priceDifference: 0),
-          const ProductVariant(id: 'v-seed-9-2', size: '41', color: 'Đen', sku: 'LEA-BLK-41', stockQuantity: 14, priceDifference: 0),
+          const ProductVariant(
+            id: 'v-seed-9-1',
+            size: '40',
+            color: 'Đen',
+            sku: 'LEA-BLK-40',
+            stockQuantity: 12,
+            priceDifference: 0,
+          ),
+          const ProductVariant(
+            id: 'v-seed-9-2',
+            size: '41',
+            color: 'Đen',
+            sku: 'LEA-BLK-41',
+            stockQuantity: 14,
+            priceDifference: 0,
+          ),
         ],
       ),
       Product(
         id: 'seed-prod-$sellerId-10',
         name: 'Dép Clog Classic Unisex',
-        description: 'Dép sục clog classic siêu bền nhẹ chống thấm nước, thích hợp đi làm đi chơi trong mọi thời tiết.',
+        description:
+            'Dép sục clog classic siêu bền nhẹ chống thấm nước, thích hợp đi làm đi chơi trong mọi thời tiết.',
         categoryId: 'cat-dep',
         basePrice: 550000.0,
         sellerId: sellerId,
         status: ProductStatus.rejected,
-        rejectReason: 'Tên sản phẩm chứa thương hiệu bản quyền nhạy cảm chưa kiểm duyệt.',
+        rejectReason:
+            'Tên sản phẩm chứa thương hiệu bản quyền nhạy cảm chưa kiểm duyệt.',
         images: ['https://picsum.photos/300/300?random=20'],
         createdAt: DateTime.now(),
         variants: [
-          const ProductVariant(id: 'v-seed-10-1', size: '38', color: 'Trắng', sku: 'CLO-W-38', stockQuantity: 1, priceDifference: -20000), // Low stock
-          const ProductVariant(id: 'v-seed-10-2', size: '40', color: 'Trắng', sku: 'CLO-W-40', stockQuantity: 18, priceDifference: 0),
+          const ProductVariant(
+            id: 'v-seed-10-1',
+            size: '38',
+            color: 'Trắng',
+            sku: 'CLO-W-38',
+            stockQuantity: 1,
+            priceDifference: -20000,
+          ), // Low stock
+          const ProductVariant(
+            id: 'v-seed-10-2',
+            size: '40',
+            color: 'Trắng',
+            sku: 'CLO-W-40',
+            stockQuantity: 18,
+            priceDifference: 0,
+          ),
         ],
       ),
     ];

@@ -178,8 +178,28 @@ class ProfileTab extends ConsumerWidget {
                 ),
                 child: Column(
                   children: [
-                    if (user.role == AppUserRole.seller ||
-                        user.role == AppUserRole.admin)
+                    if (user.role == AppUserRole.admin) ...[
+                      ListTile(
+                        leading: const Icon(
+                          Icons.admin_panel_settings_rounded,
+                          color: AppColors.primary,
+                        ),
+                        title: const Text(
+                          'Trang Quản Trị (Admin Dashboard)',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        subtitle: const Text(
+                          'Quản trị hệ thống, phê duyệt sản phẩm và người bán',
+                        ),
+                        trailing: const Icon(
+                          Icons.arrow_forward_ios_rounded,
+                          size: 14,
+                        ),
+                        onTap: () => context.push('/admin/dashboard'),
+                      ),
+                      const Divider(height: 1, indent: 16, endIndent: 16),
+                    ],
+                    if (user.role == AppUserRole.seller)
                       ListTile(
                         leading: const Icon(
                           Icons.storefront_rounded,

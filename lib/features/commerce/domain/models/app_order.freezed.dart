@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
-// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
+// ignore_for_file: type=lint
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'app_order.dart';
@@ -9,7 +9,6 @@ part of 'app_order.dart';
 // FreezedGenerator
 // **************************************************************************
 
-// GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 T _$identity<T>(T value) => value;
 
@@ -67,7 +66,7 @@ class _$AppOrderCopyWithImpl<$Res>
 /// Create a copy of AppOrder
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? userId = null,Object? status = null,Object? totalAmount = null,Object? shippingAddress = null,Object? paymentMethod = null,Object? items = null,Object? createdAt = null,Object? updatedAt = freezed,}) {
-  return _then(AppOrder(
+  return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,userId: null == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
 as String,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
@@ -227,7 +226,7 @@ return $default(_that.id,_that.userId,_that.status,_that.totalAmount,_that.shipp
 @JsonSerializable()
 
 class _AppOrder implements AppOrder {
-  const _AppOrder({required this.id, required this.userId, this.status = OrderStatus.pending, required this.totalAmount, required this.shippingAddress, required this.paymentMethod,  List<OrderItem> items = const [], required this.createdAt, this.updatedAt}): _items = items;
+  const _AppOrder({required this.id, required this.userId, this.status = OrderStatus.pending, required this.totalAmount, required this.shippingAddress, required this.paymentMethod, final  List<OrderItem> items = const [], required this.createdAt, this.updatedAt}): _items = items;
   factory _AppOrder.fromJson(Map<String, dynamic> json) => _$AppOrderFromJson(json);
 
 @override final  String id;
@@ -378,7 +377,7 @@ class _$OrderItemCopyWithImpl<$Res>
 /// Create a copy of OrderItem
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? productId = null,Object? variantId = null,Object? productName = null,Object? size = null,Object? color = null,Object? price = null,Object? quantity = null,Object? imageUrl = null,}) {
-  return _then(OrderItem(
+  return _then(_self.copyWith(
 productId: null == productId ? _self.productId : productId // ignore: cast_nullable_to_non_nullable
 as String,variantId: null == variantId ? _self.variantId : variantId // ignore: cast_nullable_to_non_nullable
 as String,productName: null == productName ? _self.productName : productName // ignore: cast_nullable_to_non_nullable
@@ -662,7 +661,7 @@ class _$ShippingAddressCopyWithImpl<$Res>
 /// Create a copy of ShippingAddress
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? fullName = null,Object? phone = null,Object? addressLine = null,Object? city = null,}) {
-  return _then(ShippingAddress(
+  return _then(_self.copyWith(
 fullName: null == fullName ? _self.fullName : fullName // ignore: cast_nullable_to_non_nullable
 as String,phone: null == phone ? _self.phone : phone // ignore: cast_nullable_to_non_nullable
 as String,addressLine: null == addressLine ? _self.addressLine : addressLine // ignore: cast_nullable_to_non_nullable

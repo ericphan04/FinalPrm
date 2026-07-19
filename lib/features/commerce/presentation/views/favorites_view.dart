@@ -20,9 +20,7 @@ class FavoritesView extends ConsumerWidget {
         .toList();
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Favorites'),
-      ),
+      appBar: AppBar(title: const Text('Favorites')),
       body: favoriteState.isLoading && favoriteProducts.isEmpty
           ? const Center(child: CircularProgressIndicator())
           : favoriteProducts.isEmpty
@@ -46,7 +44,9 @@ class FavoritesView extends ConsumerWidget {
                   product: product,
                   isFavorite: true,
                   onFavoriteToggle: () {
-                    ref.read(favoriteControllerProvider.notifier).toggleFavorite(product.id);
+                    ref
+                        .read(favoriteControllerProvider.notifier)
+                        .toggleFavorite(product.id);
                   },
                   onTap: () => context.push('/product/${product.id}'),
                 );

@@ -31,7 +31,7 @@ class FavoriteController extends StateNotifier<FavoriteState> {
   final String? _uid;
 
   FavoriteController(this._repository, this._uid)
-      : super(FavoriteState(favoriteIds: [], isLoading: true)) {
+    : super(FavoriteState(favoriteIds: [], isLoading: true)) {
     _loadFavorites();
   }
 
@@ -47,7 +47,7 @@ class FavoriteController extends StateNotifier<FavoriteState> {
 
   Future<void> toggleFavorite(String productId) async {
     final isFavorite = state.favoriteIds.contains(productId);
-    
+
     // Optimistic update
     List<String> newFavorites = List.from(state.favoriteIds);
     if (isFavorite) {
@@ -70,7 +70,7 @@ class FavoriteController extends StateNotifier<FavoriteState> {
       await _loadFavorites();
     }
   }
-  
+
   bool isFavorite(String productId) {
     return state.favoriteIds.contains(productId);
   }

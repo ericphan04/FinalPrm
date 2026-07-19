@@ -204,7 +204,9 @@ class MainScreen extends ConsumerWidget {
                       child: Text(
                         badgeCount.toString(),
                         style: TextStyle(
-                          color: Theme.of(context).brightness == Brightness.dark ? Colors.black : Colors.white,
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? Colors.black
+                              : Colors.white,
                           fontSize: 10,
                           fontWeight: FontWeight.bold,
                           height: 1,

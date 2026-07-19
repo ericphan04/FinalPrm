@@ -434,7 +434,8 @@ class _ProductsTab extends ConsumerWidget {
                 : state.products.isEmpty
                 ? const EmptyView(
                     title: 'Chưa có sản phẩm nào',
-                    description: 'Nhấn nút Thêm sản phẩm để bắt đầu đăng bán hàng.',
+                    description:
+                        'Nhấn nút Thêm sản phẩm để bắt đầu đăng bán hàng.',
                   )
                 : ListView.builder(
                     itemCount: state.products.length,
@@ -700,8 +701,8 @@ class _ProductsTab extends ConsumerWidget {
         color: isSelected
             ? Colors.white
             : (Theme.of(context).brightness == Brightness.dark
-                ? Colors.white70
-                : Colors.black87),
+                  ? Colors.white70
+                  : Colors.black87),
         fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
       ),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
