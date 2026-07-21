@@ -212,7 +212,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
                         AppTextField(
                           controller: _emailController,
-                          labelText: 'Địa chỉ Email',
+                          labelText: 'Địa chỉ email',
                           hintText: 'email@domain.com',
                           keyboardType: TextInputType.emailAddress,
                           prefixIcon: Icon(

@@ -352,6 +352,66 @@ class ProfileTab extends ConsumerWidget {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
+    if (user.role == AppUserRole.admin) {
+      return Scaffold(
+        backgroundColor: isDark
+            ? AppColors.backgroundDark
+            : AppColors.backgroundLight,
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(AppSpacing.lg),
+            child: Column(
+              children: [
+                const Spacer(),
+                CircleAvatar(
+                  radius: 48,
+                  backgroundColor: isDark
+                      ? AppColors.surfaceDark
+                      : AppColors.primaryLight,
+                  child: const Icon(
+                    Icons.admin_panel_settings_rounded,
+                    size: 42,
+                    color: AppColors.primary,
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.lg),
+                Text(
+                  'Quản trị',
+                  style: theme.textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.xs),
+                Text(
+                  'Tài khoản này chỉ dùng để quản trị hệ thống.',
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.bodyMedium,
+                ),
+                const SizedBox(height: AppSpacing.xl),
+                AppButton(
+                  text: 'Mở dashboard',
+                  icon: const Icon(Icons.dashboard_rounded, size: 18),
+                  width: double.infinity,
+                  onPressed: () => context.go('/admin/dashboard'),
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                AppButton(
+                  text: 'Đăng xuất',
+                  icon: const Icon(Icons.logout_rounded, size: 18),
+                  width: double.infinity,
+                  variant: AppButtonVariant.outlined,
+                  onPressed: () {
+                    ref.read(authControllerProvider.notifier).signOut();
+                  },
+                ),
+                const Spacer(),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
     if (user.role == AppUserRole.guest) {
       return Scaffold(
         backgroundColor: isDark
@@ -368,7 +428,7 @@ class ProfileTab extends ConsumerWidget {
               ),
               const SizedBox(height: AppSpacing.lg),
               Text(
-                'Become a Member',
+                'Đăng nhập tài khoản',
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
@@ -377,7 +437,7 @@ class ProfileTab extends ConsumerWidget {
               ),
               const SizedBox(height: AppSpacing.sm),
               Text(
-                'Sign in for free delivery, saving favorites,\nand checking out faster.',
+                'Đăng nhập để lưu yêu thích, theo dõi đơn hàng\nvà thanh toán nhanh hơn.',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 14,
@@ -399,7 +459,7 @@ class ProfileTab extends ConsumerWidget {
                   ),
                 ),
                 child: const Text(
-                  'Join Us / Sign In',
+                  'Đăng nhập / Đăng ký',
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
               ),
@@ -414,11 +474,15 @@ class ProfileTab extends ConsumerWidget {
           ? AppColors.backgroundDark
           : AppColors.backgroundLight,
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.lg,
+            AppSpacing.lg,
+            AppSpacing.lg,
+            AppSpacing.xl,
+          ),
           child: Column(
             children: [
-              const SizedBox(height: AppSpacing.xxl),
               // Avatar
               CircleAvatar(
                 radius: 50,
@@ -471,7 +535,7 @@ class ProfileTab extends ConsumerWidget {
                   ),
                 ),
                 child: const Text(
-                  'Edit Profile',
+                  'Chỉnh sửa hồ sơ',
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
               ),
@@ -483,126 +547,129 @@ class ProfileTab extends ConsumerWidget {
                   _buildActionItem(
                     context,
                     Icons.shopping_bag_outlined,
-                    'Orders',
+                    'Đơn hàng',
                     () => context.push('/orders'),
                   ),
                   _buildActionItem(
                     context,
                     Icons.favorite_border_rounded,
-                    'Favorites',
+                    'Yêu thích',
                     () => context.push('/favorites'),
                   ),
                   _buildActionItem(
                     context,
                     Icons.settings_outlined,
-                    'Settings',
+                    'Cài đặt',
                     () => _showSettingsOptionsModal(context, ref),
                   ),
                 ],
               ),
               const SizedBox(height: AppSpacing.xl),
-              Card(
-                elevation: 0,
-                color: isDark ? AppColors.surfaceDark : AppColors.surfaceLight,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                  side: BorderSide(
-                    color: isDark
-                        ? AppColors.borderDark
-                        : AppColors.borderLight,
+              if (user.role == AppUserRole.seller)
+                Card(
+                  elevation: 0,
+                  color: isDark
+                      ? AppColors.surfaceDark
+                      : AppColors.surfaceLight,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    side: BorderSide(
+                      color: isDark
+                          ? AppColors.borderDark
+                          : AppColors.borderLight,
+                    ),
+                  ),
+                  child: Column(
+                    children: [
+                      if (user.role == AppUserRole.admin) ...[
+                        ListTile(
+                          leading: const Icon(
+                            Icons.admin_panel_settings_rounded,
+                            color: AppColors.primary,
+                          ),
+                          title: const Text(
+                            'Bảng quản trị',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          subtitle: const Text(
+                            'Quản lý hệ thống, chi nhánh, sản phẩm và đơn hàng',
+                          ),
+                          trailing: const Icon(
+                            Icons.arrow_forward_ios_rounded,
+                            size: 14,
+                          ),
+                          onTap: () => context.push('/admin/dashboard'),
+                        ),
+                        const Divider(height: 1, indent: 16, endIndent: 16),
+                      ],
+                      if (user.role == AppUserRole.seller)
+                        ListTile(
+                          leading: Icon(
+                            Icons.storefront_rounded,
+                            color: isDark ? Colors.white : AppColors.primary,
+                          ),
+                          title: Text(
+                            'Bảng điều khiển chi nhánh',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: isDark
+                                  ? AppColors.textDarkPrimary
+                                  : AppColors.textLightPrimary,
+                            ),
+                          ),
+                          subtitle: Text(
+                            'Quản lý sản phẩm, đơn hàng và thống kê shop',
+                            style: TextStyle(
+                              color: isDark
+                                  ? AppColors.textDarkSecondary
+                                  : AppColors.textLightSecondary,
+                            ),
+                          ),
+                          trailing: Icon(
+                            Icons.arrow_forward_ios_rounded,
+                            size: 14,
+                            color: isDark
+                                ? AppColors.textDarkSecondary
+                                : AppColors.textLightSecondary,
+                          ),
+                          onTap: () => context.push('/seller/dashboard'),
+                        )
+                      else if (user.role == AppUserRole.guest)
+                        ListTile(
+                          leading: Icon(
+                            Icons.storefront_rounded,
+                            color: isDark ? Colors.white : AppColors.primary,
+                          ),
+                          title: Text(
+                            'Đăng ký bán hàng',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: isDark
+                                  ? AppColors.textDarkPrimary
+                                  : AppColors.textLightPrimary,
+                            ),
+                          ),
+                          subtitle: Text(
+                            'Mở cửa hàng trực tuyến của bạn để kinh doanh giày dép',
+                            style: TextStyle(
+                              color: isDark
+                                  ? AppColors.textDarkSecondary
+                                  : AppColors.textLightSecondary,
+                            ),
+                          ),
+                          trailing: Icon(
+                            Icons.arrow_forward_ios_rounded,
+                            size: 14,
+                            color: isDark
+                                ? AppColors.textDarkSecondary
+                                : AppColors.textLightSecondary,
+                          ),
+                          onTap: () => context.push('/seller-apply'),
+                        ),
+                    ],
                   ),
                 ),
-                child: Column(
-                  children: [
-                    if (user.role == AppUserRole.admin) ...[
-                      ListTile(
-                        leading: const Icon(
-                          Icons.admin_panel_settings_rounded,
-                          color: AppColors.primary,
-                        ),
-                        title: const Text(
-                          'Trang Quản Trị (Admin Dashboard)',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        subtitle: const Text(
-                          'Quản trị hệ thống, phê duyệt sản phẩm và người bán',
-                        ),
-                        trailing: const Icon(
-                          Icons.arrow_forward_ios_rounded,
-                          size: 14,
-                        ),
-                        onTap: () => context.push('/admin/dashboard'),
-                      ),
-                      const Divider(height: 1, indent: 16, endIndent: 16),
-                    ],
-                    if (user.role == AppUserRole.seller)
-                      ListTile(
-                        leading: Icon(
-                          Icons.storefront_rounded,
-                          color: isDark ? Colors.white : AppColors.primary,
-                        ),
-                        title: Text(
-                          'Kênh Người Bán (Seller Center)',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: isDark
-                                ? AppColors.textDarkPrimary
-                                : AppColors.textLightPrimary,
-                          ),
-                        ),
-                        subtitle: Text(
-                          'Quản lý sản phẩm, đơn hàng và thống kê shop',
-                          style: TextStyle(
-                            color: isDark
-                                ? AppColors.textDarkSecondary
-                                : AppColors.textLightSecondary,
-                          ),
-                        ),
-                        trailing: Icon(
-                          Icons.arrow_forward_ios_rounded,
-                          size: 14,
-                          color: isDark
-                              ? AppColors.textDarkSecondary
-                              : AppColors.textLightSecondary,
-                        ),
-                        onTap: () => context.push('/seller/dashboard'),
-                      )
-                    else if (user.role == AppUserRole.user)
-                      ListTile(
-                        leading: Icon(
-                          Icons.storefront_rounded,
-                          color: isDark ? Colors.white : AppColors.primary,
-                        ),
-                        title: Text(
-                          'Đăng ký bán hàng',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: isDark
-                                ? AppColors.textDarkPrimary
-                                : AppColors.textLightPrimary,
-                          ),
-                        ),
-                        subtitle: Text(
-                          'Mở cửa hàng trực tuyến của bạn để kinh doanh giày dép',
-                          style: TextStyle(
-                            color: isDark
-                                ? AppColors.textDarkSecondary
-                                : AppColors.textLightSecondary,
-                          ),
-                        ),
-                        trailing: Icon(
-                          Icons.arrow_forward_ios_rounded,
-                          size: 14,
-                          color: isDark
-                              ? AppColors.textDarkSecondary
-                              : AppColors.textLightSecondary,
-                        ),
-                        onTap: () => context.push('/seller-apply'),
-                      ),
-                  ],
-                ),
-              ),
-              const Spacer(),
+              const SizedBox(height: AppSpacing.lg),
               // Logout Button
               SizedBox(
                 width: double.infinity,
@@ -615,7 +682,7 @@ class ProfileTab extends ConsumerWidget {
                     color: Colors.redAccent,
                   ),
                   label: const Text(
-                    'Log Out',
+                    'Đăng xuất',
                     style: TextStyle(
                       color: Colors.redAccent,
                       fontWeight: FontWeight.bold,
@@ -631,7 +698,7 @@ class ProfileTab extends ConsumerWidget {
                   ),
                 ),
               ),
-              const SizedBox(height: 120),
+              const SizedBox(height: AppSpacing.md),
             ],
           ),
         ),

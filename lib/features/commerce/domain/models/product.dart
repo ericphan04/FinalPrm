@@ -12,13 +12,13 @@ enum ProductStatus {
   String get nameVi {
     switch (this) {
       case ProductStatus.draft:
-        return 'Nháp';
+        return 'Nội bộ';
       case ProductStatus.pendingReview:
-        return 'Chờ duyệt';
+        return 'Đang cấu hình';
       case ProductStatus.published:
-        return 'Đã duyệt/Đang bán';
+        return 'Đang bán';
       case ProductStatus.rejected:
-        return 'Bị từ chối';
+        return 'Ngừng bán';
     }
   }
 }

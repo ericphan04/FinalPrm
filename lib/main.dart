@@ -135,7 +135,7 @@ class ShowroomScreen extends ConsumerWidget {
               ),
               const SizedBox(width: AppSpacing.xs),
             ],
-          ),
+          )   ,
 
           // Hero Banner Section
           SliverToBoxAdapter(child: _buildHeroBanner(context)),

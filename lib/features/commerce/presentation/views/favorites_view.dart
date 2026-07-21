@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/empty_view.dart';
 import 'widgets/product_card.dart';
@@ -20,13 +19,14 @@ class FavoritesView extends ConsumerWidget {
         .toList();
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Favorites')),
+      appBar: AppBar(title: const Text('Yêu thích')),
       body: favoriteState.isLoading && favoriteProducts.isEmpty
           ? const Center(child: CircularProgressIndicator())
           : favoriteProducts.isEmpty
           ? const EmptyView(
-              title: 'No Favorites Yet',
-              description: 'Tap the heart icon on a product to save it here.',
+              title: 'Chưa có sản phẩm yêu thích',
+              description:
+                  'Nhấn biểu tượng trái tim trên sản phẩm để lưu tại đây.',
               icon: Icons.favorite_border_rounded,
             )
           : GridView.builder(

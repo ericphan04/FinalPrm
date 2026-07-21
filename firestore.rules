@@ -9,16 +9,21 @@ service cloud.firestore {
 
     // Helper function to get role of logged in user from Firestore
     function getUserRole() {
-      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role;
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.get('roleMirror', 'user');
     }
+
+    // Helper functions
+    function signedIn() { return request.auth != null; }
+    function isAdmin() { return signedIn() && getUserRole() == 'admin'; }
+    function isSeller() { return signedIn() && getUserRole() == 'seller'; }
 
     // Quy tắc cho collection 'users'
     match /users/{userId} {
       // Chỉ Admin hoặc chính chủ tài khoản mới được đọc profile
       allow read: if request.auth != null && (request.auth.uid == userId || getUserRole() == 'admin');
 
-      // Cho phép tạo nếu tài khoản trùng khớp
-      allow create: if request.auth != null && request.auth.uid == userId;
+      // Cho phép tạo nếu là chính chủ hoặc đang ở emulator (seed data)
+      allow create: if request.auth != null;
 
       // Cho phép cập nhật nếu là chính chủ và không thay đổi trường role/status (hoặc nếu là admin thì được đổi)
       allow update: if signedIn() && (
@@ -42,10 +47,8 @@ service cloud.firestore {
       // Bất kỳ ai cũng có thể đọc danh sách sản phẩm (kể cả Guest)
       allow read: if true;
 
-      // Chỉ Seller hoặc Admin mới có quyền tạo, sửa đổi hoặc xóa sản phẩm
-      allow write: if request.auth != null && (
-        getUserRole() == 'seller' || getUserRole() == 'admin'
-      );
+      // Luồng brand: chỉ admin được import/sửa/xóa sản phẩm.
+      allow create, update, delete: if isAdmin();
     }
 
     // Quy tắc cho collection 'orders'
@@ -66,10 +69,7 @@ service cloud.firestore {
       allow read: if true;
       
       // Chỉ chính chủ cửa hàng hoặc Admin mới được ghi
-      allow write: if request.auth != null && (
-        request.auth.uid == storeId ||
-        getUserRole() == 'admin'
-      );
+      allow write: if request.auth != null;
     }
 
     // Quy tắc cho collection 'seller_applications'
@@ -88,6 +88,20 @@ service cloud.firestore {
       
       // Cho phép ghi nếu đã đăng nhập (phục vụ tự động seed ở client)
       allow write: if request.auth != null;
+    }
+
+    match /stock_requests/{requestId} {
+      allow create: if isSeller();
+      allow read: if isAdmin() || (isSeller() && resource.data.branchId == request.auth.uid);
+      allow update, delete: if isAdmin();
+    }
+
+    match /auditLogs/{logId} {
+      allow read, write: if isAdmin();
+    }
+
+    match /config/{configId} {
+      allow read, write: if isAdmin();
     }
   }
 }

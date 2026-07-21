@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../../../../core/providers/navigation_providers.dart';
+import '../../../../../core/theme/app_colors.dart';
+import '../../../../../core/theme/app_spacing.dart';
+import '../../../../../core/widgets/app_button.dart';
 import '../../providers/commerce_providers.dart';
-import '../cart_view.dart'; // To reuse _CartItemTile if needed
+import '../cart_view.dart';
 
 class BagTab extends ConsumerWidget {
   const BagTab({super.key});
@@ -18,79 +22,63 @@ class BagTab extends ConsumerWidget {
     }
 
     if (cartState.items.isNotEmpty) {
-      // Nếu có sản phẩm, hiển thị giỏ hàng bình thường (sử dụng CartView)
       return const CartView();
     }
 
-    // Empty state
     return Scaffold(
-      backgroundColor: isDark ? Colors.black : Colors.white,
+      backgroundColor: isDark
+          ? AppColors.backgroundDark
+          : AppColors.backgroundLight,
+      appBar: AppBar(title: const Text('Giỏ hàng'), centerTitle: false),
       body: SafeArea(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Spacer(),
-            Container(
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: isDark ? Colors.white : Colors.black,
-                  width: 2,
-                ),
-              ),
-              child: Icon(
-                Icons.shopping_bag_outlined,
-                size: 32,
-                color: isDark ? Colors.white : Colors.black,
-              ),
-            ),
-            const SizedBox(height: 24),
-            Text(
-              'Your Bag is empty.',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: isDark ? Colors.white : Colors.black,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              "When you add products, they'll\nappear here.",
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 14,
-                color: isDark ? Colors.grey[400] : Colors.grey[600],
-              ),
-            ),
-            const Spacer(),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(
-                24,
-                24,
-                24,
-                120,
-              ), // 120 padding bottom để tránh floating nav bar
-              child: ElevatedButton(
-                onPressed: () {
-                  ref.read(mainTabIndexProvider.notifier).state =
-                      1; // Go to Shop Tab
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: isDark ? Colors.white : Colors.black,
-                  foregroundColor: isDark ? Colors.black : Colors.white,
-                  minimumSize: const Size(double.infinity, 56),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.lg),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Spacer(),
+              Container(
+                width: 88,
+                height: 88,
+                decoration: BoxDecoration(
+                  color: isDark ? AppColors.surfaceDark : Colors.white,
+                  borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+                  border: Border.all(
+                    color: isDark
+                        ? AppColors.borderDark
+                        : AppColors.borderLight,
                   ),
                 ),
-                child: const Text(
-                  'Shop Now',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                child: Icon(
+                  Icons.shopping_bag_outlined,
+                  size: 34,
+                  color: isDark ? Colors.white : AppColors.primary,
                 ),
               ),
-            ),
-          ],
+              const SizedBox(height: AppSpacing.lg),
+              Text(
+                'Giỏ hàng đang trống',
+                style: theme.textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+              const SizedBox(height: AppSpacing.xs),
+              Text(
+                'Chọn sản phẩm trong cửa hàng, giỏ hàng của bạn sẽ hiển thị tại đây.',
+                textAlign: TextAlign.center,
+                style: theme.textTheme.bodyMedium,
+              ),
+              const Spacer(),
+              AppButton(
+                text: 'Xem cửa hàng',
+                width: double.infinity,
+                icon: const Icon(Icons.storefront_rounded, size: 18),
+                onPressed: () {
+                  ref.read(mainTabIndexProvider.notifier).state = 1;
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );

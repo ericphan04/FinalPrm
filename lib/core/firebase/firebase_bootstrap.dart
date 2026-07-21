@@ -24,8 +24,7 @@ class FirebaseBootstrap {
       // 2. Kiểm tra cờ sử dụng Emulator (phải bật tường minh bằng --dart-define=USE_EMULATOR=true)
       const bool useEmulator = bool.fromEnvironment(
         'USE_EMULATOR',
-        defaultValue:
-            kDebugMode, // Auto-enable emulator in debug mode for seamless local development
+        defaultValue: false,
       );
 
       if (useEmulator) {
@@ -41,7 +40,7 @@ class FirebaseBootstrap {
 
         // Cấu hình Firestore Emulator
         FirebaseFirestore.instance.settings = Settings(
-          host: '$host:8080',
+          host: '$host:8090',
           sslEnabled: false,
           persistenceEnabled: false,
         );
@@ -53,7 +52,7 @@ class FirebaseBootstrap {
         FirebaseFunctions.instance.useFunctionsEmulator(host, 5001);
 
         AppLogger.info(
-          'Kết nối Firebase Local Emulators thành công (Auth: 9099, Firestore: 8080, Storage: 9199)',
+          'Kết nối Firebase Local Emulators thành công (Auth: 9099, Firestore: 8090, Storage: 9199)',
         );
 
         // Tự động nạp dữ liệu mẫu lên Emulator

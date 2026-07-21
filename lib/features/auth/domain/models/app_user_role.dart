@@ -1,4 +1,4 @@
-/// Các vai trò người dùng trong hệ thống Marketplace.
+/// Các vai trò người dùng trong hệ thống.
 enum AppUserRole {
   guest,
   user,
@@ -12,7 +12,7 @@ enum AppUserRole {
       case AppUserRole.user:
         return 'Khách hàng';
       case AppUserRole.seller:
-        return 'Người bán';
+        return 'Chi nhánh';
       case AppUserRole.admin:
         return 'Quản trị viên';
     }

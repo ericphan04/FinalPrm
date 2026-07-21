@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../core/theme/app_colors.dart';
+
 import '../../../../core/theme/app_spacing.dart';
-import '../../../../core/widgets/product_card_skeleton.dart';
-import '../../../../core/widgets/error_view.dart';
 import '../../../../core/widgets/empty_view.dart';
+import '../../../../core/widgets/error_view.dart';
+import '../../../../core/widgets/product_card_skeleton.dart';
 import '../providers/commerce_providers.dart';
 import 'widgets/product_card.dart';
 
@@ -15,45 +15,54 @@ class ProductListView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final catalogState = ref.watch(catalogControllerProvider);
-    final theme = Theme.of(context);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Cửa hàng'),
+        title: const Text('Catalog'),
+        centerTitle: false,
         actions: [
           Consumer(
             builder: (context, ref, _) {
               final cartState = ref.watch(cartControllerProvider);
-              final itemCount = cartState.items.fold(
+              final itemCount = cartState.items.fold<int>(
                 0,
                 (sum, item) => sum + item.quantity,
               );
 
               return IconButton(
+                tooltip: 'Giỏ hàng',
                 icon: Badge(
                   isLabelVisible: itemCount > 0,
                   label: Text(itemCount.toString()),
-                  child: const Icon(Icons.shopping_cart_outlined),
+                  child: const Icon(Icons.shopping_bag_outlined),
                 ),
                 onPressed: () => context.push('/cart'),
               );
             },
           ),
+          const SizedBox(width: AppSpacing.sm),
         ],
       ),
-      body: _buildBody(context, catalogState, ref),
+      body: _CatalogBody(catalogState: catalogState),
     );
   }
+}
 
-  Widget _buildBody(BuildContext context, catalogState, WidgetRef ref) {
+class _CatalogBody extends ConsumerWidget {
+  final dynamic catalogState;
+
+  const _CatalogBody({required this.catalogState});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
     if (catalogState.isLoading && catalogState.products.isEmpty) {
       return GridView.builder(
-        padding: const EdgeInsets.all(AppSpacing.md),
+        padding: const EdgeInsets.all(AppSpacing.lg),
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
           crossAxisSpacing: AppSpacing.md,
           mainAxisSpacing: AppSpacing.md,
-          childAspectRatio: 0.65,
+          childAspectRatio: 0.64,
         ),
         itemCount: 6,
         itemBuilder: (context, index) => const ProductCardSkeleton(),
@@ -70,9 +79,8 @@ class ProductListView extends ConsumerWidget {
 
     if (catalogState.products.isEmpty) {
       return const EmptyView(
-        title: 'Chưa có sản phẩm nào',
-        description:
-            'Chúng tôi đang cập nhật sản phẩm mới. Vui lòng quay lại sau.',
+        title: 'Chưa có sản phẩm',
+        description: 'Sản phẩm mới sẽ hiển thị khi danh mục được cập nhật.',
         icon: Icons.inventory_2_outlined,
       );
     }
@@ -83,27 +91,22 @@ class ProductListView extends ConsumerWidget {
             .read(catalogControllerProvider.notifier)
             .filterByCategory(catalogState.selectedCategoryId);
       },
-      child: CustomScrollView(
-        slivers: [
-          SliverPadding(
-            padding: const EdgeInsets.all(AppSpacing.md),
-            sliver: SliverGrid(
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: AppSpacing.md,
-                mainAxisSpacing: AppSpacing.md,
-                childAspectRatio: 0.65,
-              ),
-              delegate: SliverChildBuilderDelegate((context, index) {
-                final product = catalogState.products[index];
-                return ProductCard(
-                  product: product,
-                  onTap: () => context.push('/product/${product.id}'),
-                );
-              }, childCount: catalogState.products.length),
-            ),
-          ),
-        ],
+      child: GridView.builder(
+        padding: const EdgeInsets.all(AppSpacing.lg),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          crossAxisSpacing: AppSpacing.md,
+          mainAxisSpacing: AppSpacing.md,
+          childAspectRatio: 0.64,
+        ),
+        itemCount: catalogState.products.length,
+        itemBuilder: (context, index) {
+          final product = catalogState.products[index];
+          return ProductCard(
+            product: product,
+            onTap: () => context.push('/product/${product.id}'),
+          );
+        },
       ),
     );
   }

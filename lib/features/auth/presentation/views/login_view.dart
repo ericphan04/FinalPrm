@@ -185,7 +185,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         // Email input
                         AppTextField(
                           controller: _emailController,
-                          labelText: 'Địa chỉ Email',
+                          labelText: 'Địa chỉ email',
                           hintText: 'email@domain.com',
                           keyboardType: TextInputType.emailAddress,
                           prefixIcon: Icon(

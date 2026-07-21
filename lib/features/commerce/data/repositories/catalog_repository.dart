@@ -4,6 +4,8 @@ import '../../../../core/result/result.dart';
 import '../../domain/models/product.dart';
 import '../../domain/models/category.dart';
 
+const _firestoreRequestTimeout = Duration(seconds: 8);
+
 abstract class CatalogRepository {
   Future<Result<List<Category>>> getCategories();
 
@@ -25,7 +27,10 @@ class CatalogRepositoryImpl implements CatalogRepository {
   @override
   Future<Result<List<Category>>> getCategories() async {
     try {
-      final snapshot = await _firestore.collection('categories').get();
+      final snapshot = await _firestore
+          .collection('categories')
+          .get()
+          .timeout(_firestoreRequestTimeout);
       if (snapshot.docs.isEmpty) {
         await _firestore.collection('categories').doc('cat-giay').set({
           'name': 'Giày',
@@ -35,7 +40,10 @@ class CatalogRepositoryImpl implements CatalogRepository {
           'name': 'Dép',
           'description': 'Các loại dép slide, sandal, clog, xỏ ngón thời trang',
         });
-        final newSnapshot = await _firestore.collection('categories').get();
+        final newSnapshot = await _firestore
+            .collection('categories')
+            .get()
+            .timeout(_firestoreRequestTimeout);
         final categories = newSnapshot.docs
             .map((doc) => Category.fromJson({'id': doc.id, ...doc.data()}))
             .toList();
@@ -66,7 +74,7 @@ class CatalogRepositoryImpl implements CatalogRepository {
         query = query.where('categoryId', isEqualTo: categoryId);
       }
 
-      final snapshot = await query.get();
+      final snapshot = await query.get().timeout(_firestoreRequestTimeout);
       final List<Product> products = [];
 
       for (final doc in snapshot.docs) {
@@ -103,7 +111,11 @@ class CatalogRepositoryImpl implements CatalogRepository {
   @override
   Future<Result<Product>> getProductDetails(String productId) async {
     try {
-      final doc = await _firestore.collection('products').doc(productId).get();
+      final doc = await _firestore
+          .collection('products')
+          .doc(productId)
+          .get()
+          .timeout(_firestoreRequestTimeout);
       if (!doc.exists) {
         return Failure(AppFailure.notFound('Không tìm thấy sản phẩm'));
       }

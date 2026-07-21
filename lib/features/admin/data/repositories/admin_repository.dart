@@ -19,6 +19,10 @@ abstract class AdminRepository {
   });
   Future<Result<List<Product>>> getPendingProducts();
   Future<Result<List<Product>>> getAllProducts();
+  Future<Result<void>> importBrandProduct(
+    Product product, {
+    required List<Map<String, dynamic>> branchInventory,
+  });
   Future<Result<void>> reviewProduct(
     String productId,
     String action, {
@@ -28,6 +32,11 @@ abstract class AdminRepository {
   Future<Result<void>> updateUserStatus(String userId, String status);
   Future<Result<List<AppOrder>>> getAllOrders();
   Future<Result<List<AuditLog>>> getAuditLogs();
+  Future<Result<List<Map<String, dynamic>>>> getStockRequests();
+  Future<Result<void>> updateStockRequestStatus(
+    String requestId,
+    String status,
+  );
   Future<Result<Map<String, dynamic>>> getSystemConfig();
   Future<Result<void>> updateSystemConfig(Map<String, dynamic> config);
   Future<Result<void>> syncAllUsersClaims();
@@ -63,7 +72,9 @@ class AdminRepositoryImpl implements AdminRepository {
       }).toList();
       return Success(list);
     } catch (e) {
-      return Failure(AppFailure.serverError('Lỗi lấy đơn đăng ký seller: $e'));
+      return Failure(
+        AppFailure.serverError('Lá»—i láº¥y Ä‘Æ¡n Ä‘Äƒng kĂ½ seller: $e'),
+      );
     }
   }
 
@@ -84,7 +95,7 @@ class AdminRepositoryImpl implements AdminRepository {
         return const Failure(
           AppFailure(
             code: 'not_found',
-            message: 'Không tìm thấy hồ sơ đăng ký',
+            message: 'KhĂ´ng tĂ¬m tháº¥y há»“ sÆ¡ Ä‘Äƒng kĂ½',
           ),
         );
       }
@@ -107,7 +118,7 @@ class AdminRepositoryImpl implements AdminRepository {
           'action': 'rejectSellerApplication',
           'targetType': 'seller_application',
           'targetId': appId,
-          'reason': reason ?? 'Từ chối đơn ứng tuyển',
+          'reason': reason ?? 'Tá»« chá»‘i Ä‘Æ¡n á»©ng tuyá»ƒn',
           'createdAt': FieldValue.serverTimestamp(),
         });
       } else {
@@ -130,9 +141,9 @@ class AdminRepositoryImpl implements AdminRepository {
         final storeRef = _firestore.collection('stores').doc(appId);
         batch.set(storeRef, {
           'ownerUid': appId,
-          'name': appData['storeName'] ?? 'Cửa hàng của bạn',
+          'name': appData['storeName'] ?? 'Cá»­a hĂ ng cá»§a báº¡n',
           'slug': 'store-$appId',
-          'description': appData['description'] ?? 'Chưa có mô tả',
+          'description': appData['description'] ?? 'ChÆ°a cĂ³ mĂ´ táº£',
           'status': 'active',
           'rating': 5.0,
           'createdAt': FieldValue.serverTimestamp(),
@@ -147,14 +158,14 @@ class AdminRepositoryImpl implements AdminRepository {
           'targetType': 'seller_application',
           'targetId': appId,
           'createdAt': FieldValue.serverTimestamp(),
-          'reason': 'Phê duyệt tài khoản người bán thành công',
+          'reason': 'PhĂª duyá»‡t tĂ i khoáº£n ngÆ°á»i bĂ¡n thĂ nh cĂ´ng',
         });
       }
 
       await batch.commit();
       return const Success(null);
     } catch (e) {
-      return Failure(AppFailure.serverError('Lỗi duyệt đơn seller: $e'));
+      return Failure(AppFailure.serverError('Lá»—i duyá»‡t Ä‘Æ¡n seller: $e'));
     }
   }
 
@@ -178,7 +189,9 @@ class AdminRepositoryImpl implements AdminRepository {
       return Success(list);
     } catch (e) {
       return Failure(
-        AppFailure.serverError('Lỗi lấy danh sách sản phẩm chờ duyệt: $e'),
+        AppFailure.serverError(
+          'Lá»—i láº¥y danh sĂ¡ch sáº£n pháº©m chá» duyá»‡t: $e',
+        ),
       );
     }
   }
@@ -203,8 +216,50 @@ class AdminRepositoryImpl implements AdminRepository {
       return Success(list);
     } catch (e) {
       return Failure(
-        AppFailure.serverError('Lỗi lấy danh sách tất cả sản phẩm: $e'),
+        AppFailure.serverError(
+          'Lá»—i láº¥y danh sĂ¡ch táº¥t cáº£ sáº£n pháº©m: $e',
+        ),
       );
+    }
+  }
+
+  @override
+  Future<Result<void>> importBrandProduct(
+    Product product, {
+    required List<Map<String, dynamic>> branchInventory,
+  }) async {
+    try {
+      final currentAdmin = FirebaseAuth.instance.currentUser;
+      final adminUid = currentAdmin?.uid ?? 'unknown';
+      final productRef = _firestore.collection('products').doc(product.id);
+      final auditRef = _firestore.collection('auditLogs').doc();
+      final data = product.toJson();
+      data.remove('id');
+      data['sellerId'] = 'admin';
+      data['ownerType'] = 'brand';
+      data['ownerId'] = 'admin';
+      data['status'] = ProductStatus.published.name;
+      data['isAvailable'] = true;
+      data['createdAt'] = Timestamp.fromDate(product.createdAt);
+      data['updatedAt'] = FieldValue.serverTimestamp();
+      data['variants'] = product.variants.map((v) => v.toJson()).toList();
+      data['branchInventory'] = branchInventory;
+
+      final batch = _firestore.batch();
+      batch.set(productRef, data);
+      batch.set(auditRef, {
+        'actorUid': adminUid,
+        'actorRole': 'admin',
+        'action': 'importBrandProduct',
+        'targetType': 'product',
+        'targetId': product.id,
+        'reason': 'Quản trị đã nhập sản phẩm thương hiệu và tồn kho chi nhánh.',
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+      await batch.commit();
+      return const Success(null);
+    } catch (e) {
+      return Failure(AppFailure.serverError('Khong the import san pham: $e'));
     }
   }
 
@@ -243,14 +298,14 @@ class AdminRepositoryImpl implements AdminRepository {
         'action': '${action}Product',
         'targetType': 'product',
         'targetId': productId,
-        'reason': reason ?? 'Thao tác sản phẩm: $action',
+        'reason': reason ?? 'Thao tĂ¡c sáº£n pháº©m: $action',
         'createdAt': FieldValue.serverTimestamp(),
       });
 
       await batch.commit();
       return const Success(null);
     } catch (e) {
-      return Failure(AppFailure.serverError('Lỗi duyệt sản phẩm: $e'));
+      return Failure(AppFailure.serverError('Lá»—i duyá»‡t sáº£n pháº©m: $e'));
     }
   }
 
@@ -270,7 +325,7 @@ class AdminRepositoryImpl implements AdminRepository {
         return AppUser(
           uid: doc.id,
           email: data['email'] as String? ?? '',
-          displayName: data['displayName'] as String? ?? 'Người dùng',
+          displayName: data['displayName'] as String? ?? 'NgÆ°á»i dĂ¹ng',
           photoUrl: data['avatarUrl'] as String? ?? '',
           role: role,
           status: data['status'] as String? ?? 'active',
@@ -279,7 +334,7 @@ class AdminRepositoryImpl implements AdminRepository {
       return Success(list);
     } catch (e) {
       return Failure(
-        AppFailure.serverError('Lỗi lấy danh sách người dùng: $e'),
+        AppFailure.serverError('Lá»—i láº¥y danh sĂ¡ch ngÆ°á»i dĂ¹ng: $e'),
       );
     }
   }
@@ -295,7 +350,9 @@ class AdminRepositoryImpl implements AdminRepository {
       return const Success(null);
     } catch (e) {
       return Failure(
-        AppFailure.serverError('Lỗi cập nhật trạng thái người dùng: $e'),
+        AppFailure.serverError(
+          'Lá»—i cáº­p nháº­t tráº¡ng thĂ¡i ngÆ°á»i dĂ¹ng: $e',
+        ),
       );
     }
   }
@@ -308,48 +365,132 @@ class AdminRepositoryImpl implements AdminRepository {
           .orderBy('createdAt', descending: true)
           .get();
       final list = snapshot.docs.map((doc) {
-        final data = doc.data();
+        final data = Map<String, dynamic>.from(doc.data());
         data['id'] = doc.id;
-        if (data['createdAt'] is Timestamp) {
-          data['createdAt'] = (data['createdAt'] as Timestamp)
-              .toDate()
-              .toIso8601String();
-        }
-        if (data['updatedAt'] is Timestamp) {
-          data['updatedAt'] = (data['updatedAt'] as Timestamp)
-              .toDate()
-              .toIso8601String();
+        data['userId'] ??= data['buyerId'] ?? '';
+        data['totalAmount'] ??= _orderTotal(data);
+        data['items'] ??= data['itemSnapshots'] ?? const [];
+        data['createdAt'] = _dateValue(data['createdAt']);
+        if (data['updatedAt'] != null) {
+          data['updatedAt'] = _dateValue(data['updatedAt']);
         }
         return AppOrder.fromJson(data);
       }).toList();
       return Success(list);
     } catch (e) {
-      return Failure(AppFailure.serverError('Lỗi lấy danh sách đơn hàng: $e'));
+      return Failure(
+        AppFailure.serverError('Lá»—i láº¥y danh sĂ¡ch Ä‘Æ¡n hĂ ng: $e'),
+      );
     }
+  }
+
+  double _orderTotal(Map<String, dynamic> data) {
+    final totals = data['totals'];
+    if (totals is Map) {
+      final total = totals['total'] ?? totals['subtotal'] ?? 0;
+      if (total is num) return total.toDouble();
+    }
+
+    final items = data['items'] ?? data['itemSnapshots'];
+    if (items is List) {
+      return items.fold<double>(0, (total, item) {
+        if (item is! Map) return total;
+        final price = item['price'];
+        final quantity = item['quantity'];
+        return total +
+            (price is num ? price.toDouble() : 0) *
+                (quantity is num ? quantity.toInt() : 0);
+      });
+    }
+
+    return 0;
+  }
+
+  String _dateValue(dynamic value) {
+    if (value is Timestamp) return value.toDate().toIso8601String();
+    if (value is DateTime) return value.toIso8601String();
+    if (value is String && value.isNotEmpty) return value;
+    return DateTime.now().toIso8601String();
   }
 
   @override
   Future<Result<List<AuditLog>>> getAuditLogs() async {
     try {
+      final snapshot = await _getAuditSnapshot('auditLogs');
+      return Success(_auditLogsFromSnapshot(snapshot));
+    } catch (_) {
+      try {
+        final snapshot = await _getAuditSnapshot('audit_logs');
+        return Success(_auditLogsFromSnapshot(snapshot));
+      } catch (_) {
+        return const Success([]);
+      }
+    }
+  }
+
+  Future<QuerySnapshot<Map<String, dynamic>>> _getAuditSnapshot(
+    String collection,
+  ) {
+    return _firestore
+        .collection(collection)
+        .orderBy('createdAt', descending: true)
+        .limit(100)
+        .get();
+  }
+
+  List<AuditLog> _auditLogsFromSnapshot(
+    QuerySnapshot<Map<String, dynamic>> snapshot,
+  ) {
+    return snapshot.docs.map((doc) {
+      final data = Map<String, dynamic>.from(doc.data());
+      data['id'] = doc.id;
+      data['actorUid'] ??= data['actorId'] ?? 'system';
+      data['actorRole'] ??= 'admin';
+      data['action'] ??= 'unknown';
+      data['targetType'] ??= 'system';
+      data['targetId'] ??= '';
+      data['createdAt'] = _dateValue(data['createdAt']);
+      return AuditLog.fromJson(data);
+    }).toList();
+  }
+
+  @override
+  Future<Result<List<Map<String, dynamic>>>> getStockRequests() async {
+    try {
       final snapshot = await _firestore
-          .collection('auditLogs')
+          .collection('stock_requests')
           .orderBy('createdAt', descending: true)
           .get();
-      final list = snapshot.docs.map((doc) {
-        final data = doc.data();
+      final requests = snapshot.docs.map((doc) {
+        final data = Map<String, dynamic>.from(doc.data());
         data['id'] = doc.id;
-        if (data['createdAt'] is Timestamp) {
-          data['createdAt'] = (data['createdAt'] as Timestamp)
-              .toDate()
-              .toIso8601String();
-        } else {
-          data['createdAt'] = DateTime.now().toIso8601String();
+        data['createdAt'] = _dateValue(data['createdAt']);
+        if (data['updatedAt'] != null) {
+          data['updatedAt'] = _dateValue(data['updatedAt']);
         }
-        return AuditLog.fromJson(data);
+        return data;
       }).toList();
-      return Success(list);
+      return Success(requests);
+    } catch (_) {
+      return const Success([]);
+    }
+  }
+
+  @override
+  Future<Result<void>> updateStockRequestStatus(
+    String requestId,
+    String status,
+  ) async {
+    try {
+      await _firestore.collection('stock_requests').doc(requestId).set({
+        'status': status,
+        'updatedAt': FieldValue.serverTimestamp(),
+      }, SetOptions(merge: true));
+      return const Success(null);
     } catch (e) {
-      return Failure(AppFailure.serverError('Lỗi lấy audit logs: $e'));
+      return Failure(
+        AppFailure.serverError('Không thể cập nhật yêu cầu nhập hàng: $e'),
+      );
     }
   }
 
@@ -362,7 +503,9 @@ class AdminRepositoryImpl implements AdminRepository {
       }
       return const Success({'lowStockThreshold': 5, 'cancellationHours': 24});
     } catch (e) {
-      return Failure(AppFailure.serverError('Lỗi lấy cấu hình hệ thống: $e'));
+      return Failure(
+        AppFailure.serverError('Lá»—i láº¥y cáº¥u hĂ¬nh há»‡ thá»‘ng: $e'),
+      );
     }
   }
 
@@ -376,7 +519,9 @@ class AdminRepositoryImpl implements AdminRepository {
       return const Success(null);
     } catch (e) {
       return Failure(
-        AppFailure.serverError('Lỗi cập nhật cấu hình hệ thống: $e'),
+        AppFailure.serverError(
+          'Lá»—i cáº­p nháº­t cáº¥u hĂ¬nh há»‡ thá»‘ng: $e',
+        ),
       );
     }
   }
@@ -388,7 +533,9 @@ class AdminRepositoryImpl implements AdminRepository {
       await callable.call();
       return const Success(null);
     } catch (e) {
-      return Failure(AppFailure.serverError('Lỗi đồng bộ Custom Claims: $e'));
+      return Failure(
+        AppFailure.serverError('Lá»—i Ä‘á»“ng bá»™ Custom Claims: $e'),
+      );
     }
   }
 }

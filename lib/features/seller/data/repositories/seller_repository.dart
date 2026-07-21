@@ -22,6 +22,12 @@ abstract class SellerRepository {
   Future<Result<void>> submitProductForReview(String productId);
   Future<Result<List<AppOrder>>> getSellerOrders(String sellerId);
   Future<Result<void>> updateOrderStatus(String orderId, OrderStatus newStatus);
+  Future<Result<void>> requestStockReplenishment({
+    required String branchId,
+    required Product product,
+    required int requestedQuantity,
+    required String note,
+  });
 }
 
 class SellerRepositoryImpl implements SellerRepository {
@@ -159,6 +165,14 @@ class SellerRepositoryImpl implements SellerRepository {
   @override
   Future<Result<void>> saveProductDraft(Product product) async {
     try {
+      if (product.id.isNotEmpty || product.id.isEmpty) {
+        return Failure(
+          AppFailure.conflict(
+            'Chi nhánh không được tạo sản phẩm. Quản trị sẽ nhập hàng hóa và phân bổ tồn kho.',
+          ),
+        );
+      }
+      // Legacy marketplace product creation is intentionally disabled.
       // Validate VND price must be integer
       if (product.basePrice % 1 != 0) {
         return Failure(
@@ -253,6 +267,14 @@ class SellerRepositoryImpl implements SellerRepository {
   @override
   Future<Result<void>> submitProductForReview(String productId) async {
     try {
+      if (productId.isNotEmpty || productId.isEmpty) {
+        return Failure(
+          AppFailure.conflict(
+            'Luồng duyệt sản phẩm đã được bỏ. Quản trị quản lý toàn bộ danh mục thương hiệu.',
+          ),
+        );
+      }
+      // Legacy marketplace product review is intentionally disabled.
       // 1. Call Cloud Function first ( moderation flows )
       try {
         final callable = _functions.httpsCallable('submitProductForReview');
@@ -367,6 +389,37 @@ class SellerRepositoryImpl implements SellerRepository {
       return const Success(null);
     } catch (e) {
       return Failure(ErrorHandler.handle(e));
+    }
+  }
+
+  @override
+  Future<Result<void>> requestStockReplenishment({
+    required String branchId,
+    required Product product,
+    required int requestedQuantity,
+    required String note,
+  }) async {
+    try {
+      if (requestedQuantity <= 0) {
+        return Failure(AppFailure.conflict('Số lượng yêu cầu phải lớn hơn 0'));
+      }
+
+      await _firestore.collection('stock_requests').add({
+        'branchId': branchId,
+        'productId': product.id,
+        'productName': product.name,
+        'requestedQuantity': requestedQuantity,
+        'note': note,
+        'status': 'pending',
+        'createdAt': FieldValue.serverTimestamp(),
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
+
+      return const Success(null);
+    } catch (e) {
+      return Failure(
+        AppFailure.serverError('Không thể gửi yêu cầu bổ sung hàng: $e'),
+      );
     }
   }
 }

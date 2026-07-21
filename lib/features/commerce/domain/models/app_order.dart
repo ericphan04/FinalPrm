@@ -5,6 +5,23 @@ part 'app_order.g.dart';
 
 enum OrderStatus { pending, confirmed, shipping, completed, cancelled }
 
+extension OrderStatusX on OrderStatus {
+  String get nameVi {
+    switch (this) {
+      case OrderStatus.pending:
+        return 'Chờ xác nhận';
+      case OrderStatus.confirmed:
+        return 'Đã xác nhận';
+      case OrderStatus.shipping:
+        return 'Đang giao';
+      case OrderStatus.completed:
+        return 'Hoàn tất';
+      case OrderStatus.cancelled:
+        return 'Đã hủy';
+    }
+  }
+}
+
 @freezed
 abstract class AppOrder with _$AppOrder {
   const factory AppOrder({

@@ -5,7 +5,9 @@ import '../../data/repositories/admin_repository.dart';
 import '../../domain/models/audit_log.dart';
 import '../../../auth/domain/models/app_user.dart';
 import '../../../commerce/domain/models/app_order.dart';
+import '../../../commerce/domain/models/category.dart';
 import '../../../commerce/domain/models/product.dart';
+import '../../../commerce/presentation/providers/commerce_providers.dart';
 import '../../../seller/domain/models/seller_application.dart';
 
 final adminRepositoryProvider = Provider<AdminRepository>((ref) {
@@ -88,3 +90,24 @@ final allProductsProvider = FutureProvider.autoDispose<List<Product>>((
     onFailure: (failure) => throw failure.message,
   );
 });
+
+final adminCategoriesProvider = FutureProvider.autoDispose<List<Category>>((
+  ref,
+) async {
+  final repo = ref.watch(catalogRepositoryProvider);
+  final result = await repo.getCategories();
+  return result.when(
+    onSuccess: (data) => data,
+    onFailure: (failure) => throw failure.message,
+  );
+});
+
+final stockRequestsProvider =
+    FutureProvider.autoDispose<List<Map<String, dynamic>>>((ref) async {
+      final repo = ref.watch(adminRepositoryProvider);
+      final result = await repo.getStockRequests();
+      return result.when(
+        onSuccess: (data) => data,
+        onFailure: (failure) => throw failure.message,
+      );
+    });

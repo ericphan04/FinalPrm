@@ -12,7 +12,6 @@ import '../../features/profile/presentation/views/notification_history_view.dart
 import '../../features/auth/presentation/views/login_view.dart';
 import '../../features/auth/presentation/views/register_view.dart';
 import '../../features/auth/presentation/views/forgot_password_view.dart';
-import '../../features/auth/presentation/views/mock_screens.dart';
 
 import '../../features/admin/presentation/views/admin_dashboard_view.dart';
 
@@ -64,18 +63,25 @@ final routerProvider = Provider<GoRouter>((ref) {
       // 2. Nếu đã đăng nhập thành công
       // Không cho phép quay lại trang login/register/forgot-password
       if (isLogin || isRegister || isForgotPassword) {
+        if (user.role == AppUserRole.admin) return '/admin/dashboard';
+        if (user.role == AppUserRole.seller) return '/seller/dashboard';
         return '/';
       }
 
       // Kiểm tra quyền hạn truy cập theo Role
       final path = state.uri.path;
+      if (user.role == AppUserRole.admin) {
+        return path == '/admin/dashboard' ? null : '/admin/dashboard';
+      }
+      if (user.role == AppUserRole.seller) {
+        return path == '/seller/dashboard' ? null : '/seller/dashboard';
+      }
       if (path.startsWith('/admin') && user.role != AppUserRole.admin) {
         // Cố tình vào trang admin nhưng không phải admin -> Về trang chủ
         return '/';
       }
       if ((path.startsWith('/seller/') || path == '/seller') &&
-          user.role != AppUserRole.seller &&
-          user.role != AppUserRole.admin) {
+          user.role != AppUserRole.seller) {
         // Cố tình vào trang seller nhưng không có quyền seller/admin -> Về trang chủ
         return '/';
       }

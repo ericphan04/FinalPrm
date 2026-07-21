@@ -320,7 +320,7 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                     controller: TextEditingController(
                       text: state.profile.email,
                     ),
-                    labelText: 'Địa chỉ Email (Không thể thay đổi)',
+                    labelText: 'Địa chỉ email (không thể thay đổi)',
                     readOnly: true,
                     prefixIcon: Icon(
                       Icons.email_outlined,

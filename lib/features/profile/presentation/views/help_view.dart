@@ -31,27 +31,27 @@ class HelpView extends StatelessWidget {
           _buildFAQTile(
             context,
             'Tôi có thể thanh toán bằng phương thức nào?',
-            'Trong phiên bản MVP 1.0 hiện tại, chúng tôi bắt buộc sử dụng phương thức Thanh toán khi nhận hàng (COD). Các hình thức thanh toán trực tuyến qua ví điện tử và ngân hàng sẽ được bổ sung ở các phiên bản tiếp theo.',
+            'Bạn có thể thanh toán khi nhận hàng hoặc chọn lấy hàng tại cửa hàng. Khi chọn lấy tại cửa hàng, hệ thống sẽ ghi nhận chi nhánh nhận hàng trong đơn.',
           ),
           _buildFAQTile(
             context,
-            'Làm thế nào để trở thành Người Bán Hàng (Seller)?',
-            'Bạn có thể đăng ký tài khoản Seller trong mục "Seller Center" trên ứng dụng. Sau khi điền thông tin và gửi hồ sơ, Quản trị viên (Admin) sẽ xét duyệt hồ sơ của bạn trong vòng 24h. Khi được phê duyệt, bạn sẽ nhận được quyền bán hàng sau khi tải lại ứng dụng.',
+            'Chi nhánh hoạt động như thế nào?',
+            'Chi nhánh là tài khoản nội bộ của công ty. Chi nhánh theo dõi tồn kho được phân bổ và gửi yêu cầu bổ sung hàng cho admin khi cần.',
           ),
           _buildFAQTile(
             context,
             'Tôi có thể hủy đơn hàng đã đặt hay không?',
-            'Bạn chỉ có thể tự hủy đơn hàng khi trạng thái đơn hàng hiển thị là "Chờ xác nhận" (Pending) hoặc "Đã xác nhận" (Confirmed). Sau khi đơn hàng chuyển sang trạng thái "Đang đóng gói" (Packing) hoặc "Đang giao" (Shipping), bạn sẽ không thể tự hủy trên ứng dụng mà phải liên hệ với tổng đài hỗ trợ.',
+            'Bạn chỉ có thể tự hủy đơn hàng khi đơn đang ở trạng thái chờ xác nhận. Nếu đơn đã được xử lý hoặc đang giao, vui lòng liên hệ bộ phận hỗ trợ.',
           ),
           _buildFAQTile(
             context,
-            'Tôi có thể đặt hàng từ nhiều Shop khác nhau trong một đơn hàng không?',
-            'Có. Giỏ hàng của bạn có thể chứa sản phẩm từ nhiều Shop khác nhau. Khi bạn tiến hành thanh toán (checkout), hệ thống backend sẽ tự động tách giỏ hàng thành các đơn hàng con riêng biệt cho từng Shop tương ứng để thuận tiện cho việc xử lý và vận chuyển.',
+            'Đơn online do bên nào xử lý?',
+            'Đơn online thuộc về thương hiệu và được admin quản lý tập trung. Tồn kho theo chi nhánh giúp khách biết nơi còn hàng và chọn điểm lấy hàng phù hợp.',
           ),
           _buildFAQTile(
             context,
-            'Quy định về đánh giá sản phẩm như thế nào?',
-            'Để đảm bảo tính khách quan, chỉ những khách hàng đã mua và nhận hàng thành công (trạng thái đơn hàng "Đã giao hàng" - Delivered) mới được quyền đánh giá sản phẩm. Mỗi sản phẩm trong đơn hàng chỉ được đánh giá duy nhất một lần.',
+            'Tồn kho chi nhánh được hiển thị ra sao?',
+            'Mỗi sản phẩm hiển thị tồn kho theo chi nhánh để khách biết còn hàng hay đã hết hàng. Số lượng có thể thay đổi sau khi chi nhánh cập nhật hoặc admin phân bổ thêm hàng.',
           ),
 
           const SizedBox(height: AppSpacing.xl),

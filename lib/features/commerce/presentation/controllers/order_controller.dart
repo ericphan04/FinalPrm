@@ -56,15 +56,24 @@ class OrderController extends StateNotifier<OrderState> {
   Future<AppOrder?> createCheckout(
     List<CartItem> items,
     ShippingAddress address,
-    String paymentMethod,
-  ) async {
-    if (_uid == null) return null;
+    String paymentMethod, {
+    String fulfillmentMethod = 'delivery',
+    String? pickupStoreId,
+    String? pickupStoreName,
+    String? pickupAddress,
+  }) async {
+    final uid = _uid;
+    if (uid == null) return null;
     state = state.copyWith(isLoading: true, errorMessage: null);
     final result = await _repository.createCheckout(
-      _uid!,
+      uid,
       items,
       address,
       paymentMethod,
+      fulfillmentMethod: fulfillmentMethod,
+      pickupStoreId: pickupStoreId,
+      pickupStoreName: pickupStoreName,
+      pickupAddress: pickupAddress,
     );
     return result.when(
       onSuccess: (order) {
